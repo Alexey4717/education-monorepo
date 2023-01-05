@@ -1,5 +1,8 @@
 import request from 'supertest'
-import {app, HTTP_STATUSES} from "../../src"
+import { app } from "../../src"
+import { HTTP_STATUSES } from '../../src/types'
+import {CourseOutputModel} from "../../src/types/models/CourseOutputModel";
+import {CourseCreateInputModel} from "../../src/types/models/CourseCreateInputModel";
 
 describe('/course', () => {
     beforeAll(async () => {
@@ -11,7 +14,7 @@ describe('/course', () => {
     it('should return 200 and empty array', async () => {
         await request(app)
             .get('/courses')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, [] as CourseOutputModel[])
     })
 
     it('should return 404 for existing course', async () => {
@@ -23,31 +26,31 @@ describe('/course', () => {
     it(`shouldn't create course with incorrect input data`, async () => {
         await request(app)
             .post('/courses')
-            .send({ title: ' ' })
+            .send({ title: ' ' } as CourseOutputModel)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)
             .get('/courses')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, [] as CourseOutputModel[])
     })
 
     it(`should create course with correct input data`, async () => {
         const title = 'new course'
         const createResponse = await request(app)
             .post('/courses')
-            .send({ title })
+            .send({ title } as CourseCreateInputModel)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdCourse = createResponse?.body
+        const createdCourse: CourseOutputModel = createResponse?.body
 
         expect(createdCourse).toEqual({
             id: expect.any(Number),
             title
-        })
+        } as CourseOutputModel)
 
         await request(app)
             .get('/courses')
-            .expect(HTTP_STATUSES.OK_200, [createdCourse])
+            .expect(HTTP_STATUSES.OK_200, [createdCourse] as CourseOutputModel[])
     })
 
     it(`shouldn't update course with incorrect input data`, async () => {
@@ -61,7 +64,7 @@ describe('/course', () => {
 
         await request(app)
             .put(`/courses/${createdCourse?.id}`)
-            .send({ title: ' ' })
+            .send({ title: ' ' } as CourseCreateInputModel)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)
