@@ -28,7 +28,8 @@ export const isIsoDate = (dateString: string): boolean => {
 }
 
 export const getCorrectIncludesAvailableResolutions = (availableResolutions: AvailableResolutions[]): boolean => {
-    const intersections = Object.values(AvailableResolutions)
-        .filter((key) => availableResolutions.includes(key));
+    const enumValues = Object.values(AvailableResolutions)
+    const intersections = availableResolutions
+        .filter((key) => !enumValues.includes(key));
     return Boolean(intersections.length);
 }

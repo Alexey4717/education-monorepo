@@ -54,7 +54,7 @@ videosRouter.post(
             typeof author !== 'string' ||
             author?.length > 20;
         const isInvalidAvailableResolutions = availableResolutions &&
-            (!availableResolutions.length || !getCorrectIncludesAvailableResolutions(availableResolutions));
+            (!availableResolutions.length || getCorrectIncludesAvailableResolutions(availableResolutions));
 
         if (isInvalidTitle || isInvalidAuthor || isInvalidAvailableResolutions) {
             let errorsMessages = [] as Error[];
@@ -91,7 +91,7 @@ videosRouter.post(
                         field: 'availableResolutions'
                     });
                 }
-                if (availableResolutions.length && !getCorrectIncludesAvailableResolutions(availableResolutions)) {
+                if (availableResolutions.length && getCorrectIncludesAvailableResolutions(availableResolutions)) {
                     errorsMessages.push({
                         message: 'Some item of available resolutions does not match the enum',
                         field: 'availableResolutions'
@@ -154,7 +154,7 @@ videosRouter.put(
             typeof author !== 'string' ||
             author?.length > 20;
         const isInvalidAvailableResolutions = availableResolutions &&
-            (!availableResolutions.length || !getCorrectIncludesAvailableResolutions(availableResolutions));
+            (!availableResolutions.length || getCorrectIncludesAvailableResolutions(availableResolutions));
 
         if (
             !videoId ||
@@ -164,7 +164,8 @@ videosRouter.put(
             (publicationDate && !isIsoDate(publicationDate)) ||
             (minAgeRestriction && (
                 typeof minAgeRestriction !== 'number' || minAgeRestriction > 18 || minAgeRestriction < 1
-            ))
+            )) ||
+            typeof canBeDownloaded !== 'boolean'
         ) {
             let errorsMessages = [] as Error[];
             if (!title && typeof title !== 'string') {
@@ -200,7 +201,7 @@ videosRouter.put(
                         field: 'availableResolutions'
                     });
                 }
-                if (availableResolutions.length && !getCorrectIncludesAvailableResolutions(availableResolutions)) {
+                if (availableResolutions.length && getCorrectIncludesAvailableResolutions(availableResolutions)) {
                     errorsMessages.push({
                         message: 'Some item of available resolutions does not match the enum',
                         field: 'availableResolutions'
@@ -235,6 +236,12 @@ videosRouter.put(
                         });
                     }
                 }
+            }
+            if (typeof canBeDownloaded !== 'boolean') {
+                errorsMessages.push({
+                    message: 'CanBeDownloaded field must be boolean type',
+                    field: 'canBeDownloaded'
+                });
             }
 
             res

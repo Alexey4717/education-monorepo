@@ -33,13 +33,20 @@ describe('/video', () => {
 
         availableResolutions1: {title: 'title', author: 'author', availableResolutions: []},
         availableResolutions2: {title: 'title', author: 'author', availableResolutions: ["P1444"]},
+        availableResolutions3: {title: 'title', author: 'author', availableResolutions: ["P144","Invalid","P720"]},
 
         // canBeDownloaded, minAgeRestriction, publicationDate check only for update video (put method)
-        canBeDownloaded: {
+        canBeDownloaded1: {
             title: 'title',
             author: 'author',
             availableResolutions: [AvailableResolutions.P144],
             canBeDownloaded: 1
+        },
+        canBeDownloaded2: {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144],
+            canBeDownloaded: "string"
         },
 
         minAgeRestriction1: {
@@ -72,8 +79,15 @@ describe('/video', () => {
             author: 'author',
             availableResolutions: [AvailableResolutions.P144],
             publicationDate: 'invalidDateString'
-        },
+        }
     }
+
+    // testing clear all data api
+    it('should remove all data', async () => {
+        await request(app)
+            .delete('/testing/all-data')
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+    })
 
     // testing get '/videos' api
     it('should return 200 and empty array', async () => {
@@ -174,6 +188,7 @@ describe('/video', () => {
             .send(invalidInputData.author3)
             .send(invalidInputData.availableResolutions1)
             .send(invalidInputData.availableResolutions2)
+            .send(invalidInputData.availableResolutions3)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)
@@ -235,7 +250,9 @@ describe('/video', () => {
             .send(invalidInputData.author3)
             .send(invalidInputData.availableResolutions1)
             .send(invalidInputData.availableResolutions2)
-            .send(invalidInputData.canBeDownloaded)
+            .send(invalidInputData.availableResolutions3)
+            .send(invalidInputData.canBeDownloaded1)
+            .send(invalidInputData.canBeDownloaded2)
             .send(invalidInputData.minAgeRestriction1)
             .send(invalidInputData.minAgeRestriction2)
             .send(invalidInputData.minAgeRestriction3)
