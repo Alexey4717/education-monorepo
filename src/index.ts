@@ -5,7 +5,7 @@ import {HTTP_STATUSES} from "./types";
 import {videosRouter} from "./routes/h01-videos/videos-router";
 
 
-const PORT = process.env.PORT || 3001;
+const port = process.env.PORT || 3001;
 const jsonMiddleware = express.json();
 
 export const app = express();
@@ -24,6 +24,6 @@ app.delete('/testing/all-data', (req: Request, res: Response<void>) => {
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
 
-app.listen(PORT, () => {
-    console.log(`server running on ${PORT} port`);
+app.listen(port, () => {
+    console.log(`server running on ${port} port`);
 });
