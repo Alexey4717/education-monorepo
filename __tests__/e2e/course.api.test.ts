@@ -1,108 +1,296 @@
-import request from 'supertest'
-import { app } from "../../src"
-import { HTTP_STATUSES } from '../../src/types'
-import {CourseOutputModel} from "../../src/types/models/CourseOutputModel";
-import {CourseCreateInputModel} from "../../src/types/models/CourseCreateInputModel";
+import request from "supertest";
+import {app} from "../../src/index";
+import {HTTP_STATUSES, AvailableResolutions} from '../../src/types'
+import {GetVideoOutputModel} from "../../src/models/GetVideoOutputModel";
+import {CreateVideoInputModel} from "../../src/models/CreateVideoInputModel";
+import {UpdateVideoInputModel} from "../../src/models/UpdateVideoInputModel";
 
-describe('/course', () => {
-    beforeAll(async () => {
+describe('/video', () => {
+    beforeEach(async () => {
         await request(app)
-            .delete('/__test__/data')
+            .delete('/testing/all-data')
             .expect(HTTP_STATUSES.NO_CONTENT_204)
     })
 
+    const invalidInputData = {
+        title1: {title: '', author: 'author', availableResolutions: [AvailableResolutions.P144]},
+        title2: {title: ' ', author: 'author', availableResolutions: [AvailableResolutions.P144]},
+        title3: {title: 1, author: 'author', availableResolutions: [AvailableResolutions.P144]},
+        title4: {
+            title: 'Lorem ipsum dolor sit amet, consectetuer.',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144]
+        },
+
+        author1: {title: 'title', author: '', availableResolutions: [AvailableResolutions.P144]},
+        author2: {title: 'title', author: ' ', availableResolutions: [AvailableResolutions.P144]},
+        author3: {title: 'title', author: 1, availableResolutions: [AvailableResolutions.P144]},
+        author4: {
+            title: 'title',
+            author: 'Lorem ipsum dolor sit',
+            availableResolutions: [AvailableResolutions.P144]
+        },
+
+        availableResolutions1: {title: 'title', author: 'author', availableResolutions: []},
+        availableResolutions2: {title: 'title', author: 'author', availableResolutions: ["P1444"]},
+
+        // canBeDownloaded, minAgeRestriction, publicationDate check only for update video (put method)
+        canBeDownloaded: {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144],
+            canBeDownloaded: 1
+        },
+
+        minAgeRestriction1: {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144],
+            minAgeRestriction: '10'
+        },
+        minAgeRestriction2: {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144],
+            minAgeRestriction: 0
+        },
+        minAgeRestriction3: {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144],
+            minAgeRestriction: 19
+        },
+
+        publicationDate1: {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144],
+            publicationDate: 1
+        },
+        publicationDate2: {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144],
+            publicationDate: 'invalidDateString'
+        },
+    }
+
+    // testing get '/videos' api
     it('should return 200 and empty array', async () => {
         await request(app)
-            .get('/courses')
-            .expect(HTTP_STATUSES.OK_200, [] as CourseOutputModel[])
-    })
-
-    it('should return 404 for existing course', async () => {
-        await request(app)
-            .get('/courses/99')
-            .expect(HTTP_STATUSES.NOT_FOUND_404)
-    })
-
-    it(`shouldn't create course with incorrect input data`, async () => {
-        await request(app)
-            .post('/courses')
-            .send({ title: ' ' } as CourseOutputModel)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
-
-        await request(app)
-            .get('/courses')
-            .expect(HTTP_STATUSES.OK_200, [] as CourseOutputModel[])
-    })
-
-    it(`should create course with correct input data`, async () => {
-        const title = 'new course'
-        const createResponse = await request(app)
-            .post('/courses')
-            .send({ title } as CourseCreateInputModel)
-            .expect(HTTP_STATUSES.CREATED_201)
-
-        const createdCourse: CourseOutputModel = createResponse?.body
-
-        expect(createdCourse).toEqual({
-            id: expect.any(Number),
-            title
-        } as CourseOutputModel)
-
-        await request(app)
-            .get('/courses')
-            .expect(HTTP_STATUSES.OK_200, [createdCourse] as CourseOutputModel[])
-    })
-
-    it(`shouldn't update course with incorrect input data`, async () => {
-        const title = 'new course'
-        const createResponse = await request(app)
-            .post('/courses')
-            .send({ title })
-            .expect(HTTP_STATUSES.CREATED_201)
-
-        const createdCourse = createResponse?.body
-
-        await request(app)
-            .put(`/courses/${createdCourse?.id}`)
-            .send({ title: ' ' } as CourseCreateInputModel)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
-
-        await request(app)
-            .get('/courses')
-            .expect(HTTP_STATUSES.OK_200, [createdCourse])
-    })
-
-    it(`shouldn't update course if not exist`, async () => {
-        await request(app)
-            .put('/courses/-9999')
-            .send({ title: 'update course' })
-            .expect(HTTP_STATUSES.NOT_FOUND_404)
-
-        await request(app)
-            .get('/courses')
+            .get('/videos')
             .expect(HTTP_STATUSES.OK_200, [])
     })
-
-    it(`should update course with correct input data`, async () => {
-        const createdTitle = 'new course'
-        const updatedTitle = 'update course'
-        const createResponse = await request(app)
-            .post('/courses')
-            .send({ title: createdTitle })
+    it('should return 200 and array of videos', async () => {
+        const data1: CreateVideoInputModel = {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144]
+        };
+        const createResponse1 = await request(app)
+            .post('/videos')
+            .send(data1)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdCourse = createResponse.body
+        const createdVideo1: GetVideoOutputModel = createResponse1?.body;
 
         await request(app)
-            .put(`/courses/${createdCourse?.id}`)
-            .send({ title: updatedTitle })
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .get('/videos')
+            .expect(HTTP_STATUSES.OK_200, [createdVideo1]);
 
-        const updatedCourse = { ...createdCourse, title: updatedTitle }
+        const data2: CreateVideoInputModel = {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144]
+        };
+        const createResponse2 = await request(app)
+            .post('/videos')
+            .send(data2)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdVideo2: GetVideoOutputModel = createResponse2?.body;
 
         await request(app)
-            .get('/courses')
-            .expect(HTTP_STATUSES.OK_200, [updatedCourse])
+            .get('/videos')
+            .expect(HTTP_STATUSES.OK_200, [createdVideo1, createdVideo2]);
     })
 
-})
+    // testing get '/videos/:id' api
+    it('should return 404 for not existing video', async () => {
+        await request(app)
+            .get('/videos/-99')
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+    it('should return 200 and existing video', async () => {
+        const data: CreateVideoInputModel = {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144]
+        };
+        const createResponse = await request(app)
+            .post('/videos')
+            .send(data)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdVideo: GetVideoOutputModel = createResponse?.body;
+        await request(app)
+            .get(`/videos/${createdVideo.id}`)
+            .expect(HTTP_STATUSES.OK_200, createdVideo)
+    })
+
+    // testing delete '/videos/:id' api
+    it('should return 404 for not existing video', async () => {
+        await request(app)
+            .delete('/videos/-99')
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+    it('should return 204 for existing video', async () => {
+        const data: CreateVideoInputModel = {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144]
+        };
+        const createResponse = await request(app)
+            .post('/videos')
+            .send(data)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdVideo: GetVideoOutputModel = createResponse?.body;
+        await request(app)
+            .delete(`/videos/${createdVideo.id}`)
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+    })
+
+    // testing post '/videos' api
+    it(`shouldn't create video with incorrect input data`, async () => {
+        await request(app)
+            .post('/videos')
+            .send(invalidInputData.title1)
+            .send(invalidInputData.title2)
+            .send(invalidInputData.title3)
+            .send(invalidInputData.title4)
+            .send(invalidInputData.author1)
+            .send(invalidInputData.author2)
+            .send(invalidInputData.author3)
+            .send(invalidInputData.availableResolutions1)
+            .send(invalidInputData.availableResolutions2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .get('/videos')
+            .expect(HTTP_STATUSES.OK_200, [])
+    })
+    it(`should create video with correct input data`, async () => {
+        const data: CreateVideoInputModel = {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144]
+        };
+        const createResponse = await request(app)
+            .post('/videos')
+            .send(data)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdVideo: GetVideoOutputModel = createResponse?.body;
+        const expectedVideo: GetVideoOutputModel = {
+            ...data,
+            id: createdVideo.id,
+            canBeDownloaded: false,
+            minAgeRestriction: null,
+            createdAt: createdVideo.createdAt,
+            publicationDate: new Date(
+                new Date(createdVideo.createdAt).setDate(new Date(createdVideo.createdAt).getDate() + 1)
+            ).toISOString(),
+        };
+
+        expect(createdVideo).toEqual(expectedVideo);
+
+        await request(app)
+            .get('/videos')
+            .expect(HTTP_STATUSES.OK_200, [createdVideo])
+    })
+
+    // testing put '/videos/:id' api
+    it(`shouldn't update video with incorrect input data`, async () => {
+        const data: CreateVideoInputModel = {
+            title: 'title',
+            author: 'author',
+            availableResolutions: [AvailableResolutions.P144]
+        };
+        const createResponse = await request(app)
+            .post('/videos')
+            .send(data)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdVideo = createResponse?.body
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
+            .send(invalidInputData.title1)
+            .send(invalidInputData.title2)
+            .send(invalidInputData.title3)
+            .send(invalidInputData.title4)
+            .send(invalidInputData.author1)
+            .send(invalidInputData.author2)
+            .send(invalidInputData.author3)
+            .send(invalidInputData.availableResolutions1)
+            .send(invalidInputData.availableResolutions2)
+            .send(invalidInputData.canBeDownloaded)
+            .send(invalidInputData.minAgeRestriction1)
+            .send(invalidInputData.minAgeRestriction2)
+            .send(invalidInputData.minAgeRestriction3)
+            .send(invalidInputData.publicationDate1)
+            .send(invalidInputData.publicationDate2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .get('/videos')
+            .expect(HTTP_STATUSES.OK_200, [createdVideo])
+    })
+    it(`shouldn't update video if not exist`, async () => {
+        const data: UpdateVideoInputModel = {
+            title: 'title1',
+            author: 'author2',
+            availableResolutions: [AvailableResolutions.P240]
+        };
+        await request(app)
+            .put('/videos/-9999')
+            .send(data)
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+
+        await request(app)
+            .get('/videos')
+            .expect(HTTP_STATUSES.OK_200, [])
+    })
+    it(`should update video with correct input data`, async () => {
+        const dataForCreate: CreateVideoInputModel = {
+            title: 'title1',
+            author: 'author2',
+            availableResolutions: [AvailableResolutions.P240]
+        };
+        const dataForUpdate: UpdateVideoInputModel = {
+            title: 'title1',
+            author: 'author2',
+            availableResolutions: [AvailableResolutions.P240]
+        };
+
+        const createResponse = await request(app)
+            .post('/videos')
+            .send(dataForCreate)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdVideo = createResponse.body
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
+            .send(dataForUpdate)
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const updatedVideo = {...createdVideo, ...dataForUpdate};
+
+        await request(app)
+            .get('/videos')
+            .expect(HTTP_STATUSES.OK_200, [updatedVideo])
+    })
+
+});
