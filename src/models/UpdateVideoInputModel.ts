@@ -14,7 +14,7 @@ export type UpdateVideoInputModel = {
     /**
      * Update available resolutions for video. At least one resolution should be added.
      */
-    availableResolutions: GetVideoOutputModel["availableResolutions"]
+    availableResolutions?: GetVideoOutputModel["availableResolutions"]
 
     /**
      * Update permission to download. Not required. By default - false.

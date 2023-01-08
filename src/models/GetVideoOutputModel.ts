@@ -39,5 +39,5 @@ export type GetVideoOutputModel = {
     /**
      * Available resolutions of video (enum), can be nullable.
      */
-    availableResolutions: AvailableResolutions[]
+    availableResolutions: AvailableResolutions[] | null
 }

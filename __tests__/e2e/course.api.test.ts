@@ -281,14 +281,14 @@ describe('/video', () => {
     })
     it(`should update video with correct input data`, async () => {
         const dataForCreate: CreateVideoInputModel = {
-            title: 'title1',
-            author: 'author2',
+            title: 'title',
+            author: 'author',
             availableResolutions: [AvailableResolutions.P240]
         };
         const dataForUpdate: UpdateVideoInputModel = {
             title: 'title1',
             author: 'author2',
-            availableResolutions: [AvailableResolutions.P240]
+            availableResolutions: [AvailableResolutions.P144]
         };
 
         const createResponse = await request(app)

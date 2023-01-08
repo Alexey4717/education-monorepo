@@ -2,7 +2,7 @@ import {Request, Response, Router} from "express";
 
 import {GetVideoOutputModel} from "../../models/GetVideoOutputModel";
 import {db} from "../../store/mockedDB";
-import {getVideoViewModel, isIsoDate, getCorrectIncludesAvailableResolutions} from "../../helpers";
+import {getVideoViewModel, getIsIsoDate, getCorrectIncludesAvailableResolutions} from "../../helpers";
 import {GetVideoInputModel} from "../../models/GetVideoInputModel";
 import {HTTP_STATUSES, RequestWithBody, RequestWithParamsAndBody, Error} from "../../types";
 import {CreateVideoInputModel} from "../../models/CreateVideoInputModel";
@@ -53,7 +53,7 @@ videosRouter.post(
             (typeof author === 'string' && !author?.trim()) ||
             typeof author !== 'string' ||
             author?.length > 20;
-        const isInvalidAvailableResolutions = availableResolutions &&
+        const isInvalidAvailableResolutions = availableResolutions && Boolean(availableResolutions) &&
             (!availableResolutions.length || getCorrectIncludesAvailableResolutions(availableResolutions));
 
         if (isInvalidTitle || isInvalidAuthor || isInvalidAvailableResolutions) {
@@ -122,7 +122,7 @@ videosRouter.post(
             minAgeRestriction,
             createdAt,
             publicationDate,
-            availableResolutions
+            availableResolutions: availableResolutions ?? null // null default
         };
 
         db.videos.push(createdVideo);
@@ -136,6 +136,17 @@ videosRouter.put(
         res: Response<undefined | GetErrorOutputModel>
     ) => {
         const videoId = req.params?.id;
+
+        const findVideoById = (video: GetVideoOutputModel) => video.id === +videoId;
+
+        const foundVideo = db.videos.find(findVideoById);
+        const foundVideoIndex = db.videos.findIndex(findVideoById);
+
+        if (!foundVideo || foundVideoIndex === -1) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            return;
+        }
+
         const {
             title,
             author,
@@ -153,7 +164,7 @@ videosRouter.put(
             (typeof author === 'string' && !author?.trim()) ||
             typeof author !== 'string' ||
             author?.length > 20;
-        const isInvalidAvailableResolutions = availableResolutions &&
+        const isInvalidAvailableResolutions = Boolean(availableResolutions) && availableResolutions &&
             (!availableResolutions.length || getCorrectIncludesAvailableResolutions(availableResolutions));
 
         if (
@@ -161,11 +172,11 @@ videosRouter.put(
             isInvalidTitle ||
             isInvalidAuthor ||
             isInvalidAvailableResolutions ||
-            (publicationDate && !isIsoDate(publicationDate)) ||
+            (publicationDate && !getIsIsoDate(publicationDate)) ||
             (minAgeRestriction && (
                 typeof minAgeRestriction !== 'number' || minAgeRestriction > 18 || minAgeRestriction < 1
             )) ||
-            typeof canBeDownloaded !== 'boolean'
+            (canBeDownloaded !== undefined && typeof canBeDownloaded !== 'boolean')
         ) {
             let errorsMessages = [] as Error[];
             if (!title && typeof title !== 'string') {
@@ -209,7 +220,7 @@ videosRouter.put(
                 }
             }
 
-            if (publicationDate && !isIsoDate(publicationDate)) {
+            if (publicationDate && !getIsIsoDate(publicationDate)) {
                 errorsMessages.push({
                     message: 'Publication date must be a ISO string of date',
                     field: 'publicationDate'
@@ -250,16 +261,6 @@ videosRouter.put(
             return;
         }
 
-        const findVideoById = (video: GetVideoOutputModel) => video.id === +videoId;
-
-        const foundVideo = db.videos.find(findVideoById);
-        const foundVideoIndex = db.videos.findIndex(findVideoById);
-
-        if (!foundVideo || foundVideoIndex === -1) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-            return;
-        }
-
         db.videos[foundVideoIndex] = {
             ...foundVideo,
             title,
@@ -269,7 +270,7 @@ videosRouter.put(
             publicationDate: publicationDate
                 ? new Date(publicationDate).toISOString()
                 : foundVideo?.publicationDate,
-            availableResolutions
+            availableResolutions: availableResolutions ?? null
         };
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
