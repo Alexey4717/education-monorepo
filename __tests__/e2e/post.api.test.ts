@@ -80,8 +80,6 @@ describe('/blog', () => {
         blogId4: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: 123},
         blogId5: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: false},
         blogId6: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '-999'}, // not exists blog
-
-        notExistKey: {tit: 'title', title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: db.blogs[0].id},
     }
 
     // testing get '/posts' api
@@ -196,7 +194,6 @@ describe('/blog', () => {
             .send(invalidInputData.blogId4)
             .send(invalidInputData.blogId5)
             .send(invalidInputData.blogId6)
-            .send(invalidInputData.notExistKey)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)
@@ -281,7 +278,6 @@ describe('/blog', () => {
             .send(invalidInputData.blogId4)
             .send(invalidInputData.blogId5)
             .send(invalidInputData.blogId6)
-            .send(invalidInputData.notExistKey)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)

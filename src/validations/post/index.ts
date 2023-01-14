@@ -2,14 +2,6 @@ import {body} from "express-validator";
 import {blogsRepository} from "../../repositories/blogs-repository";
 
 
-export const bodySanitization = body('*').custom((value, {req}) => {
-    const requiredFields = ['title', 'shortDescription', 'content', 'blogId']
-    if (Object.keys(req.body).some(field => !requiredFields.includes((field)))) {
-        return Promise.reject('Extra field in request body not allowed');
-    }
-    return true;
-})
-
 // validations for post body (post and put methods)
 export const titleValidation = body('title')
     .isLength({max: 30}).withMessage("Max field length shouldn`t be more than 30 symbols");

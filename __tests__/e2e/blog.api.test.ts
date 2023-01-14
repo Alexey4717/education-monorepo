@@ -53,8 +53,6 @@ describe('/blog', () => {
         websiteUrl5: {name: 'name', description: 'description', websiteUrl: 1},
         websiteUrl6: {name: 'name', description: 'description', websiteUrl: false},
         websiteUrl7: {name: 'name', description: 'description', websiteUrl: 'not url string'},
-
-        notExistKey: {"nam": "name", name: 'name', description: 'description', websiteUrl: 'https://google.com'},
     }
 
     // testing get '/blogs' api
@@ -161,7 +159,6 @@ describe('/blog', () => {
             .send(invalidInputData.websiteUrl5)
             .send(invalidInputData.websiteUrl6)
             .send(invalidInputData.websiteUrl7)
-            .send(invalidInputData.notExistKey)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)
@@ -237,7 +234,6 @@ describe('/blog', () => {
             .send(invalidInputData.websiteUrl5)
             .send(invalidInputData.websiteUrl6)
             .send(invalidInputData.websiteUrl7)
-            .send(invalidInputData.notExistKey)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
         await request(app)

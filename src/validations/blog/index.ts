@@ -1,14 +1,6 @@
 import {body} from "express-validator";
 
 
-export const bodySanitization = body('*').custom((value, {req}) => {
-    const requiredFields = ['name', 'description', 'websiteUrl']
-    if (Object.keys(req.body).some(field => !requiredFields.includes((field)))) {
-        return Promise.reject('Extra field in request body not allowed');
-    }
-    return true;
-})
-
 // validations for blog body post and put
 export const nameValidation = body('name')
     .isLength({max: 15}).withMessage("Max field length shouldn`t be more than 15 symbols");
