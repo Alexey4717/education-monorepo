@@ -1,5 +1,6 @@
 import {commonValidationForBodyStrings} from '../common';
 import {
+    bodySanitization,
     descriptionValidation,
     nameValidation,
     websiteUrlValidation
@@ -7,6 +8,7 @@ import {
 
 
 export const createBlogInputValidations = [
+    bodySanitization,
     commonValidationForBodyStrings,
     nameValidation,
     descriptionValidation,

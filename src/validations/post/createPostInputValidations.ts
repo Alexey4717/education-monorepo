@@ -3,11 +3,12 @@ import {
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
-    blogIdValidation
+    blogIdValidation, bodySanitization
 } from "./index";
 
 
 export const createPostInputValidations = [
+    bodySanitization,
     commonValidationForBodyStrings,
     titleValidation,
     shortDescriptionValidation,
