@@ -7,7 +7,7 @@ import {
 
 export const updateBlogInputValidations = [
     uriIdParamValidation,
-    commonValidationForBodyStrings,
+    // commonValidationForBodyStrings,
     nameValidation,
     descriptionValidation,
     websiteUrlValidation

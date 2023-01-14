@@ -7,7 +7,7 @@ import {
 
 
 export const createBlogInputValidations = [
-    commonValidationForBodyStrings,
+    // commonValidationForBodyStrings,
     nameValidation,
     descriptionValidation,
     websiteUrlValidation

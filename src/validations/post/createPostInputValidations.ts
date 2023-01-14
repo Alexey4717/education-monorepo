@@ -8,7 +8,7 @@ import {
 
 
 export const createPostInputValidations = [
-    commonValidationForBodyStrings,
+    // commonValidationForBodyStrings,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,

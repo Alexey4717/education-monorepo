@@ -9,7 +9,7 @@ import {
 
 export const updatePostInputValidations = [
     uriIdParamValidation,
-    commonValidationForBodyStrings,
+    // commonValidationForBodyStrings,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
