@@ -4,7 +4,7 @@ import {body, param} from "express-validator";
 export const uriIdParamValidation = param('id')
     .exists()
     .trim()
-    .isNumeric()
+    .isString()
     .withMessage("Id from URI param should be a string");
 
 export const commonValidationForBodyStrings = body('*')
