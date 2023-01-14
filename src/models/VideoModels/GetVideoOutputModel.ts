@@ -1,4 +1,4 @@
-import {AvailableResolutions} from '../types';
+import {AvailableResolutions} from '../../types';
 
 export type GetVideoOutputModel = {
     /**

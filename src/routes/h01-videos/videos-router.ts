@@ -1,13 +1,13 @@
 import {Request, Response, Router} from "express";
 
-import {GetVideoOutputModel} from "../../models/GetVideoOutputModel";
+import {GetVideoOutputModel} from "../../models/VideoModels/GetVideoOutputModel";
 import {db} from "../../store/mockedDB";
 import {getVideoViewModel, getIsIsoDate, getCorrectIncludesAvailableResolutions} from "../../helpers";
-import {GetVideoInputModel} from "../../models/GetVideoInputModel";
-import {HTTP_STATUSES, RequestWithBody, RequestWithParamsAndBody, Error} from "../../types";
-import {CreateVideoInputModel} from "../../models/CreateVideoInputModel";
+import {GetVideoInputModel} from "../../models/VideoModels/GetVideoInputModel";
+import {HTTP_STATUSES, RequestWithBody, RequestWithParamsAndBody, Error, RequestWithParams} from "../../types";
+import {CreateVideoInputModel} from "../../models/VideoModels/CreateVideoInputModel";
 import {GetErrorOutputModel} from "../../models/GetErrorOutputModel";
-import {UpdateVideoInputModel} from "../../models/UpdateVideoInputModel";
+import {UpdateVideoInputModel} from "../../models/VideoModels/UpdateVideoInputModel";
 
 
 export const videosRouter = Router({});
@@ -16,7 +16,7 @@ videosRouter.get('/', (req: Request, res: Response<GetVideoOutputModel[]>) => {
     const resData = db.videos.map(getVideoViewModel);
     res.json(resData);
 })
-videosRouter.get('/:id', (req: Request<GetVideoInputModel>, res: Response<GetVideoOutputModel>) => {
+videosRouter.get('/:id', (req: RequestWithParams<GetVideoInputModel>, res: Response<GetVideoOutputModel>) => {
     const videoId = req.params?.id;
     if (!videoId) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);

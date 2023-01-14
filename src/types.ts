@@ -1,6 +1,8 @@
 import {Request} from 'express';
 
-import {GetVideoOutputModel} from "./models/GetVideoOutputModel";
+import {GetVideoOutputModel} from "./models/VideoModels/GetVideoOutputModel";
+import {GetBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
+import {GetPostOutputModel} from "./models/PostModels/GetPostOutputModel";
 
 
 export enum HTTP_STATUSES {
@@ -10,6 +12,7 @@ export enum HTTP_STATUSES {
 
     NOT_FOUND_404 = 404,
     BAD_REQUEST_400 = 400,
+    NOT_AUTH_401 = 401,
 
     INTERNAL_ERROR_500 = 500
 }
@@ -25,8 +28,17 @@ export enum AvailableResolutions {
     P2160 = 'P2160'
 }
 
+type User = {
+    id: number
+    login: string
+    password: string
+};
+
 export type DataBase = {
+    users: User[]
     videos: GetVideoOutputModel[]
+    blogs: GetBlogOutputModel[]
+    posts: GetPostOutputModel[]
 };
 
 export type Error = {

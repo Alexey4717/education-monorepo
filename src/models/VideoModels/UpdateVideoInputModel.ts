@@ -1,4 +1,4 @@
-import {GetVideoOutputModel} from "../models/GetVideoOutputModel";
+import {GetVideoOutputModel} from "./GetVideoOutputModel";
 
 export type UpdateVideoInputModel = {
     /**

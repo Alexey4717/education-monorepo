@@ -1,9 +1,9 @@
 import request from "supertest";
 import {app} from "../../src/index";
 import {HTTP_STATUSES, AvailableResolutions} from '../../src/types'
-import {GetVideoOutputModel} from "../../src/models/GetVideoOutputModel";
-import {CreateVideoInputModel} from "../../src/models/CreateVideoInputModel";
-import {UpdateVideoInputModel} from "../../src/models/UpdateVideoInputModel";
+import {GetVideoOutputModel} from "../../src/models/VideoModels/GetVideoOutputModel";
+import {CreateVideoInputModel} from "../../src/models/VideoModels/CreateVideoInputModel";
+import {UpdateVideoInputModel} from "../../src/models/VideoModels/UpdateVideoInputModel";
 
 describe('/video', () => {
     beforeEach(async () => {
@@ -95,6 +95,7 @@ describe('/video', () => {
             .get('/videos')
             .expect(HTTP_STATUSES.OK_200, [])
     })
+
     it('should return 200 and array of videos', async () => {
         const data1: CreateVideoInputModel = {
             title: 'title',

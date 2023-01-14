@@ -1,6 +1,14 @@
 import {AvailableResolutions, DataBase} from "../types";
 
 export const db: DataBase = {
+    users: [
+        {
+            id: 1,
+            login: 'admin',
+            password: 'qwerty',
+        }
+    ],
+
     videos: [
         {
             id: 0,
@@ -13,6 +21,26 @@ export const db: DataBase = {
             availableResolutions: [
                 AvailableResolutions.P144
             ]
+        }
+    ],
+
+    blogs: [
+        {
+            id: "123",
+            name: "blog1",
+            description: "blog description",
+            websiteUrl: "https://websiteUrl.com"
+        }
+    ],
+
+    posts: [
+        {
+            id: "456",
+            title: "title",
+            shortDescription: "short description",
+            content: "content",
+            blogId: "123",
+            blogName: "blog1"
         }
     ]
 };
