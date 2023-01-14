@@ -8,5 +8,6 @@ export const uriIdParamValidation = param('id')
     .withMessage("Id from URI param should be a string");
 
 export const commonValidationForBodyStrings = body('*')
+    .exists()
     .isString().withMessage("Field should be a string")
     .trim().notEmpty().withMessage("Field shouldn`t be empty");
