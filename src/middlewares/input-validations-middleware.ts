@@ -13,7 +13,7 @@ export const inputValidationsMiddleware = (req: Request, res: Response, next: Ne
     };
     const errors = validationResult(req).formatWith(errorFormatter);
     if (!errors.isEmpty()) {
-        return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({errors: errors.array({ onlyFirstError: true })});
+        return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({errorsMessages: errors.array({ onlyFirstError: true })});
     } else {
         next();
     }
