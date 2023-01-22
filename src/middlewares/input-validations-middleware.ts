@@ -2,6 +2,7 @@ import {Request, Response, NextFunction} from "express";
 import {validationResult} from 'express-validator';
 
 import {HTTP_STATUSES} from '../types';
+import {GetErrorOutputModel} from "../models/GetErrorOutputModel";
 
 
 export const inputValidationsMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +14,8 @@ export const inputValidationsMiddleware = (req: Request, res: Response, next: Ne
     };
     const errors = validationResult(req).formatWith(errorFormatter);
     if (!errors.isEmpty()) {
-        return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({errorsMessages: errors.array({ onlyFirstError: true })});
+        const errorsBody: GetErrorOutputModel = {errorsMessages: errors.array({ onlyFirstError: true })}
+        return res.status(HTTP_STATUSES.BAD_REQUEST_400).json(errorsBody);
     } else {
         next();
     }

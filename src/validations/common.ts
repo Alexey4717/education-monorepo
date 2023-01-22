@@ -7,7 +7,7 @@ export const uriIdParamValidation = param('id')
     .isString()
     .withMessage("Id from URI param should be a string");
 
-export const commonValidationForBodyStrings = body('*')
+export const commonValidationForBodyStrings = (name: string) => body(name)
     .exists()
     .isString().withMessage("Field should be a string")
     .trim().notEmpty().withMessage("Field shouldn`t be empty");

@@ -22,8 +22,8 @@ export const blogIdValidation = body('blogId')
     .exists()
     .isString().withMessage("Field should be a string")
     .trim().notEmpty().withMessage("Field shouldn`t be empty")
-    .custom((value, {req}) => {
-    const foundBlog = blogsRepository.findBlogById(value);
-    if (!foundBlog) throw new Error('Blog not found by passed blogId');
-    return true;
-})
+    .custom(async (value, {req}) => {
+        const foundBlog = await blogsRepository.findBlogById(value);
+        if (!foundBlog) throw new Error('Blog not found by passed blogId');
+        return true;
+    })

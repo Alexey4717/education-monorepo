@@ -100,7 +100,7 @@ describe('/video', () => {
         const data1: CreateVideoInputModel = {
             title: 'title',
             author: 'author',
-            availableResolutions: [AvailableResolutions.P144]
+            availableResolutions: ["P144" as AvailableResolutions]
         };
         const createResponse1 = await request(app)
             .post('/videos')
@@ -116,7 +116,7 @@ describe('/video', () => {
         const data2: CreateVideoInputModel = {
             title: 'title',
             author: 'author',
-            availableResolutions: [AvailableResolutions.P144]
+            availableResolutions: ["P144" as AvailableResolutions]
         };
         const createResponse2 = await request(app)
             .post('/videos')
@@ -181,16 +181,53 @@ describe('/video', () => {
         await request(app)
             .post('/videos')
             .send(invalidInputData.title1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.title2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.title3)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.title4)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.author1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.author2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.author3)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.availableResolutions1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.availableResolutions2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post('/videos')
             .send(invalidInputData.availableResolutions3)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
 
         await request(app)
             .get('/videos')
@@ -243,21 +280,85 @@ describe('/video', () => {
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.title1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.title2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.title3)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.title4)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.author1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.author2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.author3)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.availableResolutions1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.availableResolutions2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.availableResolutions3)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.canBeDownloaded1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.canBeDownloaded2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.minAgeRestriction1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.minAgeRestriction2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.minAgeRestriction3)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.publicationDate1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.publicationDate2)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
 

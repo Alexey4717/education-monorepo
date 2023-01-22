@@ -4,6 +4,7 @@ import {GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
 import {CreatePostInputModel} from "../models/PostModels/CreatePostInputModel";
 import {UpdatePostInputModel} from "../models/PostModels/UpdatePostInputModel";
 import {blogsRepository} from "./blogs-repository";
+import {postsCollection} from "../store/db";
 
 interface UpdatePostArgs {
     id: string
@@ -11,16 +12,17 @@ interface UpdatePostArgs {
 }
 
 export const postsRepository = {
-    getPosts() {
-        return db.posts.map(getPostViewModel);
+    async getPosts(): Promise<GetPostOutputModel[]> {
+        const result = await postsCollection.find({}).toArray();
+        return result?.map(getPostViewModel);
     },
 
-    findPostById(id: string) {
-        const foundPost = db.posts.find((post) => post.id === id);
+    async findPostById(id: string): Promise<GetPostOutputModel | null> {
+        const foundPost = await postsCollection.findOne({id});
         return foundPost ? getPostViewModel(foundPost) : null;
     },
 
-    createPost(input: CreatePostInputModel) {
+    async createPost(input: CreatePostInputModel): Promise<GetPostOutputModel | null> {
         const {
             title,
             shortDescription,
@@ -28,7 +30,8 @@ export const postsRepository = {
             content
         } = input || {};
 
-        const foundBlog = blogsRepository.findBlogById(blogId);
+        // Узнать может тут можно по-другому?
+        const foundBlog = await blogsRepository.findBlogById(blogId);
 
         if (!foundBlog) return null;
 
@@ -41,29 +44,20 @@ export const postsRepository = {
             content
         };
 
-        db.posts.push(newPost);
-        return newPost;
+        await postsCollection.insertOne(newPost);
+        return getPostViewModel(newPost);
     },
 
-    updatePost({id, input}: UpdatePostArgs) {
-        const foundPostIndex = db.posts.findIndex((post) => post.id === id);
-        const foundPost = db.posts.find((post) => post.id === id);
-
-        const foundBlog = blogsRepository.findBlogById(input.blogId);
-
-        if (foundPostIndex === -1 || !foundPost || !foundBlog) return false;
-
-        db.posts[foundPostIndex] = {
-            ...foundPost,
-            ...input
-        };
-        return true;
+    async updatePost({id, input}: UpdatePostArgs): Promise<boolean> {
+        const response = await postsCollection.updateOne(
+            {id},
+            {$set: input}
+        );
+        return response.matchedCount === 1;
     },
 
-    deletePostById(id: string) {
-        const foundPostIndex = db.posts.findIndex((post) => post.id === id);
-        if (foundPostIndex === -1) return false;
-        db.posts.splice(foundPostIndex, 1);
-        return true;
+    async deletePostById(id: string): Promise<boolean> {
+        const result = await postsCollection.deleteOne({id});
+        return result.deletedCount === 1;
     }
 };

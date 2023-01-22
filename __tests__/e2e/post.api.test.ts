@@ -8,26 +8,12 @@ import {getEncodedAuthToken} from "../../src/helpers";
 import {GetPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
 import {CreateBlogInputModel} from "../../src/models/BlogModels/CreateBlogInputModel";
 import {GetBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
+import {blogsCollection} from "../../src/store/db";
+import {blogsRepository} from "../../src/repositories/blogs-repository";
 
 
-describe('/blog', () => {
+describe('/post', () => {
     const encodedBase64Token = getEncodedAuthToken();
-
-    const createPost = async (input: CreatePostInputModel | undefined = {
-        title: 'title',
-        blogId: db.blogs[0].id,
-        content: 'content',
-        shortDescription: 'shortDescription'
-    }) => {
-        const createResponse = await request(app)
-            .post('/posts')
-            .set('Authorization', `Basic ${encodedBase64Token}`)
-            .send(input)
-            .expect(HTTP_STATUSES.CREATED_201)
-
-        const createdPost: GetPostOutputModel = createResponse?.body;
-        return createdPost;
-    }
 
     const createBlog = async (input: CreateBlogInputModel | undefined = {
         name: 'blog1',
@@ -44,6 +30,35 @@ describe('/blog', () => {
         return createdBlog;
     }
 
+    const getCreatedBlogId = async () => {
+        await createBlog();
+
+        const createdBlogs = await request(app)
+            .get('/blogs')
+            .expect(HTTP_STATUSES.OK_200);
+        const createdBlogId = createdBlogs.body[0].id
+
+        return createdBlogId;
+    };
+
+    const createPost = async (input: CreatePostInputModel | undefined = {
+        title: 'title',
+        blogId: '11',
+        content: 'content',
+        shortDescription: 'shortDescription'
+    }) => {
+        const createdBlogId = await getCreatedBlogId();
+
+        const createResponse = await request(app)
+            .post('/posts')
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...input, blogId: createdBlogId})
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdPost: GetPostOutputModel = createResponse?.body;
+        return createdPost;
+    }
+
     beforeEach(async () => {
         await request(app)
             .delete('/testing/all-data')
@@ -52,27 +67,29 @@ describe('/blog', () => {
         await createBlog();
     })
 
+    const createdBlogId = "123";
+
     const invalidInputData = {
-        title1: {shortDescription: 'shortDescription', content: 'content', blogId: db.blogs[0].id},
-        title2: {title: '', shortDescription: 'shortDescription', content: 'content', blogId: db.blogs[0].id},
-        title3: {title: '   ', shortDescription: 'shortDescription', content: 'content', blogId: db.blogs[0].id},
-        title4: {title: new Array(32).join("a"), shortDescription: 'shortDescription', content: 'content', blogId: db.blogs[0].id},
-        title5: {title: 1, shortDescription: 'shortDescription', content: 'content', blogId: db.blogs[0].id},
-        title6: {title: false, shortDescription: 'shortDescription', content: 'content', blogId: db.blogs[0].id},
+        title1: {shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
+        title2: {title: '', shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
+        title3: {title: '   ', shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
+        title4: {title: new Array(32).join("a"), shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
+        title5: {title: 1, shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
+        title6: {title: false, shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
 
         shortDescription1: {title: 'title', content: 'content', blogId: '123'},
-        shortDescription2: {title: 'title', shortDescription: '', content: 'content', blogId: db.blogs[0].id},
-        shortDescription3: {title: 'title', shortDescription: '   ', content: 'content', blogId: db.blogs[0].id},
-        shortDescription4: {title: 'title', shortDescription: new Array(102).join("a"), content: 'content', blogId: db.blogs[0].id},
-        shortDescription5: {title: 'title', shortDescription: 1, content: 'content', blogId: db.blogs[0].id},
-        shortDescription6: {title: 'title', shortDescription: false, content: 'content', blogId: db.blogs[0].id},
+        shortDescription2: {title: 'title', shortDescription: '', content: 'content', blogId: createdBlogId},
+        shortDescription3: {title: 'title', shortDescription: '   ', content: 'content', blogId: createdBlogId},
+        shortDescription4: {title: 'title', shortDescription: new Array(102).join("a"), content: 'content', blogId: createdBlogId},
+        shortDescription5: {title: 'title', shortDescription: 1, content: 'content', blogId: createdBlogId},
+        shortDescription6: {title: 'title', shortDescription: false, content: 'content', blogId: createdBlogId},
 
-        content1: {title: 'title', shortDescription: 'shortDescription', blogId: db.blogs[0].id},
-        content2: {title: 'title', shortDescription: 'shortDescription', content: '', blogId: db.blogs[0].id},
-        content3: {title: 'title', shortDescription: 'shortDescription', content: '   ', blogId: db.blogs[0].id},
-        content4: {title: 'title', shortDescription: 'shortDescription', content: new Array(1002).join("a"), blogId: db.blogs[0].id},
-        content5: {title: 'title', shortDescription: 'shortDescription', content: 1, blogId: db.blogs[0].id},
-        content6: {title: 'title', shortDescription: 'shortDescription', content: false, blogId: db.blogs[0].id},
+        content1: {title: 'title', shortDescription: 'shortDescription', blogId: createdBlogId},
+        content2: {title: 'title', shortDescription: 'shortDescription', content: '', blogId: createdBlogId},
+        content3: {title: 'title', shortDescription: 'shortDescription', content: '   ', blogId: createdBlogId},
+        content4: {title: 'title', shortDescription: 'shortDescription', content: new Array(1002).join("a"), blogId: createdBlogId},
+        content5: {title: 'title', shortDescription: 'shortDescription', content: 1, blogId: createdBlogId},
+        content6: {title: 'title', shortDescription: 'shortDescription', content: false, blogId: createdBlogId},
 
         blogId1: {title: 'title', shortDescription: 'shortDescription', content: 'content'},
         blogId2: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: ''},
@@ -89,9 +106,10 @@ describe('/blog', () => {
             .expect(HTTP_STATUSES.OK_200, [])
     })
     it('should return 200 and array of posts', async () => {
+        const createdBlogId = await getCreatedBlogId();
         const input1: CreatePostInputModel = {
             title: 'title',
-            blogId: db.blogs[0].id,
+            blogId: createdBlogId,
             content: 'content',
             shortDescription: 'shortDescription'
         };
@@ -103,7 +121,7 @@ describe('/blog', () => {
 
         const input2: CreatePostInputModel = {
             title: 'title2',
-            blogId: db.blogs[0].id,
+            blogId: createdBlogId,
             content: 'content2',
             shortDescription: 'shortDescription2'
         };
@@ -151,9 +169,10 @@ describe('/blog', () => {
 
     // testing post '/posts' api
     it(`shouldn't create post if not auth user`, async () => {
+        const createdBlogId = await getCreatedBlogId();
         const input: CreatePostInputModel = {
             title: 'title',
-            blogId: db.blogs[0].id,
+            blogId: createdBlogId,
             content: 'content',
             shortDescription: 'shortDescription'
         };
@@ -170,24 +189,24 @@ describe('/blog', () => {
         await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .send(invalidInputData.title1)
-            .send(invalidInputData.title2)
-            .send(invalidInputData.title3)
-            .send(invalidInputData.title4)
-            .send(invalidInputData.title5)
-            .send(invalidInputData.title6)
-            .send(invalidInputData.shortDescription1)
-            .send(invalidInputData.shortDescription2)
-            .send(invalidInputData.shortDescription3)
-            .send(invalidInputData.shortDescription4)
-            .send(invalidInputData.shortDescription5)
-            .send(invalidInputData.shortDescription6)
-            .send(invalidInputData.content1)
-            .send(invalidInputData.content2)
-            .send(invalidInputData.content3)
-            .send(invalidInputData.content4)
-            .send(invalidInputData.content5)
-            .send(invalidInputData.content6)
+            .send({...invalidInputData.title1, blogId: createdBlogId})
+            .send({...invalidInputData.title2, blogId: createdBlogId})
+            .send({...invalidInputData.title3, blogId: createdBlogId})
+            .send({...invalidInputData.title4, blogId: createdBlogId})
+            .send({...invalidInputData.title5, blogId: createdBlogId})
+            .send({...invalidInputData.title6, blogId: createdBlogId})
+            .send({...invalidInputData.shortDescription1, blogId: createdBlogId})
+            .send({...invalidInputData.shortDescription2, blogId: createdBlogId})
+            .send({...invalidInputData.shortDescription3, blogId: createdBlogId})
+            .send({...invalidInputData.shortDescription4, blogId: createdBlogId})
+            .send({...invalidInputData.shortDescription5, blogId: createdBlogId})
+            .send({...invalidInputData.shortDescription6, blogId: createdBlogId})
+            .send({...invalidInputData.content1, blogId: createdBlogId})
+            .send({...invalidInputData.content2, blogId: createdBlogId})
+            .send({...invalidInputData.content3, blogId: createdBlogId})
+            .send({...invalidInputData.content4, blogId: createdBlogId})
+            .send({...invalidInputData.content5, blogId: createdBlogId})
+            .send({...invalidInputData.content6, blogId: createdBlogId})
             .send(invalidInputData.blogId1)
             .send(invalidInputData.blogId2)
             .send(invalidInputData.blogId3)
@@ -201,9 +220,10 @@ describe('/blog', () => {
             .expect(HTTP_STATUSES.OK_200, [])
     })
     it(`should create post with correct input data`, async () => {
+        const createdBlogId = await getCreatedBlogId();
         const input: CreatePostInputModel = {
             title: 'title',
-            blogId: db.blogs[0].id,
+            blogId: createdBlogId,
             content: 'content',
             shortDescription: 'shortDescription'
         };
@@ -233,10 +253,11 @@ describe('/blog', () => {
 
     // testing put '/posts/:id' api
     it(`shouldn't update post if not auth user`, async () => {
+        const createdBlogId = await getCreatedBlogId();
         const createdPost = await createPost();
         const input: CreatePostInputModel = {
             title: 'title',
-            blogId: db.blogs[0].id,
+            blogId: createdBlogId,
             content: 'content',
             shortDescription: 'shortDescription'
         };
@@ -285,9 +306,10 @@ describe('/blog', () => {
             .expect(HTTP_STATUSES.OK_200, [createdPost])
     })
     it(`shouldn't update post if not exist`, async () => {
+        const createdBlogId = await getCreatedBlogId();
         const input: CreatePostInputModel = {
             title: 'title',
-            blogId: db.blogs[0].id,
+            blogId: createdBlogId,
             content: 'content',
             shortDescription: 'shortDescription'
         };
@@ -302,9 +324,10 @@ describe('/blog', () => {
             .expect(HTTP_STATUSES.OK_200, [])
     })
     it(`should update post with correct input data`, async () => {
+        const createdBlogId = await getCreatedBlogId();
         const dataForCreate: CreatePostInputModel = {
             title: 'title',
-            blogId: db.blogs[0].id,
+            blogId: createdBlogId,
             content: 'content',
             shortDescription: 'shortDescription'
         };
@@ -316,7 +339,7 @@ describe('/blog', () => {
 
         const dataForUpdate: CreatePostInputModel = {
             title: 'title2',
-            blogId: db.blogs[0].id,
+            blogId: createdBlogId,
             content: 'content2',
             shortDescription: 'shortDescription2'
         };

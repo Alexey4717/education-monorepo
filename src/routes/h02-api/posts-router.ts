@@ -17,17 +17,17 @@ export const postsRouter = Router({});
 
 postsRouter.get(
     '/',
-    (req: Request, res: Response<GetPostOutputModel[]>
+    async (req: Request, res: Response<GetPostOutputModel[]>
     ) => {
-        const resData = postsRepository.getPosts();
+        const resData = await postsRepository.getPosts();
         res.json(resData);
     });
 postsRouter.get(
     '/:id',
     getDeletePostInputValidations,
     inputValidationsMiddleware,
-    (req: RequestWithParams<GetPostInputModel>, res: Response<GetPostOutputModel>) => {
-        const resData = postsRepository.findPostById(req.params.id);
+    async (req: RequestWithParams<GetPostInputModel>, res: Response<GetPostOutputModel>) => {
+        const resData = await postsRepository.findPostById(req.params.id);
         if (!resData) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
             return;
@@ -40,9 +40,9 @@ postsRouter.post(
     authorizationGuardMiddleware,
     createPostInputValidations,
     inputValidationsMiddleware,
-    (req: RequestWithBody<CreatePostInputModel>, res: Response<GetPostOutputModel>
+    async (req: RequestWithBody<CreatePostInputModel>, res: Response<GetPostOutputModel>
     ) => {
-        const createdPost: GetPostOutputModel | null = postsRepository.createPost(req.body);
+        const createdPost = await postsRepository.createPost(req.body);
 
         // Если указан невалидный blogId
         if (!createdPost) {
@@ -57,9 +57,9 @@ postsRouter.put(
     authorizationGuardMiddleware,
     updatePostInputValidations,
     inputValidationsMiddleware,
-    (req: RequestWithParamsAndBody<GetPostInputModel, UpdatePostInputModel>, res: Response
+    async (req: RequestWithParamsAndBody<GetPostInputModel, UpdatePostInputModel>, res: Response
     ) => {
-        const isPostUpdated = postsRepository.updatePost({id: req.params.id, input: req.body});
+        const isPostUpdated = await postsRepository.updatePost({id: req.params.id, input: req.body});
         if (!isPostUpdated) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
             return;
@@ -73,8 +73,8 @@ postsRouter.delete(
     authorizationGuardMiddleware,
     getDeletePostInputValidations,
     inputValidationsMiddleware,
-    (req: RequestWithParams<GetPostInputModel>, res: Response<void>) => {
-        const resData = postsRepository.deletePostById(req.params.id);
+    async (req: RequestWithParams<GetPostInputModel>, res: Response<void>) => {
+        const resData = await postsRepository.deletePostById(req.params.id);
         if (!resData) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
             return;
