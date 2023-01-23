@@ -29,7 +29,8 @@ export const db: DataBase = {
             id: "123",
             name: "blog1",
             description: "blog description",
-            websiteUrl: "https://websiteUrl.com"
+            websiteUrl: "https://websiteUrl.com",
+            createdAt: new Date().toISOString()
         }
     ],
 
@@ -40,7 +41,8 @@ export const db: DataBase = {
             shortDescription: "short description",
             content: "content",
             blogId: "123",
-            blogName: "blog1"
+            blogName: "blog1",
+            createdAt: new Date().toISOString()
         }
     ]
 };

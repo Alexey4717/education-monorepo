@@ -2,14 +2,11 @@ import request from "supertest";
 
 import {app} from "../../src/index";
 import {HTTP_STATUSES} from '../../src/types';
-import {db} from '../../src/store/mockedDB';
 import {CreatePostInputModel} from '../../src/models/PostModels/CreatePostInputModel';
 import {getEncodedAuthToken} from "../../src/helpers";
 import {GetPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
 import {CreateBlogInputModel} from "../../src/models/BlogModels/CreateBlogInputModel";
 import {GetBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
-import {blogsCollection} from "../../src/store/db";
-import {blogsRepository} from "../../src/repositories/blogs-repository";
 
 
 describe('/post', () => {
@@ -41,18 +38,18 @@ describe('/post', () => {
         return createdBlogId;
     };
 
-    const createPost = async (input: CreatePostInputModel | undefined = {
-        title: 'title',
-        blogId: '11',
-        content: 'content',
-        shortDescription: 'shortDescription'
-    }) => {
-        const createdBlogId = await getCreatedBlogId();
+    const createPost = async (blogId: string, input?: Omit<CreatePostInputModel, 'blogId'>) => {
+        const defaultPayload = {
+            title: 'title',
+            content: 'content',
+            shortDescription: 'shortDescription',
+            ...input
+        }
 
         const createResponse = await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .send({...input, blogId: createdBlogId})
+            .send({...defaultPayload, blogId})
             .expect(HTTP_STATUSES.CREATED_201)
 
         const createdPost: GetPostOutputModel = createResponse?.body;
@@ -113,7 +110,7 @@ describe('/post', () => {
             content: 'content',
             shortDescription: 'shortDescription'
         };
-        const createdPost1 = await createPost(input1);
+        const createdPost1 = await createPost(createdBlogId);
 
         await request(app)
             .get('/posts')
@@ -126,7 +123,7 @@ describe('/post', () => {
             shortDescription: 'shortDescription2'
         };
 
-        const createdPost2 = await createPost(input2);
+        const createdPost2 = await createPost(createdBlogId);
 
         await request(app)
             .get('/posts')
@@ -140,7 +137,8 @@ describe('/post', () => {
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
     it('should return 200 and existing posts', async () => {
-        const createdpost = await createPost();
+        const createdBlogId = await getCreatedBlogId();
+        const createdpost = await createPost(createdBlogId);
 
         await request(app)
             .get(`/posts/${createdpost.id}`)
@@ -160,7 +158,8 @@ describe('/post', () => {
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
     it('should return 204 for existing post', async () => {
-        const createdPost = await createPost();
+        const createdBlogId = await getCreatedBlogId();
+        const createdPost = await createPost(createdBlogId);
         await request(app)
             .delete(`/posts/${createdPost.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
@@ -356,7 +355,8 @@ describe('/post', () => {
             blogId: createdPost.blogId,
             content: createdPost.content,
             shortDescription: createdPost.shortDescription,
-            blogName: createdPost.blogName
+            blogName: createdPost.blogName,
+            createdAt: createdPost.createdAt
         };
 
         expect(createdPost).toEqual(expectedPost);
@@ -369,7 +369,7 @@ describe('/post', () => {
     // testing put '/posts/:id' api
     it(`shouldn't update post if not auth user`, async () => {
         const createdBlogId = await getCreatedBlogId();
-        const createdPost = await createPost();
+        const createdPost = await createPost(createdBlogId);
         const input: CreatePostInputModel = {
             title: 'title',
             blogId: createdBlogId,
@@ -386,7 +386,8 @@ describe('/post', () => {
             .expect(HTTP_STATUSES.OK_200, [createdPost])
     })
     it(`shouldn't update post with incorrect input data`, async () => {
-        const createdPost = await createPost();
+        const createdBlogId = await getCreatedBlogId();
+        const createdPost = await createPost(createdBlogId);
 
         await request(app)
             .put(`/posts/${createdPost?.id}`)
@@ -562,7 +563,7 @@ describe('/post', () => {
             content: 'content',
             shortDescription: 'shortDescription'
         };
-        const createdPost = await createPost(dataForCreate);
+        const createdPost = await createPost(createdBlogId);
 
         await request(app)
             .get('/posts')
