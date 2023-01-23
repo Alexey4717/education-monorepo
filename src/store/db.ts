@@ -1,16 +1,18 @@
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
 import {MongoClient} from 'mongodb';
 
 import {GetBlogOutputModel} from "../models/BlogModels/GetBlogOutputModel";
 import {GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
 import {GetVideoOutputModel} from "../models/VideoModels/GetVideoOutputModel";
 
+dotenv.config();
 
 const mongoUri = process.env.MONGOURI || 'mongodb://0.0.0.0:27017';
+const dbName = process.env.DB_NAME || "It-incubator-01";
 
 const client = new MongoClient(mongoUri);
 
-const db01 = client.db("It-incubator-01")
+const db01 = client.db(dbName)
 
 export const blogsCollection = db01.collection<GetBlogOutputModel>("blogs");
 export const postsCollection = db01.collection<GetPostOutputModel>("posts");

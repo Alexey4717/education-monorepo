@@ -32,7 +32,8 @@ export const blogsRepository = {
             id: new Date().valueOf().toString(),
             name,
             websiteUrl,
-            description
+            description,
+            createdAt: new Date().toISOString()
         };
 
         await blogsCollection.insertOne(newBlog);

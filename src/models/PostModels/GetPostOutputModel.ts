@@ -28,4 +28,9 @@ export type GetPostOutputModel = {
      * Blog name of post from db, required.
      */
     blogName:	string
+
+    /**
+     * Date of post creation in db.
+     */
+    createdAt: string
 }

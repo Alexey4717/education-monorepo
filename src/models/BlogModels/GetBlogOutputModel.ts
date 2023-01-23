@@ -18,4 +18,9 @@ export type GetBlogOutputModel = {
      * WebsiteUrl to blog from db, required.
      */
     websiteUrl:	string
+
+    /**
+     * Date of blog creation in db.
+     */
+    createdAt: string
 }

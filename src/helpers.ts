@@ -28,12 +28,14 @@ export const getBlogViewModel = ({
                                      id,
                                      name,
                                      description,
-                                     websiteUrl
+                                     websiteUrl,
+                                     createdAt
                                  }: GetBlogOutputModel) => ({
     id,
     name,
     description,
-    websiteUrl
+    websiteUrl,
+    createdAt
 })
 
 export const getPostViewModel = ({
@@ -42,14 +44,16 @@ export const getPostViewModel = ({
                                      content,
                                      shortDescription,
                                      blogName,
-                                     blogId
+                                     blogId,
+                                     createdAt
                                  }: GetPostOutputModel) => ({
     id,
     title,
     content,
     shortDescription,
     blogName,
-    blogId
+    blogId,
+    createdAt
 })
 
 export const getCorrectIncludesAvailableResolutions = (availableResolutions: AvailableResolutions[]): boolean => {
