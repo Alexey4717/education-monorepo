@@ -7,8 +7,10 @@ import {
 
 export const updateBlogInputValidations = [
     uriIdParamValidation,
-    // commonValidationForBodyStrings,
+    commonValidationForBodyStrings('name'),
     nameValidation,
+    commonValidationForBodyStrings('description'),
     descriptionValidation,
+    commonValidationForBodyStrings('websiteUrl'),
     websiteUrlValidation
 ];
