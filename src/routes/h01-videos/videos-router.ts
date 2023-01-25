@@ -6,11 +6,11 @@ import {HTTP_STATUSES, RequestWithBody, RequestWithParamsAndBody, Error, Request
 import {CreateVideoInputModel} from "../../models/VideoModels/CreateVideoInputModel";
 import {GetErrorOutputModel} from "../../models/GetErrorOutputModel";
 import {UpdateVideoInputModel} from "../../models/VideoModels/UpdateVideoInputModel";
-import {videosRepository} from "../../repositories/videos-repository";
 import {createVideoInputValidations} from "../../validations/video/createVideoInputValidations";
 import {updateVideoInputValidations} from "../../validations/video/updateVideoInputValidations";
 import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
 import {getDeleteVideoInputValidations} from "../../validations/video/getDeleteVideoInputValidations";
+import {videosService} from "../../domain/videos-service";
 
 
 export const videosRouter = Router({});
@@ -18,7 +18,7 @@ export const videosRouter = Router({});
 videosRouter.get(
     '/',
     async (req: Request, res: Response<GetVideoOutputModel[]>) => {
-        const resData = await videosRepository.getVideos();
+        const resData = await videosService.getVideos();
         res.json(resData);
     })
 videosRouter.get(
@@ -35,7 +35,7 @@ videosRouter.get(
             return;
         }
 
-        const foundVideo = await videosRepository.findVideoById(videoId);
+        const foundVideo = await videosService.findVideoById(videoId);
 
         if (!foundVideo) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
@@ -53,7 +53,7 @@ videosRouter.post(
         req: RequestWithBody<CreateVideoInputModel>,
         res: Response<GetVideoOutputModel | GetErrorOutputModel>
     ) => {
-        const createdVideo = await videosRepository.createVideo(req.body)
+        const createdVideo = await videosService.createVideo(req.body)
         res.status(HTTP_STATUSES.CREATED_201).json(createdVideo)
     })
 
@@ -91,7 +91,7 @@ videosRouter.put(
             return;
         }
 
-        const isVideoUpdated = await videosRepository.updateVideo({id: videoId, input: req.body})
+        const isVideoUpdated = await videosService.updateVideo({id: videoId, input: req.body})
 
         if (!isVideoUpdated) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
@@ -107,7 +107,7 @@ videosRouter.delete(
     inputValidationsMiddleware,
     async (req: Request<GetVideoInputModel>, res: Response<void>) => {
         const videoId = +req.params?.id;
-        const isDeletedVideo = await videosRepository.deleteVideoById(videoId);
+        const isDeletedVideo = await videosService.deleteVideoById(videoId);
 
         if (!isDeletedVideo) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);

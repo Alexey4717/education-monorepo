@@ -1,6 +1,5 @@
 import {videosCollection} from '../store/db';
 import {getVideoViewModel} from "../helpers";
-import {CreateVideoInputModel} from "../models/VideoModels/CreateVideoInputModel";
 import {GetVideoOutputModel} from "../models/VideoModels/GetVideoOutputModel";
 import {UpdateVideoInputModel} from "../models/VideoModels/UpdateVideoInputModel";
 
@@ -11,42 +10,16 @@ interface UpdateVideoArgs {
 
 export const videosRepository = {
     async getVideos(): Promise<GetVideoOutputModel[]> {
-        const blogs = await videosCollection.find({}).toArray();
-        return (blogs || []).map(getVideoViewModel);
+        const videos = await videosCollection.find({}).toArray();
+        return (videos || []).map(getVideoViewModel);
     },
 
     async findVideoById(id: number): Promise<GetVideoOutputModel | null> {
-        const foundBlog = await videosCollection.findOne({id});
-        return foundBlog ? getVideoViewModel(foundBlog) : null;
+        const foundVideo = await videosCollection.findOne({id});
+        return foundVideo ? getVideoViewModel(foundVideo) : null;
     },
 
-    async createVideo(input: CreateVideoInputModel): Promise<GetVideoOutputModel> {
-        const {
-            title,
-            author,
-            availableResolutions
-        } = input || {};
-
-        const currentDate = new Date();
-        const createdAt = currentDate.toISOString();
-        const publicationDate = new Date(
-            new Date(currentDate).setDate(currentDate.getDate() + 1)
-        ).toISOString(); // default +1 day from createdAt
-
-        const canBeDownloaded = false; // default
-        const minAgeRestriction = null; // default
-
-        const newVideo = {
-            id: new Date().valueOf(),
-            title,
-            author,
-            canBeDownloaded,
-            minAgeRestriction,
-            createdAt,
-            publicationDate,
-            availableResolutions: availableResolutions ?? null // null default
-        };
-
+    async createVideo(newVideo: GetVideoOutputModel): Promise<GetVideoOutputModel> {
         await videosCollection.insertOne(newVideo);
         return getVideoViewModel(newVideo);
     },
