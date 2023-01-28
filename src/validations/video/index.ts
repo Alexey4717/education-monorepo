@@ -1,6 +1,4 @@
-import {Request} from 'express';
 import {body} from "express-validator";
-import {AvailableResolutions} from "../../types";
 import {getCorrectIncludesAvailableResolutions} from "../../helpers";
 
 

@@ -1,4 +1,4 @@
-import {commonValidationForBodyStrings, uriIdParamValidation} from '../common';
+import {commonValidationForBodyStrings} from '../common';
 import {
     authorValidation,
     availableResolutionsValidation,
@@ -9,7 +9,6 @@ import {
 } from "./index";
 
 export const updateVideoInputValidations = [
-    uriIdParamValidation,
     commonValidationForBodyStrings('title'),
     titleValidation,
     commonValidationForBodyStrings('author'),

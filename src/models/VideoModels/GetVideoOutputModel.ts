@@ -1,11 +1,8 @@
+import {ObjectId} from 'mongodb';
+
 import {AvailableResolutions} from '../../types';
 
 export type GetVideoOutputModel = {
-    /**
-     * id of video from db
-     */
-    id: number
-
     /**
      * video title
      */
@@ -40,4 +37,18 @@ export type GetVideoOutputModel = {
      * Available resolutions of video (enum), can be nullable.
      */
     availableResolutions: AvailableResolutions[] | null
+}
+
+export type GetVideoOutputModelFromMongoDB = GetVideoOutputModel & {
+    /**
+     * Inserted id video from mongodb
+     */
+    _id: ObjectId
+}
+
+export type GetMappedVideoOutputModel = GetVideoOutputModel & {
+    /**
+     * Mapped id of video from db
+     */
+    id: string
 }

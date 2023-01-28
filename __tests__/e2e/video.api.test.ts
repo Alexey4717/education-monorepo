@@ -1,7 +1,7 @@
 import request from "supertest";
 import {app} from "../../src/index";
 import {HTTP_STATUSES, AvailableResolutions} from '../../src/types'
-import {GetVideoOutputModel} from "../../src/models/VideoModels/GetVideoOutputModel";
+import {GetMappedVideoOutputModel} from "../../src/models/VideoModels/GetVideoOutputModel";
 import {CreateVideoInputModel} from "../../src/models/VideoModels/CreateVideoInputModel";
 import {UpdateVideoInputModel} from "../../src/models/VideoModels/UpdateVideoInputModel";
 
@@ -107,7 +107,7 @@ describe('/video', () => {
             .send(data1)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdVideo1: GetVideoOutputModel = createResponse1?.body;
+        const createdVideo1: GetMappedVideoOutputModel = createResponse1?.body;
 
         await request(app)
             .get('/videos')
@@ -123,7 +123,7 @@ describe('/video', () => {
             .send(data2)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdVideo2: GetVideoOutputModel = createResponse2?.body;
+        const createdVideo2: GetMappedVideoOutputModel = createResponse2?.body;
 
         await request(app)
             .get('/videos')
@@ -147,7 +147,7 @@ describe('/video', () => {
             .send(data)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdVideo: GetVideoOutputModel = createResponse?.body;
+        const createdVideo: GetMappedVideoOutputModel = createResponse?.body;
         await request(app)
             .get(`/videos/${createdVideo.id}`)
             .expect(HTTP_STATUSES.OK_200, createdVideo)
@@ -156,7 +156,7 @@ describe('/video', () => {
     // testing delete '/videos/:id' api
     it('should return 404 for not existing video', async () => {
         await request(app)
-            .delete('/videos/-99')
+            .delete('/videos/63cde53de1eeeb34059bda94')
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
     it('should return 204 for existing video', async () => {
@@ -170,7 +170,7 @@ describe('/video', () => {
             .send(data)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdVideo: GetVideoOutputModel = createResponse?.body;
+        const createdVideo: GetMappedVideoOutputModel = createResponse?.body;
         await request(app)
             .delete(`/videos/${createdVideo.id}`)
             .expect(HTTP_STATUSES.NO_CONTENT_204)
@@ -244,8 +244,8 @@ describe('/video', () => {
             .send(data)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdVideo: GetVideoOutputModel = createResponse?.body;
-        const expectedVideo: GetVideoOutputModel = {
+        const createdVideo: GetMappedVideoOutputModel = createResponse?.body;
+        const expectedVideo: GetMappedVideoOutputModel = {
             ...data,
             id: createdVideo.id,
             canBeDownloaded: false,
@@ -373,7 +373,7 @@ describe('/video', () => {
             availableResolutions: [AvailableResolutions.P240]
         };
         await request(app)
-            .put('/videos/-9999')
+            .put('/videos/63cde53de1eeeb34059bda94')
             .send(data)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
 

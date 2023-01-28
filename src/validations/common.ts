@@ -1,6 +1,7 @@
 // validation for uri params
 import {body, param} from "express-validator";
 
+// удалить (проверка в мидлваре)
 export const uriIdParamValidation = param('id')
     .exists()
     .trim()

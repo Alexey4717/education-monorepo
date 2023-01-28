@@ -1,11 +1,11 @@
-import {GetVideoOutputModel} from "./models/VideoModels/GetVideoOutputModel";
+import {GetVideoOutputModel, GetVideoOutputModelFromMongoDB} from "./models/VideoModels/GetVideoOutputModel";
 import {GetBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
 import {GetPostOutputModel} from "./models/PostModels/GetPostOutputModel";
 import {AvailableResolutions} from './types';
 import {db} from "./store/mockedDB";
 
-export const getVideoViewModel = ({
-                                      id,
+export const getMappedVideoViewModel = ({
+                                      _id,
                                       title,
                                       author,
                                       canBeDownloaded,
@@ -13,8 +13,8 @@ export const getVideoViewModel = ({
                                       createdAt,
                                       publicationDate,
                                       availableResolutions
-                                  }: GetVideoOutputModel) => ({
-    id,
+                                  }: GetVideoOutputModelFromMongoDB) => ({
+    id: _id.toString(),
     title,
     author,
     canBeDownloaded,

@@ -11,7 +11,7 @@ export const db: DataBase = {
 
     videos: [
         {
-            id: 0,
+            id: '0',
             title: "string",
             author: "string",
             canBeDownloaded: true,

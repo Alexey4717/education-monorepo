@@ -1,23 +1,15 @@
 import {CreateVideoInputModel} from "../models/VideoModels/CreateVideoInputModel";
-import {GetVideoOutputModel} from "../models/VideoModels/GetVideoOutputModel";
+import {GetVideoOutputModel, GetVideoOutputModelFromMongoDB} from "../models/VideoModels/GetVideoOutputModel";
 import {UpdateVideoInputModel} from "../models/VideoModels/UpdateVideoInputModel";
-import {videosRepository} from "../repositories/videos-repository";
+import {videosRepository} from "../repositories/CUD-repo/videos-repository";
 
 interface UpdateVideoArgs {
-    id: number
+    id: string
     input: UpdateVideoInputModel
 }
 
 export const videosService = {
-    async getVideos(): Promise<GetVideoOutputModel[]> {
-        return await videosRepository.getVideos();
-    },
-
-    async findVideoById(id: number): Promise<GetVideoOutputModel | null> {
-        return await videosRepository.findVideoById(id);
-    },
-
-    async createVideo(input: CreateVideoInputModel): Promise<GetVideoOutputModel> {
+    async createVideo(input: CreateVideoInputModel): Promise<GetVideoOutputModelFromMongoDB> {
         const {
             title,
             author,
@@ -34,24 +26,24 @@ export const videosService = {
         const minAgeRestriction = null; // default
 
         const newVideo = {
-            id: new Date().valueOf(),
             title,
             author,
             canBeDownloaded,
             minAgeRestriction,
             createdAt,
             publicationDate,
-            availableResolutions: availableResolutions ?? null // null default
+            availableResolutions: availableResolutions ?? null // null is default
         };
 
-        return await videosRepository.createVideo(newVideo)
+        await videosRepository.createVideo(newVideo);
+        return newVideo as GetVideoOutputModelFromMongoDB;
     },
 
     async updateVideo({id, input}: UpdateVideoArgs): Promise<boolean> {
         return await videosRepository.updateVideo({id, input})
     },
 
-    async deleteVideoById(id: number): Promise<boolean> {
+    async deleteVideoById(id: string): Promise<boolean> {
         return await videosRepository.deleteVideoById(id);
     }
 };
