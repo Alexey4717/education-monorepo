@@ -1,4 +1,4 @@
-import {commonValidationForBodyStrings, uriIdParamValidation} from '../common';
+import {commonValidationForBodyStrings} from '../common';
 import {
     titleValidation,
     shortDescriptionValidation,
@@ -8,10 +8,12 @@ import {
 
 
 export const updatePostInputValidations = [
-    uriIdParamValidation,
-    // commonValidationForBodyStrings,
+    commonValidationForBodyStrings('title'),
     titleValidation,
+    commonValidationForBodyStrings('shortDescription'),
     shortDescriptionValidation,
+    commonValidationForBodyStrings('content'),
     contentValidation,
+    commonValidationForBodyStrings('blogId'),
     blogIdValidation
 ];

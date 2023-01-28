@@ -4,7 +4,7 @@ import {app} from "../../src/index";
 import {HTTP_STATUSES} from '../../src/types';
 import {CreateBlogInputModel} from '../../src/models/BlogModels/CreateBlogInputModel';
 import {getEncodedAuthToken} from "../../src/helpers";
-import {GetBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
+import {GetMappedBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
 
 
 describe('/blog', () => {
@@ -27,7 +27,7 @@ describe('/blog', () => {
             .send(input)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdBlog: GetBlogOutputModel = createResponse?.body;
+        const createdBlog: GetMappedBlogOutputModel = createResponse?.body;
         return createdBlog;
     }
 
@@ -177,14 +177,15 @@ describe('/blog', () => {
             .send(input)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdBlog: GetBlogOutputModel = createResponse?.body;
-        const expectedBlog: GetBlogOutputModel = {
+        const createdBlog: GetMappedBlogOutputModel = createResponse?.body;
+        const expectedBlog = {
             ...input,
+            createdAt: createdBlog.createdAt,
             id: createdBlog.id,
             name: createdBlog.name,
             description: createdBlog.description,
             websiteUrl: createdBlog.websiteUrl
-        };
+        } as GetMappedBlogOutputModel;
 
         expect(createdBlog).toEqual(expectedBlog);
 

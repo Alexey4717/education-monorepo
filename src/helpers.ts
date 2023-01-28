@@ -1,19 +1,19 @@
-import {GetVideoOutputModel, GetVideoOutputModelFromMongoDB} from "./models/VideoModels/GetVideoOutputModel";
-import {GetBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
-import {GetPostOutputModel} from "./models/PostModels/GetPostOutputModel";
+import {GetVideoOutputModelFromMongoDB, GetMappedVideoOutputModel} from "./models/VideoModels/GetVideoOutputModel";
+import {GetBlogOutputModelFromMongoDB, GetMappedBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
+import {GetPostOutputModelFromMongoDB, GetMappedPostOutputModel} from "./models/PostModels/GetPostOutputModel";
 import {AvailableResolutions} from './types';
 import {db} from "./store/mockedDB";
 
 export const getMappedVideoViewModel = ({
-                                      _id,
-                                      title,
-                                      author,
-                                      canBeDownloaded,
-                                      minAgeRestriction,
-                                      createdAt,
-                                      publicationDate,
-                                      availableResolutions
-                                  }: GetVideoOutputModelFromMongoDB) => ({
+                                            _id,
+                                            title,
+                                            author,
+                                            canBeDownloaded,
+                                            minAgeRestriction,
+                                            createdAt,
+                                            publicationDate,
+                                            availableResolutions
+                                        }: GetVideoOutputModelFromMongoDB): GetMappedVideoOutputModel => ({
     id: _id.toString(),
     title,
     author,
@@ -24,30 +24,30 @@ export const getMappedVideoViewModel = ({
     availableResolutions
 })
 
-export const getBlogViewModel = ({
-                                     id,
-                                     name,
-                                     description,
-                                     websiteUrl,
-                                     createdAt
-                                 }: GetBlogOutputModel) => ({
-    id,
+export const getMappedBlogViewModel = ({
+                                           _id,
+                                           name,
+                                           description,
+                                           websiteUrl,
+                                           createdAt
+                                       }: GetBlogOutputModelFromMongoDB): GetMappedBlogOutputModel => ({
+    id: _id.toString(),
     name,
     description,
     websiteUrl,
     createdAt
 })
 
-export const getPostViewModel = ({
-                                     id,
-                                     title,
-                                     content,
-                                     shortDescription,
-                                     blogName,
-                                     blogId,
-                                     createdAt
-                                 }: GetPostOutputModel) => ({
-    id,
+export const getMappedPostViewModel = ({
+                                           _id,
+                                           title,
+                                           content,
+                                           shortDescription,
+                                           blogName,
+                                           blogId,
+                                           createdAt
+                                       }: GetPostOutputModelFromMongoDB): GetMappedPostOutputModel => ({
+    id: _id.toString(),
     title,
     content,
     shortDescription,

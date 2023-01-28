@@ -4,7 +4,7 @@ import {app} from "../../src/index";
 import {HTTP_STATUSES} from '../../src/types';
 import {CreatePostInputModel} from '../../src/models/PostModels/CreatePostInputModel';
 import {getEncodedAuthToken} from "../../src/helpers";
-import {GetPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
+import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
 import {CreateBlogInputModel} from "../../src/models/BlogModels/CreateBlogInputModel";
 import {GetBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
 
@@ -52,7 +52,7 @@ describe('/post', () => {
             .send({...defaultPayload, blogId})
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdPost: GetPostOutputModel = createResponse?.body;
+        const createdPost: GetMappedPostOutputModel = createResponse?.body;
         return createdPost;
     }
 
@@ -138,11 +138,11 @@ describe('/post', () => {
     })
     it('should return 200 and existing posts', async () => {
         const createdBlogId = await getCreatedBlogId();
-        const createdpost = await createPost(createdBlogId);
+        const createdPost = await createPost(createdBlogId);
 
         await request(app)
-            .get(`/posts/${createdpost.id}`)
-            .expect(HTTP_STATUSES.OK_200, createdpost)
+            .get(`/posts/${createdPost.id}`)
+            .expect(HTTP_STATUSES.OK_200, createdPost)
     })
 
     // testing delete '/posts/:id' api
@@ -347,8 +347,8 @@ describe('/post', () => {
             .send(input)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdPost: GetPostOutputModel = createResponse?.body;
-        const expectedPost: GetPostOutputModel = {
+        const createdPost: GetMappedPostOutputModel = createResponse?.body;
+        const expectedPost: GetMappedPostOutputModel = {
             ...input,
             id: createdPost.id,
             title: createdPost.title,

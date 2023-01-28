@@ -1,5 +1,5 @@
 import {CreateVideoInputModel} from "../models/VideoModels/CreateVideoInputModel";
-import {GetVideoOutputModel, GetVideoOutputModelFromMongoDB} from "../models/VideoModels/GetVideoOutputModel";
+import {GetVideoOutputModelFromMongoDB} from "../models/VideoModels/GetVideoOutputModel";
 import {UpdateVideoInputModel} from "../models/VideoModels/UpdateVideoInputModel";
 import {videosRepository} from "../repositories/CUD-repo/videos-repository";
 

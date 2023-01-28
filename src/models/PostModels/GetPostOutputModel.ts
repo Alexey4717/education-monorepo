@@ -1,9 +1,7 @@
-export type GetPostOutputModel = {
-    /**
-     * Id of post from db, required.
-     */
-    id: string
+import {ObjectId} from 'mongodb';
 
+
+export type GetPostOutputModel = {
     /**
      * Title of post from db, required.
      */
@@ -33,4 +31,18 @@ export type GetPostOutputModel = {
      * Date of post creation in db.
      */
     createdAt: string
+}
+
+export type GetPostOutputModelFromMongoDB = GetPostOutputModel & {
+    /**
+     * Id of post from mongoDB.
+     */
+    _id: ObjectId
+}
+
+export type GetMappedPostOutputModel = GetPostOutputModel & {
+    /**
+     * Id of post from db, required.
+     */
+    id: string
 }

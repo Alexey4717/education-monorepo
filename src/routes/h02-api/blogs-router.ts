@@ -1,38 +1,40 @@
 import {Request, Response, Router} from "express";
 
 import {GetBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
-import {blogsRepository} from "../../repositories/blogs-repository";
 import {HTTP_STATUSES, RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../../types";
-import {GetBlogInputModel} from "../../models/BlogModels/GetBlogInputModel";
+import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
 import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel";
 import {UpdateBlogInputModel} from "../../models/BlogModels/UpdateBlogInputModel";
 import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
 import {createBlogInputValidations} from "../../validations/blog/createBlogInputValidations";
 import {updateBlogInputValidations} from "../../validations/blog/updateBlogInputValidations";
-import {getDeleteBlogInputValidations} from "../../validations/blog/getDeleteBlogInputValidations";
 import {authorizationGuardMiddleware} from "../../middlewares/authorization-guard-middleware";
+import {paramIdValidationMiddleware} from "../../middlewares/paramId-validation-middleware";
+import {blogsQueryRepository} from "../../repositories/Queries-repo/blogs-query-repository";
+import {blogsService} from "../../domain/blogs-service";
+import {getMappedBlogViewModel} from "../../helpers";
 
 
 export const blogsRouter = Router({});
 
 blogsRouter.get(
     '/',
-    async (req: Request, res: Response<GetBlogOutputModel[]>
+    async (req: Request, res: Response<GetMappedBlogOutputModel[]>
     ) => {
-        const resData = await blogsRepository.getBlogs();
-        res.json(resData);
+        const resData = await blogsQueryRepository.getBlogs();
+        res.status(HTTP_STATUSES.OK_200).json(resData.map(getMappedBlogViewModel));
     });
 blogsRouter.get(
     '/:id',
-    getDeleteBlogInputValidations,
+    paramIdValidationMiddleware,
     inputValidationsMiddleware,
-    async (req: RequestWithParams<GetBlogInputModel>, res: Response<GetBlogOutputModel>) => {
-        const resData = await blogsRepository.findBlogById(req.params.id);
+    async (req: RequestWithParams<GetMappedBlogOutputModel>, res: Response<GetBlogOutputModel>) => {
+        const resData = await blogsQueryRepository.findBlogById(req.params.id);
         if (!resData) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
             return;
         }
-        res.json(resData);
+        res.status(HTTP_STATUSES.OK_200).json(getMappedBlogViewModel(resData));
     });
 
 blogsRouter.post(
@@ -40,20 +42,21 @@ blogsRouter.post(
     authorizationGuardMiddleware,
     createBlogInputValidations,
     inputValidationsMiddleware,
-    async (req: RequestWithBody<CreateBlogInputModel>, res: Response<GetBlogOutputModel>
+    async (req: RequestWithBody<CreateBlogInputModel>, res: Response<GetMappedBlogOutputModel>
     ) => {
-        const createdBlog: GetBlogOutputModel = await blogsRepository.createBlog(req.body);
-        res.status(HTTP_STATUSES.CREATED_201).json(createdBlog);
+        const createdBlog = await blogsService.createBlog(req.body);
+        res.status(HTTP_STATUSES.CREATED_201).json(getMappedBlogViewModel(createdBlog));
     })
 
 blogsRouter.put(
     '/:id',
     authorizationGuardMiddleware,
+    paramIdValidationMiddleware,
     updateBlogInputValidations,
     inputValidationsMiddleware,
-    async (req: RequestWithParamsAndBody<GetBlogInputModel, UpdateBlogInputModel>, res: Response
+    async (req: RequestWithParamsAndBody<GetMappedBlogOutputModel, UpdateBlogInputModel>, res: Response
     ) => {
-        const isBlogUpdated = await blogsRepository.updateBlog({id: req.params.id, input: req.body});
+        const isBlogUpdated = await blogsService.updateBlog({id: req.params.id, input: req.body});
         if (!isBlogUpdated) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
             return;
@@ -65,10 +68,10 @@ blogsRouter.put(
 blogsRouter.delete(
     '/:id',
     authorizationGuardMiddleware,
-    getDeleteBlogInputValidations,
+    paramIdValidationMiddleware,
     inputValidationsMiddleware,
-    async (req: RequestWithParams<GetBlogInputModel>, res: Response<void>) => {
-        const resData = await blogsRepository.deleteBlogById(req.params.id);
+    async (req: RequestWithParams<GetMappedBlogOutputModel>, res: Response<void>) => {
+        const resData = await blogsService.deleteBlogById(req.params.id);
         if (!resData) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
             return;

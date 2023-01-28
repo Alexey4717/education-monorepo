@@ -1,9 +1,6 @@
-export type GetBlogOutputModel = {
-    /**
-     * Id of blog from db, required.
-     */
-    id: string
+import {ObjectId} from 'mongodb';
 
+export type GetBlogOutputModel = {
     /**
      * Name of blog from db, required.
      */
@@ -23,4 +20,18 @@ export type GetBlogOutputModel = {
      * Date of blog creation in db.
      */
     createdAt: string
+}
+
+export type GetBlogOutputModelFromMongoDB = GetBlogOutputModel & {
+    /**
+     * Id of blog from mongo db.
+     */
+    _id: ObjectId
+}
+
+export type GetMappedBlogOutputModel = GetBlogOutputModel & {
+    /**
+     * Id of blog from db, required.
+     */
+    id: string
 }

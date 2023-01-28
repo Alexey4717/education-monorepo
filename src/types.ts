@@ -1,8 +1,8 @@
 import {Request} from 'express';
 
 import {GetMappedVideoOutputModel} from "./models/VideoModels/GetVideoOutputModel";
-import {GetBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
-import {GetPostOutputModel} from "./models/PostModels/GetPostOutputModel";
+import {GetMappedBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
+import {GetMappedPostOutputModel} from "./models/PostModels/GetPostOutputModel";
 
 
 export enum HTTP_STATUSES {
@@ -35,8 +35,8 @@ type User = {
 export type DataBase = {
     users: User[]
     videos: GetMappedVideoOutputModel[]
-    blogs: GetBlogOutputModel[]
-    posts: GetPostOutputModel[]
+    blogs: GetMappedBlogOutputModel[]
+    posts: GetMappedPostOutputModel[]
 };
 
 export type Error = {

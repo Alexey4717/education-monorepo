@@ -8,10 +8,12 @@ import {
 
 
 export const createPostInputValidations = [
-    // commonValidationForBodyStrings('title'),
+    commonValidationForBodyStrings('title'),
     titleValidation,
-    // commonValidationForBodyStrings('shortDescription'),
+    commonValidationForBodyStrings('shortDescription'),
     shortDescriptionValidation,
+    commonValidationForBodyStrings('content'),
     contentValidation,
+    commonValidationForBodyStrings('blogId'),
     blogIdValidation
 ];
