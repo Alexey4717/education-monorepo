@@ -83,7 +83,138 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog1, createdBlog2]);
+            .expect(HTTP_STATUSES.OK_200, [createdBlog2, createdBlog1]);
+    })
+    it('should return 200 and array of blogs by searchNameTerm=va query', async () => {
+        const input1: CreateBlogInputModel = {
+            name: 'Ivan',
+            description: 'about blog1',
+            websiteUrl: 'https://google.com'
+        };
+        const createdBlog1 = await createBlog(input1);
+
+        const input2: CreateBlogInputModel = {
+            name: 'DiVan',
+            description: 'about blog2',
+            websiteUrl: 'https://yandex.ru'
+        };
+
+        const createdBlog2 = await createBlog(input2);
+
+        const input3: CreateBlogInputModel = {
+            name: 'Gggg',
+            description: 'about blog3',
+            websiteUrl: 'https://yandex.ru'
+        };
+
+        const createdBlog3 = await createBlog(input3);
+
+        const input4: CreateBlogInputModel = {
+            name: 'JanClod Vandam',
+            description: 'about blog4',
+            websiteUrl: 'https://yandex.ru'
+        };
+
+        const createdBlog4 = await createBlog(input4);
+
+        await request(app)
+            .get('/blogs?searchNameTerm=va')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog4, createdBlog2, createdBlog1]);
+    })
+    it('should return 200 and array of blogs sorted by specified field with sortDirection', async () => {
+        const input1: CreateBlogInputModel = {
+            name: 'Alex',
+            description: 'Align items',
+            websiteUrl: 'https://google.com'
+        };
+        const createdBlog1 = await createBlog(input1);
+
+        const input2: CreateBlogInputModel = {
+            name: 'John',
+            description: 'About flowers',
+            websiteUrl: 'https://yandex.ru'
+        };
+
+        const createdBlog2 = await createBlog(input2);
+
+        const input3: CreateBlogInputModel = {
+            name: 'Zed',
+            description: 'ChatGPT',
+            websiteUrl: 'https://yandex.ru'
+        };
+
+        const createdBlog3 = await createBlog(input3);
+
+        const input4: CreateBlogInputModel = {
+            name: 'Ben',
+            description: 'Building',
+            websiteUrl: 'https://yandex.ru'
+        };
+
+        const createdBlog4 = await createBlog(input4);
+
+        await request(app)
+            .get('/blogs?sortBy=name')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog3, createdBlog2, createdBlog4, createdBlog1]);
+
+        await request(app)
+            .get('/blogs?sortBy=description&sortDirection=asc')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog2, createdBlog1, createdBlog4, createdBlog3]);
+    })
+    it('should return 200 and portion array of blogs with page number and size', async () => {
+        const input1: CreateBlogInputModel = {
+            name: 'Alex',
+            description: 'Align items',
+            websiteUrl: 'https://google.com'
+        };
+        const createdBlog1 = await createBlog(input1);
+
+        const input2: CreateBlogInputModel = {
+            name: 'John',
+            description: 'About flowers',
+            websiteUrl: 'https://yandex.ru'
+        };
+        const createdBlog2 = await createBlog(input2);
+
+        const input3: CreateBlogInputModel = {
+            name: 'Zed',
+            description: 'ChatGPT',
+            websiteUrl: 'https://yandex.ru'
+        };
+        const createdBlog3 = await createBlog(input3);
+
+        const input4: CreateBlogInputModel = {
+            name: 'Ben',
+            description: 'Building',
+            websiteUrl: 'https://yandex.ru'
+        };
+        const createdBlog4 = await createBlog(input4);
+
+        const input5: CreateBlogInputModel = {
+            name: 'Ben',
+            description: 'Building',
+            websiteUrl: 'https://yandex.ru'
+        };
+        const createdBlog5 = await createBlog(input5);
+
+        const input6: CreateBlogInputModel = {
+            name: 'Ben',
+            description: 'Building',
+            websiteUrl: 'https://yandex.ru'
+        };
+        const createdBlog6 = await createBlog(input6);
+
+        await request(app)
+            .get('/blogs')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog6, createdBlog5, createdBlog4, createdBlog3, createdBlog2, createdBlog1]);
+
+        await request(app)
+            .get('/blogs?pageSize=4')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog6, createdBlog5, createdBlog4, createdBlog3]);
+
+        await request(app)
+            .get('/blogs?pageNumber=2&pageSize=2')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog4, createdBlog3]);
     })
 
     // testing get '/blogs/:id' api

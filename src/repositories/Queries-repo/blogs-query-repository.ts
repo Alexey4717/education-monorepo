@@ -2,12 +2,28 @@ import {ObjectId} from "mongodb";
 
 import {blogsCollection} from '../../store/db';
 import {GetBlogOutputModelFromMongoDB} from "../../models/BlogModels/GetBlogOutputModel";
+import {SortDirections, GetBlogsArgs} from "../../types";
+import {calculateAndGetSkipValue} from "../../helpers";
 
 
 export const blogsQueryRepository = {
-    async getBlogs(): Promise<GetBlogOutputModelFromMongoDB[]> {
+    async getBlogs({
+                       searchNameTerm,
+                       sortBy,
+                       sortDirection,
+                       pageNumber,
+                       pageSize
+                   }
+                       : GetBlogsArgs): Promise<GetBlogOutputModelFromMongoDB[]> {
         try {
-            return await blogsCollection.find({}).toArray();
+            const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {};
+            const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
+            return await blogsCollection
+                .find(filter)
+                .sort({[sortBy]: sortDirection === SortDirections.desc ? -1 : 1})
+                .skip(skipValue)
+                .limit(pageSize)
+                .toArray();
         } catch (error) {
             console.log(`BlogsQueryRepository get blogs error is occurred: ${error}`);
             return [];

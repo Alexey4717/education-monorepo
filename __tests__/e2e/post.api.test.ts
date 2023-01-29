@@ -127,7 +127,116 @@ describe('/post', () => {
 
         await request(app)
             .get('/posts')
-            .expect(HTTP_STATUSES.OK_200, [createdPost1, createdPost2]);
+            .expect(HTTP_STATUSES.OK_200, [createdPost2, createdPost1]);
+    })
+    it('should return 200 and array of blogs sorted by specified field with sortDirection', async () => {
+        const createdBlogId = await getCreatedBlogId();
+
+        const input1: CreatePostInputModel = {
+            title: 'Alex',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'Align items'
+        };
+        const createdPost1 = await createPost(createdBlogId, input1);
+
+        const input2: CreatePostInputModel = {
+            title: 'John',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'About flowers'
+        };
+        const createdPost2 = await createPost(createdBlogId, input2);
+
+        const input3: CreatePostInputModel = {
+            title: 'Zed',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'ChatGPT'
+        };
+        const createdPost3 = await createPost(createdBlogId, input3);
+
+        const input4: CreatePostInputModel = {
+            title: 'Ben',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'Building'
+        };
+        const createdPost4 = await createPost(createdBlogId, input4);
+
+        await request(app)
+            .get('/posts?sortBy=title')
+            .expect(HTTP_STATUSES.OK_200, [createdPost3, createdPost2, createdPost4, createdPost1]);
+
+        await request(app)
+            .get('/posts?sortBy=shortDescription&sortDirection=asc')
+            .expect(HTTP_STATUSES.OK_200, [createdPost2, createdPost1, createdPost4, createdPost3]);
+    })
+    it('should return 200 and portion array of posts with page number and size', async () => {
+        const createdBlogId = await getCreatedBlogId();
+
+        const input1: CreatePostInputModel = {
+            title: 'Alex',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'Align items'
+        };
+        const createdPost1 = await createPost(createdBlogId, input1);
+
+        const input2: CreatePostInputModel = {
+            title: 'John',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'About flowers'
+        };
+        const createdPost2 = await createPost(createdBlogId, input2);
+
+        const input3: CreatePostInputModel = {
+            title: 'Zed',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'ChatGPT'
+        };
+        const createdPost3 = await createPost(createdBlogId, input3);
+
+        const input4: CreatePostInputModel = {
+            title: 'Ben',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'Building'
+        };
+        const createdPost4 = await createPost(createdBlogId, input4);
+
+        const input5: CreatePostInputModel = {
+            title: 'Ben',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'Building'
+        };
+        const createdPost5 = await createPost(createdBlogId, input5);
+
+        const input6: CreatePostInputModel = {
+            title: 'Ben',
+            blogId: createdBlogId,
+            content: 'content',
+            shortDescription: 'Building'
+        };
+        const createdPost6 = await createPost(createdBlogId, input6);
+
+        await request(app)
+            .get('/posts')
+            .expect(
+                HTTP_STATUSES.OK_200,
+                [createdPost6, createdPost5, createdPost4, createdPost3, createdPost2, createdPost1]
+            );
+
+        await request(app)
+            .get('/posts?pageSize=4')
+            .expect(HTTP_STATUSES.OK_200, [createdPost6, createdPost5, createdPost4, createdPost3]);
+
+        await request(app)
+            .get('/posts?pageNumber=2&pageSize=2')
+            .expect(HTTP_STATUSES.OK_200, [createdPost4, createdPost3]);
     })
 
     // testing get '/posts/:id' api

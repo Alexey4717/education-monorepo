@@ -1,7 +1,13 @@
 import {Request, Response, Router} from "express";
 
 import {GetBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
-import {HTTP_STATUSES, RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../../types";
+import {
+    HTTP_STATUSES,
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithQuery, SortDirections
+} from "../../types";
 import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
 import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel";
 import {UpdateBlogInputModel} from "../../models/BlogModels/UpdateBlogInputModel";
@@ -13,15 +19,22 @@ import {paramIdValidationMiddleware} from "../../middlewares/paramId-validation-
 import {blogsQueryRepository} from "../../repositories/Queries-repo/blogs-query-repository";
 import {blogsService} from "../../domain/blogs-service";
 import {getMappedBlogViewModel} from "../../helpers";
+import {GetBlogsInputModel, SortBlogsBy} from "../../models/BlogModels/GetBlogsInputModel";
 
 
 export const blogsRouter = Router({});
 
 blogsRouter.get(
     '/',
-    async (req: Request, res: Response<GetMappedBlogOutputModel[]>
+    async (req: RequestWithQuery<GetBlogsInputModel>, res: Response<GetMappedBlogOutputModel[]>
     ) => {
-        const resData = await blogsQueryRepository.getBlogs();
+        const resData = await blogsQueryRepository.getBlogs({
+            searchNameTerm: req.query.searchNameTerm?.toString() || null, // by-default null
+            sortBy: (req.query.sortBy?.toString() || 'createdAt') as SortBlogsBy, // by-default createdAt
+            sortDirection: (req.query.sortDirection?.toString() || SortDirections.desc) as SortDirections, // by-default desc
+            pageNumber: +(req.query.pageNumber || 1), // by-default 1
+            pageSize: +(req.query.pageSize || 10) // by-default 10
+        });
         res.status(HTTP_STATUSES.OK_200).json(resData.map(getMappedBlogViewModel));
     });
 blogsRouter.get(

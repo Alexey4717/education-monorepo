@@ -68,3 +68,12 @@ export const getEncodedAuthToken = () => {
         .from(`${db.users[0].login}:${db.users[0].password}`, 'utf-8')
         .toString('base64');
 };
+
+type CalculateAndGetSkipValueArgs = {
+    pageNumber: number
+    pageSize: number
+};
+
+export const calculateAndGetSkipValue = ({pageNumber, pageSize}: CalculateAndGetSkipValueArgs) => {
+    return (pageNumber - 1) * pageSize;
+};

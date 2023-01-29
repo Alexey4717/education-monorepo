@@ -3,6 +3,8 @@ import {Request} from 'express';
 import {GetMappedVideoOutputModel} from "./models/VideoModels/GetVideoOutputModel";
 import {GetMappedBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
 import {GetMappedPostOutputModel} from "./models/PostModels/GetPostOutputModel";
+import {SortBlogsBy} from "./models/BlogModels/GetBlogsInputModel";
+import {SortPostsBy} from "./models/PostModels/GetPostsInputModel";
 
 
 export enum HTTP_STATUSES {
@@ -26,10 +28,30 @@ export enum AvailableResolutions {
     P2160 = 'P2160'
 }
 
+export enum SortDirections {
+    desc = 'desc',
+    asc = 'asc'
+}
+
 type User = {
     id: number
     login: string
     password: string
+};
+
+type CommonQueryParamsTypes = {
+    sortDirection: SortDirections
+    pageNumber: number
+    pageSize: number
+};
+
+export type GetBlogsArgs = CommonQueryParamsTypes & {
+    searchNameTerm: string | null
+    sortBy: SortBlogsBy
+};
+
+export type GetPostsArgs = CommonQueryParamsTypes & {
+    sortBy: SortPostsBy
 };
 
 export type DataBase = {

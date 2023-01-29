@@ -1,6 +1,12 @@
 import {Request, Response, Router} from "express";
 
-import {HTTP_STATUSES, RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../../types";
+import {
+    HTTP_STATUSES,
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithQuery, SortDirections
+} from "../../types";
 import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
 import {authorizationGuardMiddleware} from "../../middlewares/authorization-guard-middleware";
 import {GetPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
@@ -13,15 +19,22 @@ import {paramIdValidationMiddleware} from "../../middlewares/paramId-validation-
 import {postsQueryRepository} from "../../repositories/Queries-repo/posts-query-repository";
 import {getMappedBlogViewModel, getMappedPostViewModel} from "../../helpers";
 import {postsService} from "../../domain/posts-service";
+import {GetPostsInputModel, SortPostsBy} from "../../models/PostModels/GetPostsInputModel";
+import {SortBlogsBy} from "../../models/BlogModels/GetBlogsInputModel";
 
 
 export const postsRouter = Router({});
 
 postsRouter.get(
     '/',
-    async (req: Request, res: Response<GetPostOutputModel[]>
+    async (req: RequestWithQuery<GetPostsInputModel>, res: Response<GetPostOutputModel[]>
     ) => {
-        const resData = await postsQueryRepository.getPosts();
+        const resData = await postsQueryRepository.getPosts({
+            sortBy: (req.query.sortBy?.toString() || 'createdAt') as SortPostsBy, // by-default createdAt
+            sortDirection: (req.query.sortDirection?.toString() || SortDirections.desc) as SortDirections, // by-default desc
+            pageNumber: +(req.query.pageNumber || 1), // by-default 1
+            pageSize: +(req.query.pageSize || 10) // by-default 10
+        });
         res.status(HTTP_STATUSES.OK_200).json(resData.map(getMappedPostViewModel));
     });
 postsRouter.get(
