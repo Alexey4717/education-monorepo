@@ -54,6 +54,10 @@ export type GetPostsArgs = CommonQueryParamsTypes & {
     sortBy: SortPostsBy
 };
 
+export type GetPostsInBlogArgs = GetPostsArgs & {
+    blogId: string
+}
+
 export type DataBase = {
     users: User[]
     videos: GetMappedVideoOutputModel[]
@@ -68,5 +72,6 @@ export type Error = {
 
 export type RequestWithBody<T> = Request<{}, {}, T>;
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>;
+export type RequestWithParamsAndQuery<T, B> = Request<T, {}, {}, B>;
 export type RequestWithParams<T> = Request<T>;
 export type RequestWithParamsAndBody<T, B> = Request<T, {}, B>;

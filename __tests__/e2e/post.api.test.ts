@@ -9,6 +9,38 @@ import {CreateBlogInputModel} from "../../src/models/BlogModels/CreateBlogInputM
 import {GetBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
 
 
+const mockedcreatedBlogId = "123";
+
+export const invalidInputData = {
+    title1: {shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
+    title2: {title: '', shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
+    title3: {title: '   ', shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
+    title4: {title: new Array(32).join("a"), shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
+    title5: {title: 1, shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
+    title6: {title: false, shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
+
+    shortDescription1: {title: 'title', content: 'content', blogId: mockedcreatedBlogId},
+    shortDescription2: {title: 'title', shortDescription: '', content: 'content', blogId: mockedcreatedBlogId},
+    shortDescription3: {title: 'title', shortDescription: '   ', content: 'content', blogId: mockedcreatedBlogId},
+    shortDescription4: {title: 'title', shortDescription: new Array(102).join("a"), content: 'content', blogId: mockedcreatedBlogId},
+    shortDescription5: {title: 'title', shortDescription: 1, content: 'content', blogId: mockedcreatedBlogId},
+    shortDescription6: {title: 'title', shortDescription: false, content: 'content', blogId: mockedcreatedBlogId},
+
+    content1: {title: 'title', shortDescription: 'shortDescription', blogId: mockedcreatedBlogId},
+    content2: {title: 'title', shortDescription: 'shortDescription', content: '', blogId: mockedcreatedBlogId},
+    content3: {title: 'title', shortDescription: 'shortDescription', content: '   ', blogId: mockedcreatedBlogId},
+    content4: {title: 'title', shortDescription: 'shortDescription', content: new Array(1002).join("a"), blogId: mockedcreatedBlogId},
+    content5: {title: 'title', shortDescription: 'shortDescription', content: 1, blogId: mockedcreatedBlogId},
+    content6: {title: 'title', shortDescription: 'shortDescription', content: false, blogId: mockedcreatedBlogId},
+
+    blogId1: {title: 'title', shortDescription: 'shortDescription', content: 'content'},
+    blogId2: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: ''},
+    blogId3: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '   '},
+    blogId4: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: 123},
+    blogId5: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: false},
+    blogId6: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '-999'}, // not exists blog
+}
+
 describe('/post', () => {
     const encodedBase64Token = getEncodedAuthToken();
 
@@ -63,38 +95,6 @@ describe('/post', () => {
 
         await createBlog();
     })
-
-    const createdBlogId = "123";
-
-    const invalidInputData = {
-        title1: {shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
-        title2: {title: '', shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
-        title3: {title: '   ', shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
-        title4: {title: new Array(32).join("a"), shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
-        title5: {title: 1, shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
-        title6: {title: false, shortDescription: 'shortDescription', content: 'content', blogId: createdBlogId},
-
-        shortDescription1: {title: 'title', content: 'content', blogId: '123'},
-        shortDescription2: {title: 'title', shortDescription: '', content: 'content', blogId: createdBlogId},
-        shortDescription3: {title: 'title', shortDescription: '   ', content: 'content', blogId: createdBlogId},
-        shortDescription4: {title: 'title', shortDescription: new Array(102).join("a"), content: 'content', blogId: createdBlogId},
-        shortDescription5: {title: 'title', shortDescription: 1, content: 'content', blogId: createdBlogId},
-        shortDescription6: {title: 'title', shortDescription: false, content: 'content', blogId: createdBlogId},
-
-        content1: {title: 'title', shortDescription: 'shortDescription', blogId: createdBlogId},
-        content2: {title: 'title', shortDescription: 'shortDescription', content: '', blogId: createdBlogId},
-        content3: {title: 'title', shortDescription: 'shortDescription', content: '   ', blogId: createdBlogId},
-        content4: {title: 'title', shortDescription: 'shortDescription', content: new Array(1002).join("a"), blogId: createdBlogId},
-        content5: {title: 'title', shortDescription: 'shortDescription', content: 1, blogId: createdBlogId},
-        content6: {title: 'title', shortDescription: 'shortDescription', content: false, blogId: createdBlogId},
-
-        blogId1: {title: 'title', shortDescription: 'shortDescription', content: 'content'},
-        blogId2: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: ''},
-        blogId3: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '   '},
-        blogId4: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: 123},
-        blogId5: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: false},
-        blogId6: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '-999'}, // not exists blog
-    }
 
     // testing get '/posts' api
     it('should return 200 and empty array', async () => {
@@ -294,6 +294,7 @@ describe('/post', () => {
             .expect(HTTP_STATUSES.OK_200, [])
     })
     it(`shouldn't create post with incorrect input data`, async () => {
+        const createdBlogId = await getCreatedBlogId();
         await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)

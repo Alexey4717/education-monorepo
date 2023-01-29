@@ -5,6 +5,9 @@ import {HTTP_STATUSES} from '../../src/types';
 import {CreateBlogInputModel} from '../../src/models/BlogModels/CreateBlogInputModel';
 import {getEncodedAuthToken} from "../../src/helpers";
 import {GetMappedBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
+import {CreatePostInputModel} from "../../src/models/PostModels/CreatePostInputModel";
+import {invalidInputData as invalidPostInputData} from "./post.api.test";
+import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
 
 
 describe('/blog', () => {
@@ -323,6 +326,217 @@ describe('/blog', () => {
         await request(app)
             .get('/blogs')
             .expect(HTTP_STATUSES.OK_200, [createdBlog])
+    })
+
+    // testing post '/blogs/{blogId}/posts' api
+    it(`shouldn't create post in blog if not auth user`, async () => {
+        const createdBlog = await createBlog();
+        const input: CreateBlogInputModel = {
+            name: 'blog3',
+            description: 'about blog1',
+            websiteUrl: 'https://google.com'
+        };
+
+        await request(app)
+            .get('/blogs')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog]);
+
+        const input2: CreatePostInputModel = {
+            title: 'title',
+            blogId: createdBlog?.id,
+            content: 'content',
+            shortDescription: 'shortDescription'
+        };
+        await request(app)
+            .post(`/blogs/${createdBlog?.id}/posts`)
+            .send(input2)
+            .expect(HTTP_STATUSES.NOT_AUTH_401)
+    })
+    it(`shouldn't create post in blog if not auth user`, async () => {
+        const createdBlog = await createBlog();
+        const createdBlogId = createdBlog?.id
+        const input: CreateBlogInputModel = {
+            name: 'blog3',
+            description: 'about blog1',
+            websiteUrl: 'https://google.com'
+        };
+
+        await request(app)
+            .get('/blogs')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog]);
+
+        const { blogId: blogId1, ...invalidPostInputDataInvalidTitle1 } = invalidPostInputData.title1;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidPostInputDataInvalidTitle1})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId2, ...invalidPostInputDataInvalidTitle2 } = invalidPostInputData.title2;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidPostInputDataInvalidTitle2})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId3, ...invalidPostInputDataInvalidTitle3 } = invalidPostInputData.title3;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidPostInputDataInvalidTitle3})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId4, ...invalidPostInputDataInvalidTitle4 } = invalidPostInputData.title4;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidPostInputDataInvalidTitle4})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId5, ...invalidPostInputDataInvalidTitle5 } = invalidPostInputData.title5;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidPostInputDataInvalidTitle5})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId6, ...invalidPostInputDataInvalidTitle6 } = invalidPostInputData.title6;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidPostInputDataInvalidTitle6})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId7, ...invalidShortDescription1PostInputData } = invalidPostInputData.shortDescription1;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidShortDescription1PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId8, ...invalidShortDescription2PostInputData } = invalidPostInputData.shortDescription2;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidShortDescription2PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId9, ...invalidShortDescription3PostInputData } = invalidPostInputData.shortDescription3;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidShortDescription3PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId10, ...invalidShortDescription4PostInputData } = invalidPostInputData.shortDescription4;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidShortDescription4PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId11, ...invalidShortDescription5PostInputData } = invalidPostInputData.shortDescription5;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidShortDescription5PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId12, ...invalidShortDescription6PostInputData } = invalidPostInputData.shortDescription6;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidShortDescription6PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId13, ...invalidContent1PostInputData } = invalidPostInputData.content1;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidContent1PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId14, ...invalidContent2PostInputData } = invalidPostInputData.content2;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidContent2PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId15, ...invalidContent3PostInputData } = invalidPostInputData.content3;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidContent3PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId16, ...invalidContent4PostInputData } = invalidPostInputData.content4;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidContent4PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId17, ...invalidContent5PostInputData } = invalidPostInputData.content5;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidContent5PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        const { blogId: blogId18, ...invalidContent6PostInputData } = invalidPostInputData.content6;
+        await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...invalidContent6PostInputData})
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .get(`/blogs/${createdBlogId}/posts`)
+            .expect(HTTP_STATUSES.OK_200, [])
+    })
+    it(`should create post in blog with correct input data`, async () => {
+        const createdBlog = await createBlog();
+        const createdBlogId = createdBlog?.id
+        const input: CreateBlogInputModel = {
+            name: 'blog3',
+            description: 'about blog1',
+            websiteUrl: 'https://google.com'
+        };
+
+        await request(app)
+            .get('/blogs')
+            .expect(HTTP_STATUSES.OK_200, [createdBlog]);
+
+        const input2 = {
+            title: 'title',
+            content: 'content',
+            shortDescription: 'shortDescription'
+        };
+
+        const createResponse = await request(app)
+            .post(`/blogs/${createdBlogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send(input2)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdPost: GetMappedPostOutputModel = createResponse?.body;
+        const expectedPost: GetMappedPostOutputModel = {
+            ...input2,
+            id: createdPost.id,
+            title: createdPost.title,
+            blogId: createdPost.blogId,
+            content: createdPost.content,
+            shortDescription: createdPost.shortDescription,
+            blogName: createdPost.blogName,
+            createdAt: createdPost.createdAt
+        };
+
+        expect(createdPost).toEqual(expectedPost);
+
+        await request(app)
+            .get(`/blogs/${createdBlogId}/posts`)
+            .expect(HTTP_STATUSES.OK_200, [createdPost])
     })
 
     // testing put '/blogs/:id' api

@@ -1,9 +1,10 @@
 import {ObjectId} from "mongodb";
 
-import {blogsCollection} from '../../store/db';
+import {blogsCollection, postsCollection} from '../../store/db';
 import {GetBlogOutputModelFromMongoDB} from "../../models/BlogModels/GetBlogOutputModel";
-import {SortDirections, GetBlogsArgs} from "../../types";
+import {SortDirections, GetBlogsArgs, GetPostsArgs, GetPostsInBlogArgs} from "../../types";
 import {calculateAndGetSkipValue} from "../../helpers";
+import {GetPostOutputModelFromMongoDB} from "../../models/PostModels/GetPostOutputModel";
 
 
 export const blogsQueryRepository = {
@@ -26,6 +27,27 @@ export const blogsQueryRepository = {
                 .toArray();
         } catch (error) {
             console.log(`BlogsQueryRepository get blogs error is occurred: ${error}`);
+            return [];
+        }
+    },
+
+    async getPostsInBlog({
+                             blogId,
+                             sortBy,
+                             sortDirection,
+                             pageNumber,
+                             pageSize
+                         }: GetPostsInBlogArgs): Promise<GetPostOutputModelFromMongoDB[]> {
+        try {
+            const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
+            return await postsCollection
+                .find({blogId: {$regex: blogId}})
+                .sort({[sortBy]: sortDirection === SortDirections.desc ? -1 : 1})
+                .skip(skipValue)
+                .limit(pageSize)
+                .toArray();
+        } catch (error) {
+            console.log(`BlogsQueryRepository.getPostsInBlog error is occurred: ${error}`);
             return [];
         }
     },
