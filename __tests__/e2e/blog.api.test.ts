@@ -144,7 +144,7 @@ describe('/blog', () => {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,
-                totalCount: 2,
+                totalCount: 3,
                 items: [createdBlog4, createdBlog2, createdBlog1]
             });
     })

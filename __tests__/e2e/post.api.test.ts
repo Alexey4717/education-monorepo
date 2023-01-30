@@ -6,7 +6,7 @@ import {CreatePostInputModel} from '../../src/models/PostModels/CreatePostInputM
 import {getEncodedAuthToken} from "../../src/helpers";
 import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
 import {CreateBlogInputModel} from "../../src/models/BlogModels/CreateBlogInputModel";
-import {GetBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
+import {GetMappedBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
 
 
 const mockedcreatedBlogId = "123";
@@ -55,18 +55,13 @@ describe('/post', () => {
             .send(input)
             .expect(HTTP_STATUSES.CREATED_201)
 
-        const createdBlog: GetBlogOutputModel = createResponse?.body;
+        const createdBlog: GetMappedBlogOutputModel = createResponse?.body;
         return createdBlog;
     }
 
     const getCreatedBlogId = async () => {
-        await createBlog();
-
-        const createdBlogs = await request(app)
-            .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200);
-        const createdBlogId = createdBlogs.body[0].id
-
+        const result = await createBlog();
+        const createdBlogId = result.id;
         return createdBlogId;
     };
 
@@ -298,7 +293,7 @@ describe('/post', () => {
         const createdPost = await createPost(createdBlogId);
 
         await request(app)
-            .get(`/posts/${createdPost.id}`)
+            .get(`/posts/${createdPost?.id}`)
             .expect(HTTP_STATUSES.OK_200, createdPost)
     })
 
@@ -318,7 +313,7 @@ describe('/post', () => {
         const createdBlogId = await getCreatedBlogId();
         const createdPost = await createPost(createdBlogId);
         await request(app)
-            .delete(`/posts/${createdPost.id}`)
+            .delete(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(HTTP_STATUSES.NO_CONTENT_204)
     })
@@ -520,7 +515,7 @@ describe('/post', () => {
         const createdPost: GetMappedPostOutputModel = createResponse?.body;
         const expectedPost: GetMappedPostOutputModel = {
             ...input,
-            id: createdPost.id,
+            id: createdPost?.id,
             title: createdPost.title,
             blogId: createdPost.blogId,
             content: createdPost.content,

@@ -25,7 +25,7 @@ export const blogsQueryRepository = {
                 .skip(skipValue)
                 .limit(pageSize)
                 .toArray();
-            const totalCount = await blogsCollection.countDocuments(filter, {});
+            const totalCount = await blogsCollection.count(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
             return {
                 page: pageNumber,
@@ -56,7 +56,7 @@ export const blogsQueryRepository = {
                 .skip(skipValue)
                 .limit(pageSize)
                 .toArray();
-            const totalCount = await blogsCollection.countDocuments(filter, {});
+            const totalCount = await postsCollection.count(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
             return {
                 page: pageNumber,

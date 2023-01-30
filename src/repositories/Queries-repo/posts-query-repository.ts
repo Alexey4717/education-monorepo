@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
 
 import {GetPostOutputModelFromMongoDB} from "../../models/PostModels/GetPostOutputModel";
-import {blogsCollection, postsCollection} from "../../store/db";
+import {postsCollection} from "../../store/db";
 import {CommonResponse, GetPostsArgs, SortDirections} from "../../types";
 import {calculateAndGetSkipValue} from "../../helpers";
 
@@ -22,7 +22,7 @@ export const postsQueryRepository = {
                 .skip(skipValue)
                 .limit(pageSize)
                 .toArray();
-            const totalCount = await blogsCollection.countDocuments(filter, {});
+            const totalCount = await postsCollection.count(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
             return {
                 page: pageNumber,

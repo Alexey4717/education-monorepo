@@ -47,10 +47,10 @@ blogsRouter.get(
             items
         } = resData || {};
         res.status(HTTP_STATUSES.OK_200).json({
-            pagesCount: 0,
+            pagesCount,
             page,
             pageSize,
-            totalCount: 0,
+            totalCount,
             items: items.map(getMappedBlogViewModel)
         });
     });
