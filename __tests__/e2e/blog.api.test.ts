@@ -400,6 +400,13 @@ describe('/blog', () => {
             })
     })
 
+    // testing get '/blogs/{blogId}/posts' api
+    it('should return 404 for not existing post in blog', async () => {
+        await request(app)
+            .get('/blogs/-99/posts')
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+
     // testing post '/blogs/{blogId}/posts' api
     it(`shouldn't create post in blog if not auth user`, async () => {
         const createdBlog = await createBlog();

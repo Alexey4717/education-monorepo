@@ -46,8 +46,10 @@ export const blogsQueryRepository = {
                              sortDirection,
                              pageNumber,
                              pageSize
-                         }: GetPostsInBlogArgs): Promise<CommonResponse<GetPostOutputModelFromMongoDB[]>> {
+                         }: GetPostsInBlogArgs): Promise<CommonResponse<GetPostOutputModelFromMongoDB[]> | null> {
         try {
+            const foundBlog = await blogsCollection.findOne({"_id": new ObjectId(blogId)});
+            if (!foundBlog) return null;
             const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
             const filter = {blogId: {$regex: blogId}}
             const items = await postsCollection
@@ -67,7 +69,7 @@ export const blogsQueryRepository = {
             }
         } catch (error) {
             console.log(`BlogsQueryRepository.getPostsInBlog error is occurred: ${error}`);
-            return {} as CommonResponse<GetPostOutputModelFromMongoDB[]>;
+            return null;
         }
     },
 

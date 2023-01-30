@@ -80,6 +80,12 @@ blogsRouter.get(
             pageNumber: +(req.query.pageNumber || 1), // by-default 1
             pageSize: +(req.query.pageSize || 10) // by-default 10
         });
+
+        if (!resData) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            return;
+        }
+
         const {
             pagesCount,
             page,
