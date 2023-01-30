@@ -1,8 +1,8 @@
 import {ObjectId} from "mongodb";
 
 import {GetPostOutputModelFromMongoDB} from "../../models/PostModels/GetPostOutputModel";
-import {postsCollection} from "../../store/db";
-import {GetPostsArgs, SortDirections} from "../../types";
+import {blogsCollection, postsCollection} from "../../store/db";
+import {CommonResponse, GetPostsArgs, SortDirections} from "../../types";
 import {calculateAndGetSkipValue} from "../../helpers";
 
 
@@ -12,18 +12,28 @@ export const postsQueryRepository = {
                        sortDirection,
                        pageNumber,
                        pageSize
-                   }: GetPostsArgs): Promise<GetPostOutputModelFromMongoDB[]> {
+                   }: GetPostsArgs): Promise<CommonResponse<GetPostOutputModelFromMongoDB[]>> {
         try {
             const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
-            return await postsCollection
-                .find({})
+            const filter = {};
+            const items = await postsCollection
+                .find(filter)
                 .sort({[sortBy]: sortDirection === SortDirections.desc ? -1 : 1})
                 .skip(skipValue)
                 .limit(pageSize)
                 .toArray();
+            const totalCount = await blogsCollection.countDocuments(filter, {});
+            const pagesCount = Math.ceil(totalCount / pageSize);
+            return {
+                page: pageNumber,
+                pageSize,
+                totalCount,
+                pagesCount,
+                items
+            };
         } catch (error) {
             console.log(`postsQueryRepository.getPosts error is occurred: ${error}`);
-            return [];
+            return {} as CommonResponse<GetPostOutputModelFromMongoDB[]>;
         }
     },
 

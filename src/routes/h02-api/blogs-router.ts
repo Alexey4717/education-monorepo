@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express";
 
-import {GetBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
 import {
+    CommonResponse,
     HTTP_STATUSES,
     RequestWithBody,
     RequestWithParams,
@@ -30,16 +30,29 @@ export const blogsRouter = Router({});
 
 blogsRouter.get(
     '/',
-    async (req: RequestWithQuery<GetBlogsInputModel>, res: Response<GetMappedBlogOutputModel[]>
+    async (req: RequestWithQuery<GetBlogsInputModel>, res: Response<CommonResponse<GetMappedBlogOutputModel[]>>
     ) => {
         const resData = await blogsQueryRepository.getBlogs({
             searchNameTerm: req.query.searchNameTerm?.toString() || null, // by-default null
             sortBy: (req.query.sortBy?.toString() || 'createdAt') as SortBlogsBy, // by-default createdAt
             sortDirection: (req.query.sortDirection?.toString() || SortDirections.desc) as SortDirections, // by-default desc
-            pageNumber: +(req.query.pageNumber || 1), // by-default 1
+            pageNumber: +(req.query.pageNumber || 1), // by-default 1,
             pageSize: +(req.query.pageSize || 10) // by-default 10
         });
-        res.status(HTTP_STATUSES.OK_200).json(resData.map(getMappedBlogViewModel));
+        const {
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items
+        } = resData || {};
+        res.status(HTTP_STATUSES.OK_200).json({
+            pagesCount: 0,
+            page,
+            pageSize,
+            totalCount: 0,
+            items: items.map(getMappedBlogViewModel)
+        });
     });
 blogsRouter.get(
     '/:id',
@@ -58,7 +71,7 @@ blogsRouter.get(
     paramIdValidationMiddleware,
     async (
         req: RequestWithParamsAndQuery<{ id: string }, GetPostsInputModel>,
-        res: Response<GetMappedPostOutputModel[]>
+        res: Response<CommonResponse<GetMappedPostOutputModel[]>>
     ) => {
         const resData = await blogsQueryRepository.getPostsInBlog({
             blogId: req.params.id,
@@ -67,7 +80,20 @@ blogsRouter.get(
             pageNumber: +(req.query.pageNumber || 1), // by-default 1
             pageSize: +(req.query.pageSize || 10) // by-default 10
         });
-        res.status(HTTP_STATUSES.OK_200).json(resData.map(getMappedPostViewModel));
+        const {
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items
+        } = resData || {};
+        res.status(HTTP_STATUSES.OK_200).json({
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items: items.map(getMappedPostViewModel)
+        });
     });
 
 blogsRouter.post(

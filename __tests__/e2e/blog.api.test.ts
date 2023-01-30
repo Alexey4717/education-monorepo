@@ -62,7 +62,13 @@ describe('/blog', () => {
     it('should return 200 and empty array', async () => {
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 0,
+                page: 1,
+                pageSize: 10,
+                totalCount: 0,
+                items: []
+            })
     })
     it('should return 200 and array of blogs', async () => {
         const input1: CreateBlogInputModel = {
@@ -74,7 +80,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog1]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdBlog1]
+            });
 
         const input2: CreateBlogInputModel = {
             name: 'blog2',
@@ -86,7 +98,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog2, createdBlog1]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 2,
+                items: [createdBlog2, createdBlog1]
+            });
     })
     it('should return 200 and array of blogs by searchNameTerm=va query', async () => {
         const input1: CreateBlogInputModel = {
@@ -122,7 +140,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs?searchNameTerm=va')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog4, createdBlog2, createdBlog1]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 2,
+                items: [createdBlog4, createdBlog2, createdBlog1]
+            });
     })
     it('should return 200 and array of blogs sorted by specified field with sortDirection', async () => {
         const input1: CreateBlogInputModel = {
@@ -158,11 +182,23 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs?sortBy=name')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog3, createdBlog2, createdBlog4, createdBlog1]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 4,
+                items: [createdBlog3, createdBlog2, createdBlog4, createdBlog1]
+            });
 
         await request(app)
             .get('/blogs?sortBy=description&sortDirection=asc')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog2, createdBlog1, createdBlog4, createdBlog3]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 4,
+                items: [createdBlog2, createdBlog1, createdBlog4, createdBlog3]
+            });
     })
     it('should return 200 and portion array of blogs with page number and size', async () => {
         const input1: CreateBlogInputModel = {
@@ -209,15 +245,33 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog6, createdBlog5, createdBlog4, createdBlog3, createdBlog2, createdBlog1]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 6,
+                items: [createdBlog6, createdBlog5, createdBlog4, createdBlog3, createdBlog2, createdBlog1]
+            });
 
         await request(app)
             .get('/blogs?pageSize=4')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog6, createdBlog5, createdBlog4, createdBlog3]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 2,
+                page: 1,
+                pageSize: 4,
+                totalCount: 6,
+                items: [createdBlog6, createdBlog5, createdBlog4, createdBlog3]
+            });
 
         await request(app)
             .get('/blogs?pageNumber=2&pageSize=2')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog4, createdBlog3]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 3,
+                page: 2,
+                pageSize: 2,
+                totalCount: 6,
+                items: [createdBlog4, createdBlog3]
+            });
     })
 
     // testing get '/blogs/:id' api
@@ -268,7 +322,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 0,
+                page: 1,
+                pageSize: 10,
+                totalCount: 0,
+                items: []
+            })
     })
     it(`shouldn't create blog with incorrect input data`, async () => {
         await request(app)
@@ -297,7 +357,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 0,
+                page: 1,
+                pageSize: 10,
+                totalCount: 0,
+                items: []
+            })
     })
     it(`should create blog with correct input data`, async () => {
         const input: CreateBlogInputModel = {
@@ -325,7 +391,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdBlog]
+            })
     })
 
     // testing post '/blogs/{blogId}/posts' api
@@ -339,7 +411,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdBlog]
+            });
 
         const input2: CreatePostInputModel = {
             title: 'title',
@@ -363,7 +441,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdBlog]
+            });
 
         const { blogId: blogId1, ...invalidPostInputDataInvalidTitle1 } = invalidPostInputData.title1;
         await request(app)
@@ -493,7 +577,13 @@ describe('/blog', () => {
 
         await request(app)
             .get(`/blogs/${createdBlogId}/posts`)
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 0,
+                page: 1,
+                pageSize: 10,
+                totalCount: 0,
+                items: []
+            })
     })
     it(`should create post in blog with correct input data`, async () => {
         const createdBlog = await createBlog();
@@ -506,7 +596,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog]);
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdBlog]
+            });
 
         const input2 = {
             title: 'title',
@@ -536,7 +632,13 @@ describe('/blog', () => {
 
         await request(app)
             .get(`/blogs/${createdBlogId}/posts`)
-            .expect(HTTP_STATUSES.OK_200, [createdPost])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdPost]
+            })
     })
 
     // testing put '/blogs/:id' api
@@ -554,7 +656,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdBlog]
+            })
     })
     it(`shouldn't update blog with incorrect input data`, async () => {
         const createdBlog = await createBlog();
@@ -584,7 +692,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdBlog]
+            })
     })
     it(`shouldn't update blog if not exist`, async () => {
         const input: CreateBlogInputModel = {
@@ -600,7 +714,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 0,
+                page: 1,
+                pageSize: 10,
+                totalCount: 0,
+                items: []
+            })
     })
     it(`should update blog with correct input data`, async () => {
         const dataForCreate: CreateBlogInputModel = {
@@ -612,7 +732,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [createdBlog])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdBlog]
+            })
 
         const dataForUpdate: CreateBlogInputModel = {
             name: 'blog3',
@@ -630,7 +756,13 @@ describe('/blog', () => {
 
         await request(app)
             .get('/blogs')
-            .expect(HTTP_STATUSES.OK_200, [updatedBlog])
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [updatedBlog]
+            })
     })
 
 });

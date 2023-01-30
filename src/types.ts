@@ -70,6 +70,14 @@ export type Error = {
     field: string
 };
 
+export type CommonResponse<T> = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: T
+};
+
 export type RequestWithBody<T> = Request<{}, {}, T>;
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>;
 export type RequestWithParamsAndQuery<T, B> = Request<T, {}, {}, B>;

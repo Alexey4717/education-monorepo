@@ -1,6 +1,7 @@
 import {Request, Response, Router} from "express";
 
 import {
+    CommonResponse,
     HTTP_STATUSES,
     RequestWithBody,
     RequestWithParams,
@@ -9,7 +10,7 @@ import {
 } from "../../types";
 import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
 import {authorizationGuardMiddleware} from "../../middlewares/authorization-guard-middleware";
-import {GetPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
+import {GetPostOutputModel, GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
 import {CreatePostInputModel} from "../../models/PostModels/CreatePostInputModel";
 import {GetPostInputModel} from "../../models/PostModels/GetPostInputModel";
 import {UpdatePostInputModel} from '../../models/PostModels/UpdatePostInputModel';
@@ -27,7 +28,7 @@ export const postsRouter = Router({});
 
 postsRouter.get(
     '/',
-    async (req: RequestWithQuery<GetPostsInputModel>, res: Response<GetPostOutputModel[]>
+    async (req: RequestWithQuery<GetPostsInputModel>, res: Response<CommonResponse<GetMappedPostOutputModel[]>>
     ) => {
         const resData = await postsQueryRepository.getPosts({
             sortBy: (req.query.sortBy?.toString() || 'createdAt') as SortPostsBy, // by-default createdAt
@@ -35,7 +36,20 @@ postsRouter.get(
             pageNumber: +(req.query.pageNumber || 1), // by-default 1
             pageSize: +(req.query.pageSize || 10) // by-default 10
         });
-        res.status(HTTP_STATUSES.OK_200).json(resData.map(getMappedPostViewModel));
+        const {
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items
+        } = resData || {};
+        res.status(HTTP_STATUSES.OK_200).json({
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items: items.map(getMappedPostViewModel)
+        });
     });
 postsRouter.get(
     '/:id',
