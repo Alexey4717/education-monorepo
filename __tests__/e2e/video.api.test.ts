@@ -53,7 +53,7 @@ describe('/video', () => {
             title: 'title',
             author: 'author',
             availableResolutions: [AvailableResolutions.P144],
-            minAgeRestriction: '10'
+            minAgeRestriction: 'dfgdfg'
         },
         minAgeRestriction2: {
             title: 'title',

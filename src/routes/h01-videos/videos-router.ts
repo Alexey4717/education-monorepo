@@ -70,31 +70,6 @@ videosRouter.put(
         res: Response<undefined | GetErrorOutputModel>
     ) => {
         const videoId = req.params?.id;
-
-        // isBoolean() validator not working
-        if (req.body.canBeDownloaded !== undefined && typeof req.body.canBeDownloaded !== 'boolean') {
-            const errorsMessages = {
-                errorsMessages: [{
-                    message: 'CanBeDownloaded field must be boolean type',
-                    field: 'canBeDownloaded'
-                }]
-            };
-            res.status(HTTP_STATUSES.BAD_REQUEST_400).json(errorsMessages)
-            return;
-        }
-
-        // .isInt({min: 1, max: 18}) or .isNumeric().isLength({min: 1, max: 18}) not working
-        if (req.body.minAgeRestriction !== undefined && (typeof req.body.minAgeRestriction !== 'number' || req.body.minAgeRestriction > 18 || req.body.minAgeRestriction < 1)) {
-            const errorsMessages = {
-                errorsMessages: [{
-                    message: 'CanBeDownloaded field must be boolean type',
-                    field: 'canBeDownloaded'
-                }]
-            };
-            res.status(HTTP_STATUSES.BAD_REQUEST_400).json(errorsMessages)
-            return;
-        }
-
         const isVideoUpdated = await videosService.updateVideo({id: videoId, input: req.body})
 
         if (!isVideoUpdated) {

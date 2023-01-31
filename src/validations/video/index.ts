@@ -17,11 +17,9 @@ export const availableResolutionsValidation = body('availableResolutions')
 
 export const canBeDownloadedValidation = body('canBeDownloaded')
     .optional({nullable: true})
-    // not working
-    .isBoolean().withMessage("Field should be a boolean")
+    .isBoolean({strict: true}).withMessage("Field should be a boolean")
 export const minAgeRestrictionValidation = body('minAgeRestriction')
     .optional({nullable: true})
-    // .isNumeric().isLength({min: 1, max: 18})
     .isInt({min: 1, max: 18}).withMessage("Field should be number from 1 to 18")
 export const publicationDateValidation = body('publicationDate')
     .optional({nullable: true})

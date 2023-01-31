@@ -14,7 +14,7 @@ export const authorizationGuardMiddleware = (req: Request, res: Response, next: 
 
         const splitToken = token.split(' ');
         const authType = splitToken[0];
-        const authData = new Buffer(splitToken[1], 'base64')
+        const authData = Buffer.from(splitToken[1], 'base64')
             .toString('utf-8')
             .split(':');
         const login = authData[0];
