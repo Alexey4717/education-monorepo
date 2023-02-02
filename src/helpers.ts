@@ -3,6 +3,8 @@ import {GetBlogOutputModelFromMongoDB, GetMappedBlogOutputModel} from "./models/
 import {GetPostOutputModelFromMongoDB, GetMappedPostOutputModel} from "./models/PostModels/GetPostOutputModel";
 import {AvailableResolutions} from './types';
 import {db} from "./store/mockedDB";
+import {GetMappedUserOutputModel, GetUserOutputModelFromMongoDB} from "./models/UserModels/GetUserOutputModel";
+
 
 export const getMappedVideoViewModel = ({
                                             _id,
@@ -22,7 +24,7 @@ export const getMappedVideoViewModel = ({
     createdAt,
     publicationDate,
     availableResolutions
-})
+});
 
 export const getMappedBlogViewModel = ({
                                            _id,
@@ -36,7 +38,7 @@ export const getMappedBlogViewModel = ({
     description,
     websiteUrl,
     createdAt
-})
+});
 
 export const getMappedPostViewModel = ({
                                            _id,
@@ -54,7 +56,19 @@ export const getMappedPostViewModel = ({
     blogName,
     blogId,
     createdAt
-})
+});
+
+export const getMappedUserViewModel = ({
+                                           _id,
+                                           login,
+                                           email,
+                                           createdAt
+                                       }: GetUserOutputModelFromMongoDB): GetMappedUserOutputModel => ({
+    id: _id.toString(),
+    login,
+    email,
+    createdAt
+});
 
 export const getCorrectIncludesAvailableResolutions = (availableResolutions: AvailableResolutions[]): boolean => {
     const enumValues = Object.values(AvailableResolutions)

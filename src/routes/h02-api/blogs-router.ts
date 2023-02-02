@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express";
 
 import {
-    CommonResponse,
+    Paginator,
     HTTP_STATUSES,
     RequestWithBody,
     RequestWithParams,
@@ -30,7 +30,7 @@ export const blogsRouter = Router({});
 
 blogsRouter.get(
     '/',
-    async (req: RequestWithQuery<GetBlogsInputModel>, res: Response<CommonResponse<GetMappedBlogOutputModel[]>>
+    async (req: RequestWithQuery<GetBlogsInputModel>, res: Response<Paginator<GetMappedBlogOutputModel[]>>
     ) => {
         const resData = await blogsQueryRepository.getBlogs({
             searchNameTerm: req.query.searchNameTerm?.toString() || null, // by-default null
@@ -71,7 +71,7 @@ blogsRouter.get(
     paramIdValidationMiddleware,
     async (
         req: RequestWithParamsAndQuery<{ id: string }, GetPostsInputModel>,
-        res: Response<CommonResponse<GetMappedPostOutputModel[]>>
+        res: Response<Paginator<GetMappedPostOutputModel[]>>
     ) => {
         const resData = await blogsQueryRepository.getPostsInBlog({
             blogId: req.params.id,

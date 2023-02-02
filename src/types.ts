@@ -5,6 +5,7 @@ import {GetMappedBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
 import {GetMappedPostOutputModel} from "./models/PostModels/GetPostOutputModel";
 import {SortBlogsBy} from "./models/BlogModels/GetBlogsInputModel";
 import {SortPostsBy} from "./models/PostModels/GetPostsInputModel";
+import {SortUsersBy} from "./models/UserModels/GetUsersInputModel";
 
 
 export enum HTTP_STATUSES {
@@ -54,6 +55,13 @@ export type GetPostsArgs = CommonQueryParamsTypes & {
     sortBy: SortPostsBy
 };
 
+export type GetUsersArgs = CommonQueryParamsTypes & {
+    searchLoginTerm: string | null
+    searchEmailTerm: string | null
+    sortBy: SortUsersBy
+};
+
+
 export type GetPostsInBlogArgs = GetPostsArgs & {
     blogId: string
 }
@@ -70,7 +78,7 @@ export type Error = {
     field: string
 };
 
-export type CommonResponse<T> = {
+export type Paginator<T> = {
     pagesCount: number
     page: number
     pageSize: number

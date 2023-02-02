@@ -1,5 +1,5 @@
 import request from "supertest";
-import {app} from "../../src/index";
+import {app} from "../../src/app";
 import {HTTP_STATUSES, AvailableResolutions} from '../../src/types'
 import {GetMappedVideoOutputModel} from "../../src/models/VideoModels/GetVideoOutputModel";
 import {CreateVideoInputModel} from "../../src/models/VideoModels/CreateVideoInputModel";

@@ -4,6 +4,7 @@ import {MongoClient} from 'mongodb';
 import {GetBlogOutputModel} from "../models/BlogModels/GetBlogOutputModel";
 import {GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
 import {GetVideoOutputModel} from "../models/VideoModels/GetVideoOutputModel";
+import {GetUserOutputModel} from "../models/UserModels/GetUserOutputModel";
 
 
 dotenv.config();
@@ -18,6 +19,7 @@ const db01 = client.db(dbName)
 export const blogsCollection = db01.collection<GetBlogOutputModel>("blogs");
 export const postsCollection = db01.collection<GetPostOutputModel>("posts");
 export const videosCollection = db01.collection<GetVideoOutputModel>("videos");
+export const usersCollection = db01.collection<GetUserOutputModel>("users");
 
 export const runDB = async () => {
     try {

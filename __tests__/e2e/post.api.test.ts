@@ -1,6 +1,6 @@
 import request from "supertest";
 
-import {app} from "../../src/index";
+import {app} from "../../src/app";
 import {HTTP_STATUSES} from '../../src/types';
 import {CreatePostInputModel} from '../../src/models/PostModels/CreatePostInputModel';
 import {getEncodedAuthToken} from "../../src/helpers";

@@ -2,7 +2,7 @@ import {ObjectId} from "mongodb";
 
 import {GetPostOutputModelFromMongoDB} from "../../models/PostModels/GetPostOutputModel";
 import {postsCollection} from "../../store/db";
-import {CommonResponse, GetPostsArgs, SortDirections} from "../../types";
+import {Paginator, GetPostsArgs, SortDirections} from "../../types";
 import {calculateAndGetSkipValue} from "../../helpers";
 
 
@@ -12,7 +12,7 @@ export const postsQueryRepository = {
                        sortDirection,
                        pageNumber,
                        pageSize
-                   }: GetPostsArgs): Promise<CommonResponse<GetPostOutputModelFromMongoDB[]>> {
+                   }: GetPostsArgs): Promise<Paginator<GetPostOutputModelFromMongoDB[]>> {
         try {
             const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
             const filter = {};
@@ -33,7 +33,7 @@ export const postsQueryRepository = {
             };
         } catch (error) {
             console.log(`postsQueryRepository.getPosts error is occurred: ${error}`);
-            return {} as CommonResponse<GetPostOutputModelFromMongoDB[]>;
+            return {} as Paginator<GetPostOutputModelFromMongoDB[]>;
         }
     },
 

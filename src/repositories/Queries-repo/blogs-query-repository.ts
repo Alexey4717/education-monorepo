@@ -2,7 +2,7 @@ import {ObjectId} from "mongodb";
 
 import {blogsCollection, postsCollection} from '../../store/db';
 import {GetBlogOutputModelFromMongoDB} from "../../models/BlogModels/GetBlogOutputModel";
-import {SortDirections, GetBlogsArgs, GetPostsArgs, GetPostsInBlogArgs, CommonResponse} from "../../types";
+import {SortDirections, GetBlogsArgs, GetPostsArgs, GetPostsInBlogArgs, Paginator} from "../../types";
 import {calculateAndGetSkipValue} from "../../helpers";
 import {GetPostOutputModelFromMongoDB} from "../../models/PostModels/GetPostOutputModel";
 
@@ -15,7 +15,7 @@ export const blogsQueryRepository = {
                        pageNumber,
                        pageSize
                    }
-                       : GetBlogsArgs): Promise<CommonResponse<GetBlogOutputModelFromMongoDB[]>> {
+                       : GetBlogsArgs): Promise<Paginator<GetBlogOutputModelFromMongoDB[]>> {
         try {
             const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {};
             const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
@@ -36,7 +36,7 @@ export const blogsQueryRepository = {
             }
         } catch (error) {
             console.log(`BlogsQueryRepository get blogs error is occurred: ${error}`);
-            return {} as CommonResponse<GetBlogOutputModelFromMongoDB[]>;
+            return {} as Paginator<GetBlogOutputModelFromMongoDB[]>;
         }
     },
 
@@ -46,7 +46,7 @@ export const blogsQueryRepository = {
                              sortDirection,
                              pageNumber,
                              pageSize
-                         }: GetPostsInBlogArgs): Promise<CommonResponse<GetPostOutputModelFromMongoDB[]> | null> {
+                         }: GetPostsInBlogArgs): Promise<Paginator<GetPostOutputModelFromMongoDB[]> | null> {
         try {
             const foundBlog = await blogsCollection.findOne({"_id": new ObjectId(blogId)});
             if (!foundBlog) return null;

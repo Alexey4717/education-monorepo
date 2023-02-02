@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express";
 
 import {
-    CommonResponse,
+    Paginator,
     HTTP_STATUSES,
     RequestWithBody,
     RequestWithParams,
@@ -21,14 +21,13 @@ import {postsQueryRepository} from "../../repositories/Queries-repo/posts-query-
 import {getMappedBlogViewModel, getMappedPostViewModel} from "../../helpers";
 import {postsService} from "../../domain/posts-service";
 import {GetPostsInputModel, SortPostsBy} from "../../models/PostModels/GetPostsInputModel";
-import {SortBlogsBy} from "../../models/BlogModels/GetBlogsInputModel";
 
 
 export const postsRouter = Router({});
 
 postsRouter.get(
     '/',
-    async (req: RequestWithQuery<GetPostsInputModel>, res: Response<CommonResponse<GetMappedPostOutputModel[]>>
+    async (req: RequestWithQuery<GetPostsInputModel>, res: Response<Paginator<GetMappedPostOutputModel[]>>
     ) => {
         const resData = await postsQueryRepository.getPosts({
             sortBy: (req.query.sortBy?.toString() || 'createdAt') as SortPostsBy, // by-default createdAt

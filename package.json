@@ -1,7 +1,7 @@
 {
   "name": "introductory-lesson",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "src/app.ts",
   "license": "MIT",
   "scripts": {
     "watch": "tsc -w",

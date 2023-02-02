@@ -2,6 +2,7 @@ import {ObjectId} from 'mongodb';
 
 import {AvailableResolutions} from '../../types';
 
+
 export type GetVideoOutputModel = {
     /**
      * video title
