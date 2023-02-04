@@ -12,6 +12,7 @@ describe('/video', () => {
             .expect(HTTP_STATUSES.NO_CONTENT_204)
     })
 
+    const notExistingId = '63cde53de1eeeb34059bda94'; // valid format
     const invalidInputData = {
         title1: {title: '', author: 'author', availableResolutions: [AvailableResolutions.P144]},
         title2: {title: ' ', author: 'author', availableResolutions: [AvailableResolutions.P144]},
@@ -133,7 +134,7 @@ describe('/video', () => {
     // testing get '/videos/:id' api
     it('should return 404 for not existing video', async () => {
         await request(app)
-            .get('/videos/-99')
+            .get(`/videos/${notExistingId}`)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
     it('should return 200 and existing video', async () => {

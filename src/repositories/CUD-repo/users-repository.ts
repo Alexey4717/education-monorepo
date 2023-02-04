@@ -1,15 +1,16 @@
 import {usersCollection} from "../../store/db";
 import {ObjectId} from "mongodb";
-import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
 import {GetUserOutputModelFromMongoDB} from "../../models/UserModels/GetUserOutputModel";
+import {CreateUserInsertToDBModel} from "../../models/UserModels/CreateUserInsertToDBModel";
 
 
 export const usersRepository = {
-    async createUser(newUser: CreateUserInputModel & { createdAt: string }): Promise<GetUserOutputModelFromMongoDB> {
+    async createUser(newUser: CreateUserInsertToDBModel): Promise<GetUserOutputModelFromMongoDB> {
         try {
             const {
                 login,
                 email,
+                passwordHash,
                 createdAt
             } = newUser
             const result = await usersCollection.insertOne(newUser);
@@ -18,7 +19,8 @@ export const usersRepository = {
                 _id: result.insertedId,
                 login,
                 email,
-                createdAt
+                createdAt,
+                passwordHash
             };
             return createdUser
         } catch (error) {
@@ -27,9 +29,13 @@ export const usersRepository = {
         }
     },
 
+    async findByLoginOrEmail(loginOrEmail: string): Promise<GetUserOutputModelFromMongoDB | null> {
+        return await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]});
+    },
+
     async deleteUserById(id: string): Promise<boolean> {
         try {
-            const result = await usersCollection.deleteOne({"_id" : new ObjectId(id)});
+            const result = await usersCollection.deleteOne({"_id": new ObjectId(id)});
             return result.deletedCount === 1;
         } catch (error) {
             console.log(`usersRepository.deleteUserById error is occurred: ${error}`)

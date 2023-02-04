@@ -86,6 +86,16 @@ export type Paginator<T> = {
     items: T
 };
 
+export type CheckCredentialsInputArgs = {
+    loginOrEmail: string,
+    password: string
+};
+
+export type GenerateHashInputArgs = {
+    password: string
+    salt: string
+};
+
 export type RequestWithBody<T> = Request<{}, {}, T>;
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>;
 export type RequestWithParamsAndQuery<T, B> = Request<T, {}, {}, B>;

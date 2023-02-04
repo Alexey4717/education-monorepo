@@ -55,7 +55,7 @@ blogsRouter.get(
         });
     });
 blogsRouter.get(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     async (req: RequestWithParams<{ id: string }>, res: Response<GetMappedBlogOutputModel>) => {
@@ -67,7 +67,7 @@ blogsRouter.get(
         res.status(HTTP_STATUSES.OK_200).json(getMappedBlogViewModel(resData));
     });
 blogsRouter.get(
-    '/:id/posts',
+    '/:id([0-9a-f]{24})/posts',
     paramIdValidationMiddleware,
     async (
         req: RequestWithParamsAndQuery<{ id: string }, GetPostsInputModel>,
@@ -113,7 +113,7 @@ blogsRouter.post(
         res.status(HTTP_STATUSES.CREATED_201).json(getMappedBlogViewModel(createdBlog));
     });
 blogsRouter.post(
-    '/:id/posts',
+    '/:id([0-9a-f]{24})/posts',
     authorizationGuardMiddleware,
     paramIdValidationMiddleware,
     createPostInBlogInputValidations,
@@ -136,7 +136,7 @@ blogsRouter.post(
     });
 
 blogsRouter.put(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     authorizationGuardMiddleware,
     paramIdValidationMiddleware,
     updateBlogInputValidations,
@@ -153,7 +153,7 @@ blogsRouter.put(
     });
 
 blogsRouter.delete(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     authorizationGuardMiddleware,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,

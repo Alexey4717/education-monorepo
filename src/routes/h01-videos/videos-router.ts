@@ -25,7 +25,7 @@ videosRouter.get(
         res.json(videos);
     })
 videosRouter.get(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     async (
@@ -61,7 +61,7 @@ videosRouter.post(
     })
 
 videosRouter.put(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     paramIdValidationMiddleware,
     updateVideoInputValidations,
     inputValidationsMiddleware,
@@ -81,7 +81,7 @@ videosRouter.put(
     })
 
 videosRouter.delete(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     async (req: Request<GetVideoInputModel>, res: Response<void>) => {

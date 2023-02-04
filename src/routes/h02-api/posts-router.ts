@@ -51,7 +51,7 @@ postsRouter.get(
         });
     });
 postsRouter.get(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     async (req: RequestWithParams<GetPostInputModel>, res: Response<GetPostOutputModel>) => {
@@ -81,7 +81,7 @@ postsRouter.post(
     })
 
 postsRouter.put(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     authorizationGuardMiddleware,
     paramIdValidationMiddleware,
     updatePostInputValidations,
@@ -98,10 +98,9 @@ postsRouter.put(
     });
 
 postsRouter.delete(
-    '/:id',
+    '/:id([0-9a-f]{24})',
     authorizationGuardMiddleware,
     paramIdValidationMiddleware,
-    inputValidationsMiddleware,
     async (req: RequestWithParams<GetPostInputModel>, res: Response<void>) => {
         const resData = await postsService.deletePostById(req.params.id);
         if (!resData) {

@@ -38,11 +38,12 @@ export const invalidInputData = {
     blogId3: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '   '},
     blogId4: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: 123},
     blogId5: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: false},
-    blogId6: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '-999'}, // not exists blog
+    blogId6: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '63cde53de1eeeb34059bda94'}, // not exists blog
 }
 
 describe('/post', () => {
     const encodedBase64Token = getEncodedAuthToken();
+    const notExistingId = '63cde53de1eeeb34059bda94';
 
     const createBlog = async (input: CreateBlogInputModel | undefined = {
         name: 'blog1',
@@ -285,7 +286,7 @@ describe('/post', () => {
     // testing get '/posts/:id' api
     it('should return 404 for not existing post', async () => {
         await request(app)
-            .get('/posts/-99')
+            .get(`/posts/${notExistingId}`)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
     it('should return 200 and existing posts', async () => {
@@ -300,12 +301,12 @@ describe('/post', () => {
     // testing delete '/posts/:id' api
     it('should return 401 for not auth user', async () => {
         await request(app)
-            .delete('/posts/-99')
+            .delete(`/posts/${notExistingId}`)
             .expect(HTTP_STATUSES.NOT_AUTH_401)
     })
     it('should return 404 for not existing post', async () => {
         await request(app)
-            .delete('/posts/-99')
+            .delete(`/posts/${notExistingId}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
@@ -729,7 +730,7 @@ describe('/post', () => {
             shortDescription: 'shortDescription'
         };
         await request(app)
-            .put('/posts/-9999')
+            .put(`/posts/${notExistingId}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
             .expect(HTTP_STATUSES.NOT_FOUND_404)

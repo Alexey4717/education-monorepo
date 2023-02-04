@@ -13,6 +13,12 @@ export type GetUserOutputModel = {
     email: string
 
     /**
+     * User password hash.
+     */
+    // на время необязательным сделал, нужно разобраться
+    passwordHash?: string
+
+    /**
      * Date of created user.
      */
     createdAt: string

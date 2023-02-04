@@ -15,12 +15,17 @@ import {getMappedUserViewModel} from "../../helpers";
 import {usersQueryRepository} from "../../repositories/Queries-repo/users-query-repository";
 import {SortUsersBy} from "../../models/UserModels/GetUsersInputModel";
 import {usersService} from "../../domain/users-service";
+import {authorizationGuardMiddleware} from "../../middlewares/authorization-guard-middleware";
+import {paramIdValidationMiddleware} from "../../middlewares/paramId-validation-middleware";
+import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
+import {createUserInputValidations} from "../../validations/user/createVideoInputValidations";
 
 
 export const usersRouter = Router({});
 
 usersRouter.get(
     '/',
+    authorizationGuardMiddleware,
     async (
         req: RequestWithQuery<GetUsersInputModel>,
         res: Response<Paginator<GetMappedUserOutputModel[]>>
@@ -51,6 +56,9 @@ usersRouter.get(
 
 usersRouter.post(
     '/',
+    authorizationGuardMiddleware,
+    createUserInputValidations,
+    inputValidationsMiddleware,
     async (
         req: RequestWithBody<CreateUserInputModel>,
         res: Response<GetMappedUserOutputModel>
@@ -61,11 +69,13 @@ usersRouter.post(
 
 usersRouter.delete(
     '/:id([0-9a-f]{24})',
+    authorizationGuardMiddleware,
+    paramIdValidationMiddleware,
     async (
         req: RequestWithParams<DeleteUserInputModel>,
         res: Response
     ) => {
-        const resData = usersService.deleteUserById(req.params.id);
+        const resData = await usersService.deleteUserById(req.params.id);
         if (!resData) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
             return;

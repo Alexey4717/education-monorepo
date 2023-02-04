@@ -17,6 +17,7 @@ describe('/blog', () => {
             .expect(HTTP_STATUSES.NO_CONTENT_204)
     })
 
+    const notExistingId = '63cde53de1eeeb34059bda94'; // valid format
     const encodedBase64Token = getEncodedAuthToken();
 
     const createBlog = async (input: CreateBlogInputModel | undefined = {
@@ -277,7 +278,7 @@ describe('/blog', () => {
     // testing get '/blogs/:id' api
     it('should return 404 for not existing blog', async () => {
         await request(app)
-            .get('/blogs/-99')
+            .get(`/blogs/${notExistingId}`)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
     it('should return 200 and existing blog', async () => {
@@ -291,12 +292,12 @@ describe('/blog', () => {
     // testing delete '/blogs/:id' api
     it('should return 401 for not auth user', async () => {
         await request(app)
-            .delete('/blogs/-99')
+            .delete(`/blogs/${notExistingId}`)
             .expect(HTTP_STATUSES.NOT_AUTH_401)
     })
     it('should return 404 for not existing blog', async () => {
         await request(app)
-            .delete('/blogs/-99')
+            .delete(`/blogs/${notExistingId}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
@@ -403,7 +404,7 @@ describe('/blog', () => {
     // testing get '/blogs/{blogId}/posts' api
     it('should return 404 for not existing post in blog', async () => {
         await request(app)
-            .get('/blogs/-99/posts')
+            .get(`/blogs/${notExistingId}/posts`)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
 
@@ -714,7 +715,7 @@ describe('/blog', () => {
             websiteUrl: 'https://google.com'
         };
         await request(app)
-            .put('/blogs/-9999')
+            .put(`/blogs/${notExistingId}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
             .expect(HTTP_STATUSES.NOT_FOUND_404)

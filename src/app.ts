@@ -1,5 +1,6 @@
 import express, {Request, Response} from "express";
 
+import {authRouter} from "./routes/h05-api/auth-router";
 import {videosRouter} from "./routes/h01-videos/videos-router";
 import {blogsRouter} from "./routes/h02-api/blogs-router";
 import {postsRouter} from "./routes/h02-api/posts-router";
@@ -12,6 +13,7 @@ const jsonMiddleware = express.json();
 export const app = express();
 
 app.use(jsonMiddleware);
+app.use('/auth', authRouter);
 app.use('/videos', videosRouter);
 app.use('/blogs', blogsRouter);
 app.use('/posts', postsRouter);
