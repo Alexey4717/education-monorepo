@@ -31,12 +31,14 @@ export const getMappedBlogViewModel = ({
                                            name,
                                            description,
                                            websiteUrl,
+                                           isMembership,
                                            createdAt
                                        }: GetBlogOutputModelFromMongoDB): GetMappedBlogOutputModel => ({
     id: _id.toString(),
     name,
     description,
     websiteUrl,
+    isMembership,
     createdAt
 });
 

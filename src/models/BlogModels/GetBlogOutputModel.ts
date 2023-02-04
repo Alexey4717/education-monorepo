@@ -17,6 +17,11 @@ export type GetBlogOutputModel = {
     websiteUrl:	string
 
     /**
+     * True if user has not expired membership subscription to blog.
+     */
+    isMembership: boolean
+
+    /**
      * Date of blog creation in db.
      */
     createdAt: string

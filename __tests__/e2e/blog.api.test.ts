@@ -385,6 +385,7 @@ describe('/blog', () => {
             id: createdBlog.id,
             name: createdBlog.name,
             description: createdBlog.description,
+            isMembership: createdBlog.isMembership,
             websiteUrl: createdBlog.websiteUrl
         } as GetMappedBlogOutputModel;
 

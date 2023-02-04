@@ -30,6 +30,7 @@ export const db: DataBase = {
             name: "blog1",
             description: "blog description",
             websiteUrl: "https://websiteUrl.com",
+            isMembership: true,
             createdAt: new Date().toISOString()
         }
     ],

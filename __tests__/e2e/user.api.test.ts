@@ -220,16 +220,16 @@ describe('/user', () => {
             });
 
         // Возможно некорректный кейс
-        // await request(app)
-        //     .get('/users?searchLoginTerm=D&searchEmailTerm=K')
-        //     .set('Authorization', `Basic ${encodedBase64Token}`)
-        //     .expect(HTTP_STATUSES.OK_200, {
-        //         pagesCount: 1,
-        //         page: 1,
-        //         pageSize: 10,
-        //         totalCount: 2,
-        //         items: [createdUser2, createdUser1]
-        //     });
+        await request(app)
+            .get('/users?searchLoginTerm=D&searchEmailTerm=K')
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 2,
+                items: [createdUser2, createdUser1]
+            });
     })
     it('should return 200 and portion array of users with page number and size', async () => {
         const input1: CreateUserInputModel = {

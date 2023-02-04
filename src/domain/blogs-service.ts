@@ -26,6 +26,7 @@ export const blogsService = {
             name,
             websiteUrl,
             description,
+            isMembership: true,
             createdAt: new Date().toISOString()
         };
 

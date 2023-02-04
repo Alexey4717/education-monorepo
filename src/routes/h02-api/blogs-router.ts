@@ -141,7 +141,7 @@ blogsRouter.put(
     paramIdValidationMiddleware,
     updateBlogInputValidations,
     inputValidationsMiddleware,
-    async (req: RequestWithParamsAndBody<GetMappedBlogOutputModel, UpdateBlogInputModel>, res: Response
+    async (req: RequestWithParamsAndBody<{id: string}, UpdateBlogInputModel>, res: Response
     ) => {
         const isBlogUpdated = await blogsService.updateBlog({id: req.params.id, input: req.body});
         if (!isBlogUpdated) {
@@ -157,7 +157,7 @@ blogsRouter.delete(
     authorizationGuardMiddleware,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
-    async (req: RequestWithParams<GetMappedBlogOutputModel>, res: Response<void>) => {
+    async (req: RequestWithParams<{id: string}>, res: Response<void>) => {
         const resData = await blogsService.deleteBlogById(req.params.id);
         if (!resData) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
