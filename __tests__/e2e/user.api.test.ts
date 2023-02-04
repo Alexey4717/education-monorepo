@@ -168,6 +168,69 @@ describe('/user', () => {
                 items: [createdUser1, createdUser2, createdUser3, createdUser4]
             });
     })
+    it('should return 200 and array of users filtered by searchLoginTerm or (and) searchEmailTerm', async () => {
+        const input1: CreateUserInputModel = {
+            login: 'Dimych',
+            email: 'dimych@gmail.com',
+            password: 'pass123',
+        };
+        const createdUser1 = await createUser(input1);
+
+        const input2: CreateUserInputModel = {
+            login: 'Nanalia',
+            email: 'kuzyuberdina@gmail.com',
+            password: 'pass123',
+        };
+        const createdUser2 = await createUser(input2);
+
+        const input3: CreateUserInputModel = {
+            login: 'Alex12',
+            email: 'example3@gmail.com',
+            password: 'pass123',
+        };
+        const createdUser3 = await createUser(input3);
+
+        const input4: CreateUserInputModel = {
+            login: 'Bob123',
+            email: 'example4@gmail.com',
+            password: 'pass123',
+        };
+        const createdUser4 = await createUser(input4);
+
+        await request(app)
+            .get('/users?searchLoginTerm=D')
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdUser1]
+            });
+
+        await request(app)
+            .get('/users?searchEmailTerm=K')
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [createdUser2]
+            });
+
+        // Возможно некорректный кейс
+        // await request(app)
+        //     .get('/users?searchLoginTerm=D&searchEmailTerm=K')
+        //     .set('Authorization', `Basic ${encodedBase64Token}`)
+        //     .expect(HTTP_STATUSES.OK_200, {
+        //         pagesCount: 1,
+        //         page: 1,
+        //         pageSize: 10,
+        //         totalCount: 2,
+        //         items: [createdUser2, createdUser1]
+        //     });
+    })
     it('should return 200 and portion array of users with page number and size', async () => {
         const input1: CreateUserInputModel = {
             login: 'Zed123',
