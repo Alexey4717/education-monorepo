@@ -14,7 +14,7 @@ import {UpdateBlogInputModel} from "../../../models/BlogModels/UpdateBlogInputMo
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
 import {createBlogInputValidations} from "../../../validations/blog/createBlogInputValidations";
 import {updateBlogInputValidations} from "../../../validations/blog/updateBlogInputValidations";
-import {authorizationGuardMiddleware} from "../../../middlewares/authorization-guard-middleware";
+import {adminBasicAuthMiddleware} from "../../../middlewares/admin-basicAuth-middleware";
 import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
 import {blogsQueryRepository} from "../../../repositories/Queries-repo/blogs-query-repository";
 import {blogsService} from "../../../domain/blogs-service";
@@ -104,7 +104,7 @@ blogsRouter.get(
 
 blogsRouter.post(
     '/',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     createBlogInputValidations,
     inputValidationsMiddleware,
     async (req: RequestWithBody<CreateBlogInputModel>, res: Response<GetMappedBlogOutputModel>
@@ -114,7 +114,7 @@ blogsRouter.post(
     });
 blogsRouter.post(
     '/:id([0-9a-f]{24})/posts',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     createPostInBlogInputValidations,
     inputValidationsMiddleware,
@@ -137,7 +137,7 @@ blogsRouter.post(
 
 blogsRouter.put(
     '/:id([0-9a-f]{24})',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     updateBlogInputValidations,
     inputValidationsMiddleware,
@@ -154,7 +154,7 @@ blogsRouter.put(
 
 blogsRouter.delete(
     '/:id([0-9a-f]{24})',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     async (req: RequestWithParams<{id: string}>, res: Response<void>) => {

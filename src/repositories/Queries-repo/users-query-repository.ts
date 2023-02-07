@@ -1,3 +1,5 @@
+import {ObjectId} from "mongodb";
+
 import {GetUsersArgs, Paginator, SortDirections} from "../../types/common";
 import {GetUserOutputModelFromMongoDB} from "../../models/UserModels/GetUserOutputModel";
 import {calculateAndGetSkipValue} from "../../helpers";
@@ -52,6 +54,10 @@ export const usersQueryRepository = {
                 console.log(`usersQueryRepository.getUsers error is occurred: ${error}`);
                 return {} as Paginator<GetUserOutputModelFromMongoDB[]>;
             }
-        }
+        },
+
+        async findUserById(id: ObjectId): Promise<GetUserOutputModelFromMongoDB | null> {
+            return await usersCollection.findOne({_id: id});
+        },
     }
 ;

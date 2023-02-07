@@ -4,7 +4,7 @@ import {HTTP_STATUSES} from '../types/common';
 import {db} from "../store/mockedDB";
 
 
-export const authorizationGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const adminBasicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req?.headers?.authorization;
         if (!token) {

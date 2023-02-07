@@ -1,4 +1,4 @@
-import {Response, Router} from "express";
+import {Request, Response, Router} from "express";
 
 import {usersService} from "../../../domain/users-service";
 import {HTTP_STATUSES, RequestWithBody} from "../../../types/common";
@@ -6,6 +6,8 @@ import {LoginInputModel} from "../../../models/AuthModels/LoginInputModel";
 import {jwtService} from "../../jwt-service";
 import {loginInputValidations} from "../../../validations/auth/loginInputValidations";
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
+import {authMiddleware} from "../../../middlewares/auth-middleware";
+import {getMappedMeViewModel} from "../../../helpers";
 
 
 export const authRouter = Router({})
@@ -30,3 +32,14 @@ authRouter.post(
         const accessToken = await jwtService.createJWT(user);
         res.status(HTTP_STATUSES.OK_200).json({accessToken});
     });
+
+authRouter.get(
+    '/me',
+    authMiddleware,
+    (
+        req: Request,
+        res: Response
+    ) => {
+        res.status(HTTP_STATUSES.OK_200).json(getMappedMeViewModel(req.context.user))
+    }
+);

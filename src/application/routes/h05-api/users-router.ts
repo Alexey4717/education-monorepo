@@ -15,7 +15,7 @@ import {getMappedUserViewModel} from "../../../helpers";
 import {usersQueryRepository} from "../../../repositories/Queries-repo/users-query-repository";
 import {SortUsersBy} from "../../../models/UserModels/GetUsersInputModel";
 import {usersService} from "../../../domain/users-service";
-import {authorizationGuardMiddleware} from "../../../middlewares/authorization-guard-middleware";
+import {adminBasicAuthMiddleware} from "../../../middlewares/admin-basicAuth-middleware";
 import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
 import {createUserInputValidations} from "../../../validations/user/createVideoInputValidations";
@@ -25,7 +25,7 @@ export const usersRouter = Router({});
 
 usersRouter.get(
     '/',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     async (
         req: RequestWithQuery<GetUsersInputModel>,
         res: Response<Paginator<GetMappedUserOutputModel[]>>
@@ -56,7 +56,7 @@ usersRouter.get(
 
 usersRouter.post(
     '/',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     createUserInputValidations,
     inputValidationsMiddleware,
     async (
@@ -69,7 +69,7 @@ usersRouter.post(
 
 usersRouter.delete(
     '/:id([0-9a-f]{24})',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     async (
         req: RequestWithParams<DeleteUserInputModel>,

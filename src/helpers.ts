@@ -4,6 +4,7 @@ import {GetPostOutputModelFromMongoDB, GetMappedPostOutputModel} from "./models/
 import {AvailableResolutions} from './types/common';
 import {db} from "./store/mockedDB";
 import {GetMappedUserOutputModel, GetUserOutputModelFromMongoDB} from "./models/UserModels/GetUserOutputModel";
+import {MeOutputModel} from "./models/AuthModels/MeOutputModel";
 
 
 export const getMappedVideoViewModel = ({
@@ -70,6 +71,16 @@ export const getMappedUserViewModel = ({
     login,
     email,
     createdAt
+});
+
+export const getMappedMeViewModel = ({
+                                           _id,
+                                           login,
+                                           email
+                                       }: GetUserOutputModelFromMongoDB): MeOutputModel => ({
+    email,
+    login,
+    userId: _id.toString(),
 });
 
 export const getCorrectIncludesAvailableResolutions = (availableResolutions: AvailableResolutions[]): boolean => {

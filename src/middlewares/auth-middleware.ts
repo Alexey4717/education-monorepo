@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from "express";
 
 import {HTTP_STATUSES} from '../types/common';
 import {jwtService} from "../application/jwt-service";
-import {usersService} from "../domain/users-service";
+import {usersQueryRepository} from "../repositories/Queries-repo/users-query-repository";
 
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,10 +13,9 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
-        const splitedAuthData = authData.split(' ');
-        const authType = splitedAuthData[0];
-        const token = splitedAuthData[1];
-
+        const splitAuthData = authData.split(' ');
+        const authType = splitAuthData[0];
+        const token = splitAuthData[1];
 
         const userId = await jwtService.getUserIdByToken(token);
 
@@ -25,16 +24,16 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
-        const foundUser = await usersService.findUserById(userId)
+        const foundUser = await usersQueryRepository.findUserById(userId)
 
         if (!foundUser) {
             res.sendStatus(HTTP_STATUSES.NOT_AUTH_401);
             return;
         }
 
-        req.context.user = foundUser;
+        Object.assign(req.context, { user: foundUser });
         next();
     } catch (error) {
-        console.log(`Authorization middleware error is occurred: ${error}`);
+        console.log(`Auth middleware error is occurred: ${error}`);
     }
 };

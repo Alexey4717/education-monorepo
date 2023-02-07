@@ -9,7 +9,7 @@ import {
     RequestWithQuery, SortDirections
 } from "../../../types/common";
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
-import {authorizationGuardMiddleware} from "../../../middlewares/authorization-guard-middleware";
+import {adminBasicAuthMiddleware} from "../../../middlewares/admin-basicAuth-middleware";
 import {GetPostOutputModel, GetMappedPostOutputModel} from "../../../models/PostModels/GetPostOutputModel";
 import {CreatePostInputModel} from "../../../models/PostModels/CreatePostInputModel";
 import {GetPostInputModel} from "../../../models/PostModels/GetPostInputModel";
@@ -65,7 +65,7 @@ postsRouter.get(
 
 postsRouter.post(
     '/',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     createPostInputValidations,
     inputValidationsMiddleware,
     async (req: RequestWithBody<CreatePostInputModel>, res: Response<GetPostOutputModel>
@@ -82,7 +82,7 @@ postsRouter.post(
 
 postsRouter.put(
     '/:id([0-9a-f]{24})',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     updatePostInputValidations,
     inputValidationsMiddleware,
@@ -99,7 +99,7 @@ postsRouter.put(
 
 postsRouter.delete(
     '/:id([0-9a-f]{24})',
-    authorizationGuardMiddleware,
+    adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     async (req: RequestWithParams<GetPostInputModel>, res: Response<void>) => {
         const resData = await postsService.deletePostById(req.params.id);

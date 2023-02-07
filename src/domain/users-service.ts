@@ -33,8 +33,4 @@ export const usersService = {
         if (!passwordIsValid) return null;
         return foundUser;
     },
-
-    async findUserById(id: ObjectId): Promise<GetUserOutputModelFromMongoDB | null> {
-        return await usersRepository.findUserById(id)
-    },
 };
