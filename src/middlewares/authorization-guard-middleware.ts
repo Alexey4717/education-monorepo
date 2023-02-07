@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 
-import {HTTP_STATUSES} from '../types';
+import {HTTP_STATUSES} from '../types/common';
 import {db} from "../store/mockedDB";
 
 

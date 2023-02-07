@@ -1,8 +1,8 @@
 import {Request, Response, Router} from "express";
 
-import {HTTP_STATUSES} from "../../types";
-import {db} from "../../store/mockedDB";
-import {blogsCollection, postsCollection, usersCollection, videosCollection} from "../../store/db";
+import {HTTP_STATUSES} from "../../../types/common";
+import {db} from "../../../store/mockedDB";
+import {blogsCollection, postsCollection, usersCollection, videosCollection} from "../../../store/db";
 
 
 export const testingDeletionRouter = Router({});

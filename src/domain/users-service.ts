@@ -4,7 +4,7 @@ import {ObjectId} from 'mongodb';
 import {CreateUserInputModel} from "../models/UserModels/CreateUserInputModel";
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 import {usersRepository} from "../repositories/CUD-repo/users-repository";
-import {CheckCredentialsInputArgs, GenerateHashInputArgs} from "../types";
+import {CheckCredentialsInputArgs} from "../types/common";
 
 
 export const usersService = {
@@ -26,9 +26,15 @@ export const usersService = {
         return await usersRepository.deleteUserById(id);
     },
 
-    async checkCredentials({loginOrEmail, password}: CheckCredentialsInputArgs) {
+    async checkCredentials({loginOrEmail, password}: CheckCredentialsInputArgs): Promise<GetUserOutputModelFromMongoDB | null> {
         const foundUser = await usersRepository.findByLoginOrEmail(loginOrEmail);
-        if (!foundUser || !foundUser?.passwordHash) return false;
-        return await bcrypt.compare(password, foundUser.passwordHash);
+        if (!foundUser || !foundUser?.passwordHash) return null;
+        const passwordIsValid = await bcrypt.compare(password, foundUser.passwordHash);
+        if (!passwordIsValid) return null;
+        return foundUser;
+    },
+
+    async findUserById(id: ObjectId): Promise<GetUserOutputModelFromMongoDB | null> {
+        return await usersRepository.findUserById(id)
     },
 };

@@ -1,6 +1,6 @@
 import {ObjectId} from 'mongodb';
 
-import {AvailableResolutions} from '../../types';
+import {AvailableResolutions} from '../../types/common';
 
 
 export type GetVideoOutputModel = {

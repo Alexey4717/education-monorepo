@@ -1,16 +1,14 @@
-import * as dotenv from 'dotenv';
 import {MongoClient} from 'mongodb';
 
 import {GetBlogOutputModel} from "../models/BlogModels/GetBlogOutputModel";
 import {GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
 import {GetVideoOutputModel} from "../models/VideoModels/GetVideoOutputModel";
 import {GetUserOutputModel} from "../models/UserModels/GetUserOutputModel";
+import {settings} from "../settings";
 
 
-dotenv.config();
-
-const mongoUri = process.env.MONGOURI || 'mongodb://0.0.0.0:27017';
-const dbName = process.env.DB_NAME || "It-incubator-01";
+const mongoUri = settings.MONGO_URI;
+const dbName = settings.DB_NAME;
 
 const client = new MongoClient(mongoUri);
 
@@ -23,9 +21,7 @@ export const usersCollection = db01.collection<GetUserOutputModel>("users");
 
 export const runDB = async () => {
     try {
-        // connect the client to server
         await client.connect();
-        // Establish and verify connection
         await client.db("test").command({ping: 1});
         console.log('Connected successfully to mongo server')
     } catch {

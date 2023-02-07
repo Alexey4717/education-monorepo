@@ -1,4 +1,4 @@
-import {Request, Response, Router} from "express";
+import {Response, Router} from "express";
 
 import {
     Paginator,
@@ -7,20 +7,20 @@ import {
     RequestWithParams,
     RequestWithParamsAndBody,
     RequestWithQuery, SortDirections
-} from "../../types";
-import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
-import {authorizationGuardMiddleware} from "../../middlewares/authorization-guard-middleware";
-import {GetPostOutputModel, GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
-import {CreatePostInputModel} from "../../models/PostModels/CreatePostInputModel";
-import {GetPostInputModel} from "../../models/PostModels/GetPostInputModel";
-import {UpdatePostInputModel} from '../../models/PostModels/UpdatePostInputModel';
-import {createPostInputValidations} from "../../validations/post/createPostInputValidations";
-import {updatePostInputValidations} from "../../validations/post/updatePostInputValidations";
-import {paramIdValidationMiddleware} from "../../middlewares/paramId-validation-middleware";
-import {postsQueryRepository} from "../../repositories/Queries-repo/posts-query-repository";
-import {getMappedBlogViewModel, getMappedPostViewModel} from "../../helpers";
-import {postsService} from "../../domain/posts-service";
-import {GetPostsInputModel, SortPostsBy} from "../../models/PostModels/GetPostsInputModel";
+} from "../../../types/common";
+import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
+import {authorizationGuardMiddleware} from "../../../middlewares/authorization-guard-middleware";
+import {GetPostOutputModel, GetMappedPostOutputModel} from "../../../models/PostModels/GetPostOutputModel";
+import {CreatePostInputModel} from "../../../models/PostModels/CreatePostInputModel";
+import {GetPostInputModel} from "../../../models/PostModels/GetPostInputModel";
+import {UpdatePostInputModel} from '../../../models/PostModels/UpdatePostInputModel';
+import {createPostInputValidations} from "../../../validations/post/createPostInputValidations";
+import {updatePostInputValidations} from "../../../validations/post/updatePostInputValidations";
+import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
+import {postsQueryRepository} from "../../../repositories/Queries-repo/posts-query-repository";
+import {getMappedPostViewModel} from "../../../helpers";
+import {postsService} from "../../../domain/posts-service";
+import {GetPostsInputModel, SortPostsBy} from "../../../models/PostModels/GetPostsInputModel";
 
 
 export const postsRouter = Router({});

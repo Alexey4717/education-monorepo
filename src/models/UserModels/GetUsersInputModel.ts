@@ -1,5 +1,5 @@
 import {GetUserOutputModel} from "./GetUserOutputModel";
-import {SortDirections} from "../../types";
+import {SortDirections} from "../../types/common";
 
 
 export type SortUsersBy = keyof GetUserOutputModel;

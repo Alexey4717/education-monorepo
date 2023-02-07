@@ -1,5 +1,5 @@
 import {GetBlogOutputModel} from "./GetBlogOutputModel";
-import {SortDirections} from "../../types";
+import {SortDirections} from "../../types/common";
 
 
 export type SortBlogsBy = keyof GetBlogOutputModel;

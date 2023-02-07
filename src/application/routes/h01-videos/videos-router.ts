@@ -1,18 +1,18 @@
 import {Request, Response, Router} from "express";
 
-import {GetVideoOutputModel, GetMappedVideoOutputModel} from "../../models/VideoModels/GetVideoOutputModel";
-import {GetVideoInputModel} from "../../models/VideoModels/GetVideoInputModel";
-import {HTTP_STATUSES, RequestWithBody, RequestWithParamsAndBody, RequestWithParams} from "../../types";
-import {CreateVideoInputModel} from "../../models/VideoModels/CreateVideoInputModel";
-import {GetErrorOutputModel} from "../../models/GetErrorOutputModel";
-import {UpdateVideoInputModel} from "../../models/VideoModels/UpdateVideoInputModel";
-import {createVideoInputValidations} from "../../validations/video/createVideoInputValidations";
-import {updateVideoInputValidations} from "../../validations/video/updateVideoInputValidations";
-import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
-import {videosService} from "../../domain/videos-service";
-import {videosQueryRepository} from "../../repositories/Queries-repo/videos-query-repository";
-import {getMappedVideoViewModel} from "../../helpers";
-import {paramIdValidationMiddleware} from "../../middlewares/paramId-validation-middleware";
+import {GetVideoOutputModel, GetMappedVideoOutputModel} from "../../../models/VideoModels/GetVideoOutputModel";
+import {GetVideoInputModel} from "../../../models/VideoModels/GetVideoInputModel";
+import {HTTP_STATUSES, RequestWithBody, RequestWithParamsAndBody, RequestWithParams} from "../../../types/common";
+import {CreateVideoInputModel} from "../../../models/VideoModels/CreateVideoInputModel";
+import {GetErrorOutputModel} from "../../../models/GetErrorOutputModel";
+import {UpdateVideoInputModel} from "../../../models/VideoModels/UpdateVideoInputModel";
+import {createVideoInputValidations} from "../../../validations/video/createVideoInputValidations";
+import {updateVideoInputValidations} from "../../../validations/video/updateVideoInputValidations";
+import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
+import {videosService} from "../../../domain/videos-service";
+import {videosQueryRepository} from "../../../repositories/Queries-repo/videos-query-repository";
+import {getMappedVideoViewModel} from "../../../helpers";
+import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
 
 
 export const videosRouter = Router({});

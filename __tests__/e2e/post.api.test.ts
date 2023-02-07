@@ -1,7 +1,7 @@
 import request from "supertest";
 
 import {app} from "../../src/app";
-import {HTTP_STATUSES} from '../../src/types';
+import {HTTP_STATUSES} from '../../src/types/common';
 import {CreatePostInputModel} from '../../src/models/PostModels/CreatePostInputModel';
 import {getEncodedAuthToken} from "../../src/helpers";
 import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";

@@ -1,4 +1,4 @@
-import {AvailableResolutions, DataBase} from "../types";
+import {AvailableResolutions, DataBase} from "../types/common";
 
 export const db: DataBase = {
     users: [

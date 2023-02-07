@@ -1,4 +1,4 @@
-import {Error} from "../types";
+import {Error} from "../types/common";
 
 export type GetErrorOutputModel = {
     errorsMessages: Error[]

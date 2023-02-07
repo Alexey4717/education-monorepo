@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import {ObjectId} from "mongodb";
 
-import {HTTP_STATUSES} from '../types';
+import {HTTP_STATUSES} from '../types/common';
 
 
 export const paramIdValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {

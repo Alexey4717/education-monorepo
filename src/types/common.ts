@@ -1,11 +1,13 @@
 import {Request} from 'express';
+import {Secret} from "jsonwebtoken";
 
-import {GetMappedVideoOutputModel} from "./models/VideoModels/GetVideoOutputModel";
-import {GetMappedBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
-import {GetMappedPostOutputModel} from "./models/PostModels/GetPostOutputModel";
-import {SortBlogsBy} from "./models/BlogModels/GetBlogsInputModel";
-import {SortPostsBy} from "./models/PostModels/GetPostsInputModel";
-import {SortUsersBy} from "./models/UserModels/GetUsersInputModel";
+import {GetMappedVideoOutputModel} from "../models/VideoModels/GetVideoOutputModel";
+import {GetMappedBlogOutputModel} from "../models/BlogModels/GetBlogOutputModel";
+import {GetMappedPostOutputModel} from "../models/PostModels/GetPostOutputModel";
+import {SortBlogsBy} from "../models/BlogModels/GetBlogsInputModel";
+import {SortPostsBy} from "../models/PostModels/GetPostsInputModel";
+import {SortUsersBy} from "../models/UserModels/GetUsersInputModel";
+import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 
 
 export enum HTTP_STATUSES {
@@ -17,6 +19,16 @@ export enum HTTP_STATUSES {
     BAD_REQUEST_400 = 400,
     NOT_AUTH_401 = 401,
 }
+
+export type SettingsType = {
+    MONGO_URI: string
+    JWT_SECRET: Secret
+    DB_NAME: string
+}
+
+export type RequestContextType = {
+    user: GetUserOutputModelFromMongoDB
+};
 
 export enum AvailableResolutions {
     P144 = 'P144',

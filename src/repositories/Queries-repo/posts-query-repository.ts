@@ -2,7 +2,7 @@ import {ObjectId} from "mongodb";
 
 import {GetPostOutputModelFromMongoDB} from "../../models/PostModels/GetPostOutputModel";
 import {postsCollection} from "../../store/db";
-import {Paginator, GetPostsArgs, SortDirections} from "../../types";
+import {Paginator, GetPostsArgs, SortDirections} from "../../types/common";
 import {calculateAndGetSkipValue} from "../../helpers";
 
 

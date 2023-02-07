@@ -33,6 +33,10 @@ export const usersRepository = {
         return await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]});
     },
 
+    async findUserById(id: ObjectId): Promise<GetUserOutputModelFromMongoDB | null> {
+        return await usersCollection.findOne({_id: id});
+    },
+
     async deleteUserById(id: string): Promise<boolean> {
         try {
             const result = await usersCollection.deleteOne({"_id": new ObjectId(id)});

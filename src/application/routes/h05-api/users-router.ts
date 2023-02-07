@@ -6,19 +6,19 @@ import {
     RequestWithParams,
     RequestWithQuery,
     SortDirections
-} from "../../types";
-import {DeleteUserInputModel} from "../../models/UserModels/DeleteUserInputModel";
-import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
-import {GetUsersInputModel} from "../../models/UserModels/GetUsersInputModel";
-import {GetMappedUserOutputModel} from "../../models/UserModels/GetUserOutputModel";
-import {getMappedUserViewModel} from "../../helpers";
-import {usersQueryRepository} from "../../repositories/Queries-repo/users-query-repository";
-import {SortUsersBy} from "../../models/UserModels/GetUsersInputModel";
-import {usersService} from "../../domain/users-service";
-import {authorizationGuardMiddleware} from "../../middlewares/authorization-guard-middleware";
-import {paramIdValidationMiddleware} from "../../middlewares/paramId-validation-middleware";
-import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
-import {createUserInputValidations} from "../../validations/user/createVideoInputValidations";
+} from "../../../types/common";
+import {DeleteUserInputModel} from "../../../models/UserModels/DeleteUserInputModel";
+import {CreateUserInputModel} from "../../../models/UserModels/CreateUserInputModel";
+import {GetUsersInputModel} from "../../../models/UserModels/GetUsersInputModel";
+import {GetMappedUserOutputModel} from "../../../models/UserModels/GetUserOutputModel";
+import {getMappedUserViewModel} from "../../../helpers";
+import {usersQueryRepository} from "../../../repositories/Queries-repo/users-query-repository";
+import {SortUsersBy} from "../../../models/UserModels/GetUsersInputModel";
+import {usersService} from "../../../domain/users-service";
+import {authorizationGuardMiddleware} from "../../../middlewares/authorization-guard-middleware";
+import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
+import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
+import {createUserInputValidations} from "../../../validations/user/createVideoInputValidations";
 
 
 export const usersRouter = Router({});

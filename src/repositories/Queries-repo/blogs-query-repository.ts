@@ -2,7 +2,7 @@ import {ObjectId} from "mongodb";
 
 import {blogsCollection, postsCollection} from '../../store/db';
 import {GetBlogOutputModelFromMongoDB} from "../../models/BlogModels/GetBlogOutputModel";
-import {SortDirections, GetBlogsArgs, GetPostsArgs, GetPostsInBlogArgs, Paginator} from "../../types";
+import {SortDirections, GetBlogsArgs, GetPostsInBlogArgs, Paginator} from "../../types/common";
 import {calculateAndGetSkipValue} from "../../helpers";
 import {GetPostOutputModelFromMongoDB} from "../../models/PostModels/GetPostOutputModel";
 

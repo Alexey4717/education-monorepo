@@ -1,7 +1,7 @@
 import request from "supertest";
 
 import {app} from "../../src/app";
-import {HTTP_STATUSES} from '../../src/types';
+import {HTTP_STATUSES} from '../../src/types/common';
 import {CreateBlogInputModel} from '../../src/models/BlogModels/CreateBlogInputModel';
 import {getEncodedAuthToken} from "../../src/helpers";
 import {GetMappedBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";

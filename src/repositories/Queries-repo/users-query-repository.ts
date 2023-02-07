@@ -1,4 +1,4 @@
-import {GetUsersArgs, Paginator, SortDirections} from "../../types";
+import {GetUsersArgs, Paginator, SortDirections} from "../../types/common";
 import {GetUserOutputModelFromMongoDB} from "../../models/UserModels/GetUserOutputModel";
 import {calculateAndGetSkipValue} from "../../helpers";
 import {usersCollection} from "../../store/db";

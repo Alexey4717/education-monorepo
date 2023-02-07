@@ -1,4 +1,4 @@
-import {Request, Response, Router} from "express";
+import {Response, Router} from "express";
 
 import {
     Paginator,
@@ -7,23 +7,23 @@ import {
     RequestWithParams,
     RequestWithParamsAndBody, RequestWithParamsAndQuery,
     RequestWithQuery, SortDirections
-} from "../../types";
-import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
-import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel";
-import {UpdateBlogInputModel} from "../../models/BlogModels/UpdateBlogInputModel";
-import {inputValidationsMiddleware} from "../../middlewares/input-validations-middleware";
-import {createBlogInputValidations} from "../../validations/blog/createBlogInputValidations";
-import {updateBlogInputValidations} from "../../validations/blog/updateBlogInputValidations";
-import {authorizationGuardMiddleware} from "../../middlewares/authorization-guard-middleware";
-import {paramIdValidationMiddleware} from "../../middlewares/paramId-validation-middleware";
-import {blogsQueryRepository} from "../../repositories/Queries-repo/blogs-query-repository";
-import {blogsService} from "../../domain/blogs-service";
-import {getMappedBlogViewModel, getMappedPostViewModel} from "../../helpers";
-import {GetBlogsInputModel, SortBlogsBy} from "../../models/BlogModels/GetBlogsInputModel";
-import {CreatePostInBlogInputModel} from "../../models/BlogModels/CreatePostInBlogInputModel";
-import {createPostInBlogInputValidations} from "../../validations/blog/createPostInBlogInputValidations";
-import {GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
-import {GetPostsInputModel, SortPostsBy} from "../../models/PostModels/GetPostsInputModel";
+} from "../../../types/common";
+import {GetMappedBlogOutputModel} from "../../../models/BlogModels/GetBlogOutputModel";
+import {CreateBlogInputModel} from "../../../models/BlogModels/CreateBlogInputModel";
+import {UpdateBlogInputModel} from "../../../models/BlogModels/UpdateBlogInputModel";
+import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
+import {createBlogInputValidations} from "../../../validations/blog/createBlogInputValidations";
+import {updateBlogInputValidations} from "../../../validations/blog/updateBlogInputValidations";
+import {authorizationGuardMiddleware} from "../../../middlewares/authorization-guard-middleware";
+import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
+import {blogsQueryRepository} from "../../../repositories/Queries-repo/blogs-query-repository";
+import {blogsService} from "../../../domain/blogs-service";
+import {getMappedBlogViewModel, getMappedPostViewModel} from "../../../helpers";
+import {GetBlogsInputModel, SortBlogsBy} from "../../../models/BlogModels/GetBlogsInputModel";
+import {CreatePostInBlogInputModel} from "../../../models/BlogModels/CreatePostInBlogInputModel";
+import {createPostInBlogInputValidations} from "../../../validations/blog/createPostInBlogInputValidations";
+import {GetMappedPostOutputModel} from "../../../models/PostModels/GetPostOutputModel";
+import {GetPostsInputModel, SortPostsBy} from "../../../models/PostModels/GetPostsInputModel";
 
 
 export const blogsRouter = Router({});
