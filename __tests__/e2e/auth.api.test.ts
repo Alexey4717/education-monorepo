@@ -30,16 +30,16 @@ describe('/auth', () => {
 
     const invalidInputData = {
         loginOrEmail1: {password: 'pass123'},
-        loginOrEmail2: {loginOrEmail1: '', password: 'pass123'},
-        loginOrEmail3: {loginOrEmail1: ' ', password: 'pass123'},
-        loginOrEmail4: {loginOrEmail1: 1, password: 'pass123'},
-        loginOrEmail5: {loginOrEmail1: false, password: 'pass123'},
+        loginOrEmail2: {loginOrEmail: '', password: 'pass123'},
+        loginOrEmail3: {loginOrEmail: ' ', password: 'pass123'},
+        loginOrEmail4: {loginOrEmail: 1, password: 'pass123'},
+        loginOrEmail5: {loginOrEmail: false, password: 'pass123'},
 
-        password1: {loginOrEmail1: 'login12'},
-        password2: {loginOrEmail1: 'login12', password: ''},
-        password3: {loginOrEmail1: 'login12', password: ' '},
-        password4: {loginOrEmail1: 'login12', password: 1},
-        password5: {loginOrEmail1: 'login12', password: false},
+        password1: {loginOrEmail: 'login12'},
+        password2: {loginOrEmail: 'login12', password: ''},
+        password3: {loginOrEmail: 'login12', password: ' '},
+        password4: {loginOrEmail: 'login12', password: 1},
+        password5: {loginOrEmail: 'login12', password: false},
     }
 
     // testing clear all data api
