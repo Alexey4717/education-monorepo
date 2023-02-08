@@ -2,10 +2,10 @@
   "version": 2,
   "name": "introductory-lesson",
   "builds": [
-    { "src": "index.ts", "use": "@vercel/node" }
+    { "src": "src/index.ts", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "index.ts" }
+    { "src": "/(.*)", "dest": "src/index.ts" }
   ],
   "regions": ["icn1"]
 }
