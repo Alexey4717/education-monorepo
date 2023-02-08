@@ -28,7 +28,7 @@ export const commentsQueryRepository = {
                 .skip(skipValue)
                 .limit(pageSize)
                 .toArray();
-            const totalCount = await commentsCollection.count(filter);
+            const totalCount = await commentsCollection.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
             return {
                 pagesCount,
@@ -38,8 +38,8 @@ export const commentsQueryRepository = {
                 items
             };
         } catch (error) {
-            return {} as Paginator<GetCommentOutputModelFromMongoDB[]>;
             console.log(`commentsQueryRepository.getPostComments error is occurred: ${error}`)
+            return {} as Paginator<GetCommentOutputModelFromMongoDB[]>;
         }
 
     },
@@ -48,8 +48,8 @@ export const commentsQueryRepository = {
         try {
             return await commentsCollection.findOne({_id: new ObjectId(id)})
         } catch (error) {
-            return null
             console.log(`commentsQueryRepository.getCommentById error is occurred: ${error}`)
+            return null
         }
     },
 }

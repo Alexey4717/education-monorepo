@@ -2,7 +2,13 @@ import {Request, Response, Router} from "express";
 
 import {HTTP_STATUSES} from "../../../types/common";
 import {db} from "../../../store/mockedDB";
-import {blogsCollection, postsCollection, usersCollection, videosCollection} from "../../../store/db";
+import {
+    blogsCollection,
+    commentsCollection,
+    postsCollection,
+    usersCollection,
+    videosCollection
+} from "../../../store/db";
 
 
 export const testingDeletionRouter = Router({});
@@ -21,7 +27,8 @@ testingDeletionRouter.delete('/all-data', async (req: Request, res: Response<voi
         blogsCollection.deleteMany({}),
         postsCollection.deleteMany({}),
         videosCollection.deleteMany({}),
-        usersCollection.deleteMany(({}))
+        usersCollection.deleteMany({}),
+        commentsCollection.deleteMany({})
     ]);
 
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);

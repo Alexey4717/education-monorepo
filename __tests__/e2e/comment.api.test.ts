@@ -12,9 +12,11 @@ import {CreatePostInputModel} from "../../src/models/PostModels/CreatePostInputM
 import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
 import {invalidInputData} from "./post.api.test";
 import {GetMappedCommentOutputModel} from "../../src/models/CommentsModels/GetCommentOutputModel";
+import {MongoMemoryServer} from "mongodb-memory-server";
 
 
 describe('CRUD comments', () => {
+    jest.setTimeout(1000 * 60)
     const encodedBase64Token = getEncodedAuthToken();
     const notExistingId = new ObjectId();
 
@@ -102,7 +104,13 @@ describe('CRUD comments', () => {
     let createdPost: GetMappedPostOutputModel;
     let createdComment: GetMappedCommentOutputModel;
 
+    let mongoMemoryServer: MongoMemoryServer
+
     beforeAll(async () => {
+        mongoMemoryServer = await MongoMemoryServer.create()
+        const mongoUri = mongoMemoryServer.getUri()
+        process.env['MONGO_URI'] = mongoUri
+
         await request(app)
             .delete('/testing/all-data')
             .expect(HTTP_STATUSES.NO_CONTENT_204);
@@ -131,7 +139,7 @@ describe('CRUD comments', () => {
             postId: createdPost.id,
             content: 'Hello world, it`s my first comment!'
         })
-    }, 10000)
+    })
 
     // testing get '/comments/:commentId' api
     it(`should return 404 if comment not exist`, async () => {
