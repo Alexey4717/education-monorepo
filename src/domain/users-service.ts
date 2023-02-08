@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import {ObjectId} from 'mongodb';
 
 import {CreateUserInputModel} from "../models/UserModels/CreateUserInputModel";
