@@ -1,6 +1,7 @@
+import * as dotenv from "dotenv";
+
 import {runDB} from "./store/db";
 import {app} from "./app";
-import * as dotenv from "dotenv";
 
 
 dotenv.config();
