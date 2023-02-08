@@ -26,12 +26,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
         const foundUser = await usersQueryRepository.findUserById(userId)
 
-        if (!foundUser) {
-            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401);
-            return;
-        }
-
-        Object.assign(req.context, { user: foundUser });
+        req.context.user = foundUser;
         next();
     } catch (error) {
         console.log(`Auth middleware error is occurred: ${error}`);

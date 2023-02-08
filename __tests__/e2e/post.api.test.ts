@@ -1,4 +1,5 @@
 import request from "supertest";
+import {ObjectId} from 'mongodb';
 
 import {app} from "../../src/app";
 import {HTTP_STATUSES} from '../../src/types/common';
@@ -7,6 +8,9 @@ import {getEncodedAuthToken} from "../../src/helpers";
 import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
 import {CreateBlogInputModel} from "../../src/models/BlogModels/CreateBlogInputModel";
 import {GetMappedBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
+import {CreateUserInputModel} from "../../src/models/UserModels/CreateUserInputModel";
+import {GetMappedUserOutputModel} from "../../src/models/UserModels/GetUserOutputModel";
+import {LoginInputModel} from "../../src/models/AuthModels/LoginInputModel";
 
 
 const mockedcreatedBlogId = "123";
@@ -15,21 +19,36 @@ export const invalidInputData = {
     title1: {shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
     title2: {title: '', shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
     title3: {title: '   ', shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
-    title4: {title: new Array(32).join("a"), shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
+    title4: {
+        title: new Array(32).join("a"),
+        shortDescription: 'shortDescription',
+        content: 'content',
+        blogId: mockedcreatedBlogId
+    },
     title5: {title: 1, shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
     title6: {title: false, shortDescription: 'shortDescription', content: 'content', blogId: mockedcreatedBlogId},
 
     shortDescription1: {title: 'title', content: 'content', blogId: mockedcreatedBlogId},
     shortDescription2: {title: 'title', shortDescription: '', content: 'content', blogId: mockedcreatedBlogId},
     shortDescription3: {title: 'title', shortDescription: '   ', content: 'content', blogId: mockedcreatedBlogId},
-    shortDescription4: {title: 'title', shortDescription: new Array(102).join("a"), content: 'content', blogId: mockedcreatedBlogId},
+    shortDescription4: {
+        title: 'title',
+        shortDescription: new Array(102).join("a"),
+        content: 'content',
+        blogId: mockedcreatedBlogId
+    },
     shortDescription5: {title: 'title', shortDescription: 1, content: 'content', blogId: mockedcreatedBlogId},
     shortDescription6: {title: 'title', shortDescription: false, content: 'content', blogId: mockedcreatedBlogId},
 
     content1: {title: 'title', shortDescription: 'shortDescription', blogId: mockedcreatedBlogId},
     content2: {title: 'title', shortDescription: 'shortDescription', content: '', blogId: mockedcreatedBlogId},
     content3: {title: 'title', shortDescription: 'shortDescription', content: '   ', blogId: mockedcreatedBlogId},
-    content4: {title: 'title', shortDescription: 'shortDescription', content: new Array(1002).join("a"), blogId: mockedcreatedBlogId},
+    content4: {
+        title: 'title',
+        shortDescription: 'shortDescription',
+        content: new Array(1002).join("a"),
+        blogId: mockedcreatedBlogId
+    },
     content5: {title: 'title', shortDescription: 'shortDescription', content: 1, blogId: mockedcreatedBlogId},
     content6: {title: 'title', shortDescription: 'shortDescription', content: false, blogId: mockedcreatedBlogId},
 
@@ -38,12 +57,40 @@ export const invalidInputData = {
     blogId3: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '   '},
     blogId4: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: 123},
     blogId5: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: false},
-    blogId6: {title: 'title', shortDescription: 'shortDescription', content: 'content', blogId: '63cde53de1eeeb34059bda94'}, // not exists blog
+    blogId6: {
+        title: 'title',
+        shortDescription: 'shortDescription',
+        content: 'content',
+        blogId: '63cde53de1eeeb34059bda94'
+    }, // not exists blog
+
+    // for testing comments
+    comment1: {},
+    comment2: {content: ''},
+    comment3: {content: ' '},
+    comment4: {content: true},
+    comment5: {content: new Array(20).join("a")},
+    comment6: {content: new Array(302).join("a")},
 }
 
 describe('/post', () => {
     const encodedBase64Token = getEncodedAuthToken();
-    const notExistingId = '63cde53de1eeeb34059bda94';
+    const notExistingId = new ObjectId();
+
+    const createUser = async (input: CreateUserInputModel = {
+        login: 'login12',
+        email: 'example@gmail.com',
+        password: 'pass123',
+    }) => {
+        const createResponse = await request(app)
+            .post('/users')
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send(input)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdUser: GetMappedUserOutputModel = createResponse?.body;
+        return createdUser;
+    };
 
     const createBlog = async (input: CreateBlogInputModel | undefined = {
         name: 'blog1',
@@ -789,6 +836,195 @@ describe('/post', () => {
                 totalCount: 1,
                 items: [updatedPost]
             })
+    })
+
+});
+
+describe('comments in post', () => {
+    const encodedBase64Token = getEncodedAuthToken();
+    const notExistingId = new ObjectId();
+
+    const createUser = async (input: CreateUserInputModel = {
+        login: 'login12',
+        email: 'example@gmail.com',
+        password: 'pass123',
+    }) => {
+        const createResponse = await request(app)
+            .post('/users')
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send(input)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdUser: GetMappedUserOutputModel = createResponse?.body;
+        return createdUser;
+    };
+
+    const auth = async (input: LoginInputModel = {
+        loginOrEmail: 'example@gmail.com',
+        password: 'pass123'
+    }) => {
+        const {loginOrEmail, password} = input;
+        const authData = await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail, password})
+            .expect(HTTP_STATUSES.OK_200)
+
+        return authData.body.accessToken;
+    }
+
+    const createBlog = async (input: CreateBlogInputModel | undefined = {
+        name: 'blog1',
+        description: 'about blog1',
+        websiteUrl: 'https://google.com'
+    }) => {
+        const createResponse = await request(app)
+            .post('/blogs')
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send(input)
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdBlog: GetMappedBlogOutputModel = createResponse?.body;
+        return createdBlog;
+    }
+
+    const getCreatedBlogId = async () => {
+        const result = await createBlog();
+        const createdBlogId = result.id;
+        return createdBlogId;
+    };
+
+    const createPost = async (blogId: string, input?: Omit<CreatePostInputModel, 'blogId'>) => {
+        const defaultPayload = {
+            title: 'title',
+            content: 'content',
+            shortDescription: 'shortDescription',
+            ...input
+        }
+
+        const createResponse = await request(app)
+            .post('/posts')
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...defaultPayload, blogId})
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const createdPost: GetMappedPostOutputModel = createResponse?.body;
+        return createdPost;
+    }
+
+    let createdUser: GetMappedUserOutputModel;
+    let accessToken: string;
+    let createdBlogId: string;
+    let createdPost: GetMappedPostOutputModel;
+
+    beforeAll(async () => {
+        createdUser = await createUser({
+            password: 'password1',
+            email: 'email1@mail.ru',
+            login: 'login1'
+        });
+        accessToken = await auth({
+            loginOrEmail: 'login1',
+            password: 'password1'
+        });
+        createdBlogId = await getCreatedBlogId();
+        createdPost = await createPost(createdBlogId);
+    })
+
+    // testing get '/posts/:postId/comments' api
+    it(`should return 404 if post not exist`, async () => {
+        await request(app)
+            .get(`/posts/${notExistingId}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+    it(`should return 200 and arrays of comments`, async () => {
+        const createdComment1 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: 'Hello world, it`s my first comment!'})
+            .expect(HTTP_STATUSES.CREATED_201)
+        const createdComment2 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: 'Hello world, it`s my second comment!'})
+            .expect(HTTP_STATUSES.CREATED_201)
+        await request(app)
+            .get(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .expect(HTTP_STATUSES.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 2,
+                items: [createdComment2.body, createdComment1.body]
+            })
+    })
+
+    // testing post '/posts/:postId/comments' api
+    it(`should return 401 if not auth`, async () => {
+        const createdComment = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .send({content: 'Hello world, it`s my first comment!'})
+            .expect(HTTP_STATUSES.NOT_AUTH_401)
+    })
+    it(`should return 201 and the newly created comment in post if correct input data`, async () => {
+        const createdComment3 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: 'Hello world, it`s my third comment!'})
+            .expect(HTTP_STATUSES.CREATED_201)
+
+        const {
+            id: commentId,
+            createdAt
+        } = createdComment3.body;
+
+        expect(createdComment3.body.content).toBe('Hello world, it`s my third comment!');
+        expect(createdComment3.body.commentatorInfo.userLogin).toBe('login1');
+    })
+    it(`shouldn't create comment in post if incorrect input data and return 400`, async () => {
+        await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send(invalidInputData.comment1)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send(invalidInputData.comment2)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send(invalidInputData.comment3)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send(invalidInputData.comment4)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send(invalidInputData.comment5)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+
+        await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send(invalidInputData.comment6)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+    })
+    it(`should return 404 if post not exist`, async () => {
+        await request(app)
+            .post(`/posts/${notExistingId}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: 'Hello world, it`s my first comment!'})
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
 
 });

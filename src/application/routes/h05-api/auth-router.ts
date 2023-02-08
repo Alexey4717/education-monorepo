@@ -40,6 +40,10 @@ authRouter.get(
         req: Request,
         res: Response
     ) => {
+        if (!req.context.user) {
+            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401)
+            return
+        }
         res.status(HTTP_STATUSES.OK_200).json(getMappedMeViewModel(req.context.user))
     }
 );

@@ -5,6 +5,10 @@ import {AvailableResolutions} from './types/common';
 import {db} from "./store/mockedDB";
 import {GetMappedUserOutputModel, GetUserOutputModelFromMongoDB} from "./models/UserModels/GetUserOutputModel";
 import {MeOutputModel} from "./models/AuthModels/MeOutputModel";
+import {
+    GetCommentOutputModelFromMongoDB,
+    GetMappedCommentOutputModel
+} from "./models/CommentsModels/GetCommentOutputModel";
 
 
 export const getMappedVideoViewModel = ({
@@ -74,14 +78,32 @@ export const getMappedUserViewModel = ({
 });
 
 export const getMappedMeViewModel = ({
-                                           _id,
-                                           login,
-                                           email
-                                       }: GetUserOutputModelFromMongoDB): MeOutputModel => ({
+                                         _id,
+                                         login,
+                                         email
+                                     }: GetUserOutputModelFromMongoDB): MeOutputModel => ({
     email,
     login,
     userId: _id.toString(),
 });
+
+export const getMappedCommentViewModel = ({
+                                         _id,
+                                         content,
+                                         commentatorInfo,
+                                         createdAt
+                                     }: GetCommentOutputModelFromMongoDB): GetMappedCommentOutputModel => {
+    const {userId, userLogin} = commentatorInfo || {};
+    return {
+        id: _id.toString(),
+        content,
+        commentatorInfo: {
+            userId,
+            userLogin
+        },
+        createdAt
+    }
+};
 
 export const getCorrectIncludesAvailableResolutions = (availableResolutions: AvailableResolutions[]): boolean => {
     const enumValues = Object.values(AvailableResolutions)

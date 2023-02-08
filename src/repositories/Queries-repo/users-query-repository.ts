@@ -57,7 +57,7 @@ export const usersQueryRepository = {
         },
 
         async findUserById(id: ObjectId): Promise<GetUserOutputModelFromMongoDB | null> {
-            return await usersCollection.findOne({_id: id});
+            return usersCollection.findOne({_id: id});
         },
     }
 ;

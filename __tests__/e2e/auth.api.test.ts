@@ -26,7 +26,7 @@ describe('/auth', () => {
         await request(app)
             .delete('/testing/all-data')
             .expect(HTTP_STATUSES.NO_CONTENT_204)
-    })
+    }, 10000)
 
     const invalidInputData = {
         loginOrEmail1: {password: 'pass123'},

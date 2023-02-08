@@ -5,6 +5,7 @@ import {GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
 import {GetVideoOutputModel} from "../models/VideoModels/GetVideoOutputModel";
 import {GetUserOutputModel} from "../models/UserModels/GetUserOutputModel";
 import {settings} from "../settings";
+import {GetCommentOutputModel} from "../models/CommentsModels/GetCommentOutputModel";
 
 
 const mongoUri = settings.MONGO_URI;
@@ -14,10 +15,11 @@ const client = new MongoClient(mongoUri);
 
 const db01 = client.db(dbName)
 
+export const usersCollection = db01.collection<GetUserOutputModel>("users");
 export const blogsCollection = db01.collection<GetBlogOutputModel>("blogs");
 export const postsCollection = db01.collection<GetPostOutputModel>("posts");
 export const videosCollection = db01.collection<GetVideoOutputModel>("videos");
-export const usersCollection = db01.collection<GetUserOutputModel>("users");
+export const commentsCollection = db01.collection<GetCommentOutputModel>("comments");
 
 export const runDB = async () => {
     try {

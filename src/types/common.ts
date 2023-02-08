@@ -9,26 +9,21 @@ import {SortPostsBy} from "../models/PostModels/GetPostsInputModel";
 import {SortUsersBy} from "../models/UserModels/GetUsersInputModel";
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 
+// use later
+import { constants } from "http2";
+constants.HTTP_STATUS_OK
+
 
 export enum HTTP_STATUSES {
     OK_200 = 200,
     CREATED_201 = 201,
     NO_CONTENT_204 = 204,
 
+    FORBIDDEN_403 = 403,
     NOT_FOUND_404 = 404,
     BAD_REQUEST_400 = 400,
     NOT_AUTH_401 = 401,
 }
-
-export type SettingsType = {
-    MONGO_URI: string
-    JWT_SECRET: Secret
-    DB_NAME: string
-}
-
-export type RequestContextType = {
-    user: GetUserOutputModelFromMongoDB
-};
 
 export enum AvailableResolutions {
     P144 = 'P144',
@@ -46,10 +41,21 @@ export enum SortDirections {
     asc = 'asc'
 }
 
-type User = {
-    id: number
-    login: string
-    password: string
+export const enum CommentManageStatuses {
+    NOT_FOUND = 'NOT_FOUND',
+    NOT_OWNER = 'NOT_OWNER',
+    SUCCESS = 'SUCCESS',
+}
+
+export type SettingsType = {
+    MONGO_URI: string
+    JWT_SECRET: Secret
+    DB_NAME: string
+    ID_PATTERN_BY_DB_TYPE: string
+}
+
+export type RequestContextType = {
+    user: GetUserOutputModelFromMongoDB | null
 };
 
 type CommonQueryParamsTypes = {
@@ -73,10 +79,15 @@ export type GetUsersArgs = CommonQueryParamsTypes & {
     sortBy: SortUsersBy
 };
 
-
 export type GetPostsInBlogArgs = GetPostsArgs & {
     blogId: string
 }
+
+type User = {
+    id: number
+    login: string
+    password: string
+};
 
 export type DataBase = {
     users: User[]
@@ -101,11 +112,6 @@ export type Paginator<T> = {
 export type CheckCredentialsInputArgs = {
     loginOrEmail: string,
     password: string
-};
-
-export type GenerateHashInputArgs = {
-    password: string
-    salt: string
 };
 
 export type RequestWithBody<T> = Request<{}, {}, T>;

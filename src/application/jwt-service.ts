@@ -9,7 +9,7 @@ export const jwtService = {
         return jwt.sign(
             {userId: user._id},
             settings.JWT_SECRET,
-            {expiresIn: '1h'}
+            {expiresIn: '15m'}
         );
     },
 
@@ -20,6 +20,5 @@ export const jwtService = {
         } catch {
             return null;
         }
-
     }
 };
