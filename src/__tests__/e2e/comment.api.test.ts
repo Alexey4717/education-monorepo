@@ -6,7 +6,7 @@ import {constants} from "http2";
 import {invalidInputData} from "./post.api.test";
 import {getEncodedAuthToken} from "../../helpers";
 import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
-import {index} from "../../index";
+import {app} from "../../index";
 import {GetMappedUserOutputModel} from "../../models/UserModels/GetUserOutputModel";
 import {LoginInputModel} from "../../models/AuthModels/LoginInputModel";
 import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel";
@@ -26,7 +26,7 @@ describe('CRUD comments', () => {
         email: 'example@gmail.com',
         password: 'pass123',
     }) => {
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -41,7 +41,7 @@ describe('CRUD comments', () => {
         password: 'pass123'
     }) => {
         const {loginOrEmail, password} = input;
-        const authData = await request(index)
+        const authData = await request(app)
             .post('/auth/login')
             .send({loginOrEmail: loginOrEmail,password: password})
             .expect(constants.HTTP_STATUS_OK)
@@ -54,7 +54,7 @@ describe('CRUD comments', () => {
         description: 'about blog1',
         websiteUrl: 'https://google.com'
     }) => {
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/blogs')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -78,7 +78,7 @@ describe('CRUD comments', () => {
             ...input
         }
 
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...defaultPayload, blogId})
@@ -89,7 +89,7 @@ describe('CRUD comments', () => {
     }
 
     const createCommentInPost = async ({postId, content}: { postId: string, content: string }) => {
-        const result = await request(index)
+        const result = await request(app)
             .post(`/posts/${postId}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({content})
@@ -112,7 +112,7 @@ describe('CRUD comments', () => {
         const mongoUri = mongoMemoryServer.getUri()
         process.env['MONGO_URI'] = mongoUri
 
-        await request(index)
+        await request(app)
             .delete('/testing/all-data')
             .expect(constants.HTTP_STATUS_NO_CONTENT);
 
@@ -144,13 +144,13 @@ describe('CRUD comments', () => {
 
     // testing get '/comments/:commentId' api
     it(`should return 404 if comment not exist`, async () => {
-        await request(index)
+        await request(app)
             .get(`/comments/${notExistingId}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
     it(`should return 200 if comment exist`, async () => {
-        await request(index)
+        await request(app)
             .get(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .expect(constants.HTTP_STATUS_OK)
@@ -158,64 +158,64 @@ describe('CRUD comments', () => {
 
     // testing put '/comments/:commentId' api
     it(`should return 401 if not auth`, async () => {
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .send({content: 'Hello world, it`s my second comment!'})
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
     it(`should return 404 if comment not exist`, async () => {
-        await request(index)
+        await request(app)
             .put(`/comments/${notExistingId}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({content: 'Hello world, it`s my second comment!'})
             .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
     it(`should return 403 if comment not own user`, async () => {
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${otherUserAccessToken}`)
             .send({content: 'Hello world, it`s my second comment!'})
             .expect(constants.HTTP_STATUS_FORBIDDEN)
     })
     it(`should return 204 if correct input data`, async () => {
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({content: 'Hello world, it`s my other comment!'})
             .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
     it(`should return 400 if incorrect input data`, async () => {
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment6)
@@ -224,24 +224,24 @@ describe('CRUD comments', () => {
 
     // testing delete '/comments/:commentId' api
     it(`should return 401 if not auth`, async () => {
-        await request(index)
+        await request(app)
             .delete(`/comments/${createdComment.id}/`)
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
     it(`should return 404 if comment not exist`, async () => {
-        await request(index)
+        await request(app)
             .delete(`/comments/${notExistingId}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
     it(`should return 403 if comment not own user`, async () => {
-        await request(index)
+        await request(app)
             .delete(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${otherUserAccessToken}`)
             .expect(constants.HTTP_STATUS_FORBIDDEN)
     })
     it(`should return 204 if comment exist`, async () => {
-        await request(index)
+        await request(app)
             .delete(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .expect(constants.HTTP_STATUS_NO_CONTENT)

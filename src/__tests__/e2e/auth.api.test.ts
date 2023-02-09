@@ -2,7 +2,7 @@ import request from "supertest";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {constants} from 'http2';
 
-import {index} from "../../index";
+import {app} from "../../index";
 import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
 import {GetMappedUserOutputModel} from '../../models/UserModels/GetUserOutputModel';
 import {getEncodedAuthToken} from "../../helpers";
@@ -15,7 +15,7 @@ describe('/auth', () => {
         email: 'example@gmail.com',
         password: 'pass123',
     }) => {
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/users')
             .set('Authorization', `Basic ${adminBasicToken}`)
             .send(input)
@@ -34,7 +34,7 @@ describe('/auth', () => {
     })
 
     beforeEach(async () => {
-        await request(index)
+        await request(app)
             .delete('/testing/all-data')
             .expect(constants.HTTP_STATUS_NO_CONTENT)
     }, 10000)
@@ -55,14 +55,14 @@ describe('/auth', () => {
 
     // testing clear all data api
     it('should remove all data', async () => {
-        await request(index)
+        await request(app)
             .delete('/testing/all-data')
             .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
 
     // testing get '/auth/me' api
     it('should return 401 for not auth user', async () => {
-        await request(index)
+        await request(app)
             .get('/auth/me')
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
@@ -70,14 +70,14 @@ describe('/auth', () => {
         'should return 200 and access token of current auth user if loginOrEmail and password are correct',
         async () => {
             const createdUser = await createUser();
-            const authData = await request(index)
+            const authData = await request(app)
                 .post('/auth/login')
                 .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
                 .expect(constants.HTTP_STATUS_OK)
 
             const {accessToken} = authData?.body || {};
 
-            await request(index)
+            await request(app)
                 .get('/auth/me')
                 .set('Authorization', `Bearer ${accessToken}`)
                 .expect(
@@ -92,24 +92,24 @@ describe('/auth', () => {
 
     // testing post '/auth/login' api
     it(`should return 401 if the password or login is wrong`, async () => {
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send({loginOrEmail: 'login12', password: 'pass123'})
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
 
         await createUser();
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send({loginOrEmail: 'login123', password: 'pass123'})
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send({loginOrEmail: 'login12', password: 'pass1234'})
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send({loginOrEmail: 'example2@gmail.com', password: 'pass1234'})
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
@@ -117,59 +117,59 @@ describe('/auth', () => {
     it(`shouldn't login with incorrect input data`, async () => {
         await createUser();
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.loginOrEmail1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.loginOrEmail2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.loginOrEmail3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.loginOrEmail4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.loginOrEmail5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.password1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.password2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.password3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.password4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send(invalidInputData.password5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
     })
     it(`should auth with correct input data`, async () => {
         await createUser();
-        await request(index)
+        await request(app)
             .post('/auth/login')
             .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
             .expect(constants.HTTP_STATUS_OK)

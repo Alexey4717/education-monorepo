@@ -3,7 +3,7 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import {ObjectId} from 'mongodb';
 import {constants} from "http2";
 
-import {index} from "../../index";
+import {app} from "../../index";
 import {CreatePostInputModel} from '../../models/PostModels/CreatePostInputModel';
 import {getEncodedAuthToken} from "../../helpers";
 import {GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
@@ -83,7 +83,7 @@ describe('/post', () => {
         email: 'example@gmail.com',
         password: 'pass123',
     }) => {
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -98,7 +98,7 @@ describe('/post', () => {
         description: 'about blog1',
         websiteUrl: 'https://google.com'
     }) => {
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/blogs')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -122,7 +122,7 @@ describe('/post', () => {
             ...input
         }
 
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...defaultPayload, blogId})
@@ -141,7 +141,7 @@ describe('/post', () => {
     })
 
     beforeEach(async () => {
-        await request(index)
+        await request(app)
             .delete('/testing/all-data')
             .expect(constants.HTTP_STATUS_NO_CONTENT)
 
@@ -150,7 +150,7 @@ describe('/post', () => {
 
     // testing get '/posts' api
     it('should return 200 and empty array', async () => {
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 0,
@@ -170,7 +170,7 @@ describe('/post', () => {
         };
         const createdPost1 = await createPost(createdBlogId);
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -189,7 +189,7 @@ describe('/post', () => {
 
         const createdPost2 = await createPost(createdBlogId);
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -234,7 +234,7 @@ describe('/post', () => {
         };
         const createdPost4 = await createPost(createdBlogId, input4);
 
-        await request(index)
+        await request(app)
             .get('/posts?sortBy=title')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -244,7 +244,7 @@ describe('/post', () => {
                 items: [createdPost3, createdPost2, createdPost4, createdPost1]
             });
 
-        await request(index)
+        await request(app)
             .get('/posts?sortBy=shortDescription&sortDirection=asc')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -305,7 +305,7 @@ describe('/post', () => {
         };
         const createdPost6 = await createPost(createdBlogId, input6);
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(
                 constants.HTTP_STATUS_OK,
@@ -318,7 +318,7 @@ describe('/post', () => {
                 }
             );
 
-        await request(index)
+        await request(app)
             .get('/posts?pageSize=4')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 2,
@@ -328,7 +328,7 @@ describe('/post', () => {
                 items: [createdPost6, createdPost5, createdPost4, createdPost3]
             });
 
-        await request(index)
+        await request(app)
             .get('/posts?pageNumber=2&pageSize=2')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 3,
@@ -341,7 +341,7 @@ describe('/post', () => {
 
     // testing get '/posts/:id' api
     it('should return 404 for not existing post', async () => {
-        await request(index)
+        await request(app)
             .get(`/posts/${notExistingId}`)
             .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
@@ -349,19 +349,19 @@ describe('/post', () => {
         const createdBlogId = await getCreatedBlogId();
         const createdPost = await createPost(createdBlogId);
 
-        await request(index)
+        await request(app)
             .get(`/posts/${createdPost?.id}`)
             .expect(constants.HTTP_STATUS_OK, createdPost)
     })
 
     // testing delete '/posts/:id' api
     it('should return 401 for not auth user', async () => {
-        await request(index)
+        await request(app)
             .delete(`/posts/${notExistingId}`)
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
     it('should return 404 for not existing post', async () => {
-        await request(index)
+        await request(app)
             .delete(`/posts/${notExistingId}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_NOT_FOUND)
@@ -369,7 +369,7 @@ describe('/post', () => {
     it('should return 204 for existing post', async () => {
         const createdBlogId = await getCreatedBlogId();
         const createdPost = await createPost(createdBlogId);
-        await request(index)
+        await request(app)
             .delete(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_NO_CONTENT)
@@ -384,12 +384,12 @@ describe('/post', () => {
             content: 'content',
             shortDescription: 'shortDescription'
         };
-        await request(index)
+        await request(app)
             .post('/posts')
             .send(input)
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 0,
@@ -401,151 +401,151 @@ describe('/post', () => {
     })
     it(`shouldn't create post with incorrect input data`, async () => {
         const createdBlogId = await getCreatedBlogId();
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title1, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title2, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title3, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title4, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title5, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title6, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription1, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription2, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription3, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription4, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription5, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription6, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content1, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content2, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content3, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content4, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content5, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content6, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId6)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 0,
@@ -563,7 +563,7 @@ describe('/post', () => {
             content: 'content',
             shortDescription: 'shortDescription'
         };
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -583,7 +583,7 @@ describe('/post', () => {
 
         expect(createdPost).toEqual(expectedPost);
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -604,12 +604,12 @@ describe('/post', () => {
             content: 'content',
             shortDescription: 'shortDescription'
         };
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .send(input)
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -623,151 +623,151 @@ describe('/post', () => {
         const createdBlogId = await getCreatedBlogId();
         const createdPost = await createPost(createdBlogId);
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title1, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title2, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title3, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title4, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title5, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.title6, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription1, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription2, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription3, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription4, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription5, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.shortDescription6, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content1, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content2, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content3, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content4, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content5, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidInputData.content6, blogId: createdBlogId})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.blogId6)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -785,13 +785,13 @@ describe('/post', () => {
             content: 'content',
             shortDescription: 'shortDescription'
         };
-        await request(index)
+        await request(app)
             .put(`/posts/${notExistingId}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
             .expect(constants.HTTP_STATUS_NOT_FOUND)
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 0,
@@ -811,7 +811,7 @@ describe('/post', () => {
         };
         const createdPost = await createPost(createdBlogId);
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -828,7 +828,7 @@ describe('/post', () => {
             shortDescription: 'shortDescription2'
         };
 
-        await request(index)
+        await request(app)
             .put(`/posts/${createdPost?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(dataForUpdate)
@@ -836,7 +836,7 @@ describe('/post', () => {
 
         const updatedPost = {...createdPost, ...dataForUpdate};
 
-        await request(index)
+        await request(app)
             .get('/posts')
             .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
@@ -858,7 +858,7 @@ describe('comments in post', () => {
         email: 'example@gmail.com',
         password: 'pass123',
     }) => {
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -873,7 +873,7 @@ describe('comments in post', () => {
         password: 'pass123'
     }) => {
         const {loginOrEmail, password} = input;
-        const authData = await request(index)
+        const authData = await request(app)
             .post('/auth/login')
             .send({loginOrEmail, password})
             .expect(constants.HTTP_STATUS_OK)
@@ -886,7 +886,7 @@ describe('comments in post', () => {
         description: 'about blog1',
         websiteUrl: 'https://google.com'
     }) => {
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/blogs')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -910,7 +910,7 @@ describe('comments in post', () => {
             ...input
         }
 
-        const createResponse = await request(index)
+        const createResponse = await request(app)
             .post('/posts')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...defaultPayload, blogId})
@@ -941,23 +941,23 @@ describe('comments in post', () => {
 
     // testing get '/posts/:postId/comments' api
     it(`should return 404 if post not exist`, async () => {
-        await request(index)
+        await request(app)
             .get(`/posts/${notExistingId}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
     it(`should return 200 and arrays of comments`, async () => {
-        const createdComment1 = await request(index)
+        const createdComment1 = await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({content: 'Hello world, it`s my first comment!'})
             .expect(constants.HTTP_STATUS_CREATED)
-        const createdComment2 = await request(index)
+        const createdComment2 = await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({content: 'Hello world, it`s my second comment!'})
             .expect(constants.HTTP_STATUS_CREATED)
-        await request(index)
+        await request(app)
             .get(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -971,13 +971,13 @@ describe('comments in post', () => {
 
     // testing post '/posts/:postId/comments' api
     it(`should return 401 if not auth`, async () => {
-        const createdComment = await request(index)
+        const createdComment = await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .send({content: 'Hello world, it`s my first comment!'})
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
     it(`should return 201 and the newly created comment in post if correct input data`, async () => {
-        const createdComment3 = await request(index)
+        const createdComment3 = await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({content: 'Hello world, it`s my third comment!'})
@@ -992,44 +992,44 @@ describe('comments in post', () => {
         expect(createdComment3.body.commentatorInfo.userLogin).toBe('login1');
     })
     it(`shouldn't create comment in post if incorrect input data and return 400`, async () => {
-        await request(index)
+        await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(index)
+        await request(app)
             .post(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(invalidInputData.comment6)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
     })
     it(`should return 404 if post not exist`, async () => {
-        await request(index)
+        await request(app)
             .post(`/posts/${notExistingId}/comments`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({content: 'Hello world, it`s my first comment!'})
