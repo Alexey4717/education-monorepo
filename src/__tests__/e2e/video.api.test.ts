@@ -2,11 +2,11 @@ import request from "supertest";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {constants} from 'http2';
 
-import {app} from "../../src/app";
-import {AvailableResolutions} from '../../src/types/common'
-import {GetMappedVideoOutputModel} from "../../src/models/VideoModels/GetVideoOutputModel";
-import {CreateVideoInputModel} from "../../src/models/VideoModels/CreateVideoInputModel";
-import {UpdateVideoInputModel} from "../../src/models/VideoModels/UpdateVideoInputModel";
+import {app} from "../../app";
+import {AvailableResolutions} from '../../types/common'
+import {GetMappedVideoOutputModel} from "../../models/VideoModels/GetVideoOutputModel";
+import {CreateVideoInputModel} from "../../models/VideoModels/CreateVideoInputModel";
+import {UpdateVideoInputModel} from "../../models/VideoModels/UpdateVideoInputModel";
 
 
 describe('/video', () => {

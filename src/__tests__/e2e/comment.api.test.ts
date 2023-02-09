@@ -4,16 +4,16 @@ import {ObjectId} from "mongodb";
 import {constants} from "http2";
 
 import {invalidInputData} from "./post.api.test";
-import {getEncodedAuthToken} from "../../src/helpers";
-import {CreateUserInputModel} from "../../src/models/UserModels/CreateUserInputModel";
-import {app} from "../../src/app";
-import {GetMappedUserOutputModel} from "../../src/models/UserModels/GetUserOutputModel";
-import {LoginInputModel} from "../../src/models/AuthModels/LoginInputModel";
-import {CreateBlogInputModel} from "../../src/models/BlogModels/CreateBlogInputModel";
-import {GetMappedBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
-import {CreatePostInputModel} from "../../src/models/PostModels/CreatePostInputModel";
-import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
-import {GetMappedCommentOutputModel} from "../../src/models/CommentsModels/GetCommentOutputModel";
+import {getEncodedAuthToken} from "../../helpers";
+import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
+import {app} from "../../app";
+import {GetMappedUserOutputModel} from "../../models/UserModels/GetUserOutputModel";
+import {LoginInputModel} from "../../models/AuthModels/LoginInputModel";
+import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel";
+import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
+import {CreatePostInputModel} from "../../models/PostModels/CreatePostInputModel";
+import {GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
+import {GetMappedCommentOutputModel} from "../../models/CommentsModels/GetCommentOutputModel";
 
 
 describe('CRUD comments', () => {

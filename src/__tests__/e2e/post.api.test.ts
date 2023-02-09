@@ -3,15 +3,15 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import {ObjectId} from 'mongodb';
 import {constants} from "http2";
 
-import {app} from "../../src/app";
-import {CreatePostInputModel} from '../../src/models/PostModels/CreatePostInputModel';
-import {getEncodedAuthToken} from "../../src/helpers";
-import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
-import {CreateBlogInputModel} from "../../src/models/BlogModels/CreateBlogInputModel";
-import {GetMappedBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
-import {CreateUserInputModel} from "../../src/models/UserModels/CreateUserInputModel";
-import {GetMappedUserOutputModel} from "../../src/models/UserModels/GetUserOutputModel";
-import {LoginInputModel} from "../../src/models/AuthModels/LoginInputModel";
+import {app} from "../../app";
+import {CreatePostInputModel} from '../../models/PostModels/CreatePostInputModel';
+import {getEncodedAuthToken} from "../../helpers";
+import {GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
+import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel";
+import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
+import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
+import {GetMappedUserOutputModel} from "../../models/UserModels/GetUserOutputModel";
+import {LoginInputModel} from "../../models/AuthModels/LoginInputModel";
 
 
 const mockedcreatedBlogId = new ObjectId().toString();

@@ -2,10 +2,10 @@ import request from "supertest";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {constants} from 'http2';
 
-import {app} from "../../src/app";
-import {CreateUserInputModel} from "../../src/models/UserModels/CreateUserInputModel";
-import {GetMappedUserOutputModel} from '../../src/models/UserModels/GetUserOutputModel';
-import {getEncodedAuthToken} from "../../src/helpers";
+import {app} from "../../app";
+import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
+import {GetMappedUserOutputModel} from '../../models/UserModels/GetUserOutputModel';
+import {getEncodedAuthToken} from "../../helpers";
 
 
 describe('/auth', () => {

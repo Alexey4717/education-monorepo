@@ -3,13 +3,13 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import {ObjectId} from 'mongodb';
 import {constants} from 'http2';
 
-import {app} from "../../src/app";
-import {CreateBlogInputModel} from '../../src/models/BlogModels/CreateBlogInputModel';
-import {getEncodedAuthToken} from "../../src/helpers";
-import {GetMappedBlogOutputModel} from "../../src/models/BlogModels/GetBlogOutputModel";
-import {CreatePostInputModel} from "../../src/models/PostModels/CreatePostInputModel";
+import {app} from "../../app";
+import {CreateBlogInputModel} from '../../models/BlogModels/CreateBlogInputModel';
+import {getEncodedAuthToken} from "../../helpers";
+import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
+import {CreatePostInputModel} from "../../models/PostModels/CreatePostInputModel";
 import {invalidInputData as invalidPostInputData} from "./post.api.test";
-import {GetMappedPostOutputModel} from "../../src/models/PostModels/GetPostOutputModel";
+import {GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
 
 
 describe('/blog', () => {
