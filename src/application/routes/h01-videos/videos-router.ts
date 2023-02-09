@@ -1,8 +1,9 @@
 import {Request, Response, Router} from "express";
+import {constants} from 'http2';
 
 import {GetVideoOutputModel, GetMappedVideoOutputModel} from "../../../models/VideoModels/GetVideoOutputModel";
 import {GetVideoInputModel} from "../../../models/VideoModels/GetVideoInputModel";
-import {HTTP_STATUSES, RequestWithBody, RequestWithParamsAndBody, RequestWithParams} from "../../../types/common";
+import {RequestWithBody, RequestWithParamsAndBody, RequestWithParams} from "../../../types/common";
 import {CreateVideoInputModel} from "../../../models/VideoModels/CreateVideoInputModel";
 import {GetErrorOutputModel} from "../../../models/GetErrorOutputModel";
 import {UpdateVideoInputModel} from "../../../models/VideoModels/UpdateVideoInputModel";
@@ -34,14 +35,14 @@ videosRouter.get(
     ) => {
         const videoId = req.params?.id;
         if (!videoId) {
-            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+            res.sendStatus(constants.HTTP_STATUS_BAD_REQUEST);
             return;
         }
 
         const foundVideo = await videosQueryRepository.findVideoById(videoId);
 
         if (!foundVideo) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
         const mappedVideo = getMappedVideoViewModel(foundVideo);
@@ -57,7 +58,7 @@ videosRouter.post(
         res: Response<GetMappedVideoOutputModel | GetErrorOutputModel>
     ) => {
         const createdVideo = await videosService.createVideo(req.body)
-        res.status(HTTP_STATUSES.CREATED_201).json(getMappedVideoViewModel(createdVideo));
+        res.status(constants.HTTP_STATUS_CREATED).json(getMappedVideoViewModel(createdVideo));
     })
 
 videosRouter.put(
@@ -73,11 +74,11 @@ videosRouter.put(
         const isVideoUpdated = await videosService.updateVideo({id: videoId, input: req.body})
 
         if (!isVideoUpdated) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
 
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT)
     })
 
 videosRouter.delete(
@@ -89,8 +90,8 @@ videosRouter.delete(
         const isDeletedVideo = await videosService.deleteVideoById(videoId);
 
         if (!isDeletedVideo) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     })

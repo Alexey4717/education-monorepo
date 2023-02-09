@@ -9,21 +9,6 @@ import {SortPostsBy} from "../models/PostModels/GetPostsInputModel";
 import {SortUsersBy} from "../models/UserModels/GetUsersInputModel";
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 
-// use later
-import { constants } from "http2";
-constants.HTTP_STATUS_OK
-
-
-export enum HTTP_STATUSES {
-    OK_200 = 200,
-    CREATED_201 = 201,
-    NO_CONTENT_204 = 204,
-
-    FORBIDDEN_403 = 403,
-    NOT_FOUND_404 = 404,
-    BAD_REQUEST_400 = 400,
-    NOT_AUTH_401 = 401,
-}
 
 export enum AvailableResolutions {
     P144 = 'P144',

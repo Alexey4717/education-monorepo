@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
+import {constants} from 'http2';
 
-import {HTTP_STATUSES} from '../types/common';
 import {jwtService} from "../application/jwt-service";
 import {usersQueryRepository} from "../repositories/Queries-repo/users-query-repository";
 
@@ -9,7 +9,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     try {
         const authData = req?.headers?.authorization;
         if (!authData) {
-            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401)
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return;
         }
 
@@ -20,7 +20,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         const userId = await jwtService.getUserIdByToken(token);
 
         if (authType !== 'Bearer' || !userId) {
-            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401);
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
             return;
         }
 

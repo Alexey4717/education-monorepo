@@ -1,15 +1,27 @@
 import request from "supertest";
+import {MongoMemoryServer} from "mongodb-memory-server";
+import {constants} from 'http2';
+
 import {app} from "../../src/app";
-import {HTTP_STATUSES, AvailableResolutions} from '../../src/types/common'
+import {AvailableResolutions} from '../../src/types/common'
 import {GetMappedVideoOutputModel} from "../../src/models/VideoModels/GetVideoOutputModel";
 import {CreateVideoInputModel} from "../../src/models/VideoModels/CreateVideoInputModel";
 import {UpdateVideoInputModel} from "../../src/models/VideoModels/UpdateVideoInputModel";
 
+
 describe('/video', () => {
+    let mongoMemoryServer: MongoMemoryServer
+
+    beforeAll(async () => {
+        mongoMemoryServer = await MongoMemoryServer.create()
+        const mongoUri = mongoMemoryServer.getUri()
+        process.env['MONGO_URI'] = mongoUri
+    })
+
     beforeEach(async () => {
         await request(app)
             .delete('/testing/all-data')
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
 
     const notExistingId = '63cde53de1eeeb34059bda94'; // valid format
@@ -87,14 +99,14 @@ describe('/video', () => {
     it('should remove all data', async () => {
         await request(app)
             .delete('/testing/all-data')
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
 
     // testing get '/videos' api
     it('should return 200 and empty array', async () => {
         await request(app)
             .get('/videos')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(constants.HTTP_STATUS_OK, [])
     })
 
     it('should return 200 and array of videos', async () => {
@@ -106,13 +118,13 @@ describe('/video', () => {
         const createResponse1 = await request(app)
             .post('/videos')
             .send(data1)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdVideo1: GetMappedVideoOutputModel = createResponse1?.body;
 
         await request(app)
             .get('/videos')
-            .expect(HTTP_STATUSES.OK_200, [createdVideo1]);
+            .expect(constants.HTTP_STATUS_OK, [createdVideo1]);
 
         const data2: CreateVideoInputModel = {
             title: 'title',
@@ -122,20 +134,20 @@ describe('/video', () => {
         const createResponse2 = await request(app)
             .post('/videos')
             .send(data2)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdVideo2: GetMappedVideoOutputModel = createResponse2?.body;
 
         await request(app)
             .get('/videos')
-            .expect(HTTP_STATUSES.OK_200, [createdVideo1, createdVideo2]);
+            .expect(constants.HTTP_STATUS_OK, [createdVideo1, createdVideo2]);
     })
 
     // testing get '/videos/:id' api
     it('should return 404 for not existing video', async () => {
         await request(app)
             .get(`/videos/${notExistingId}`)
-            .expect(HTTP_STATUSES.NOT_FOUND_404)
+            .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
     it('should return 200 and existing video', async () => {
         const data: CreateVideoInputModel = {
@@ -146,19 +158,19 @@ describe('/video', () => {
         const createResponse = await request(app)
             .post('/videos')
             .send(data)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdVideo: GetMappedVideoOutputModel = createResponse?.body;
         await request(app)
             .get(`/videos/${createdVideo.id}`)
-            .expect(HTTP_STATUSES.OK_200, createdVideo)
+            .expect(constants.HTTP_STATUS_OK, createdVideo)
     })
 
     // testing delete '/videos/:id' api
     it('should return 404 for not existing video', async () => {
         await request(app)
             .delete('/videos/63cde53de1eeeb34059bda94')
-            .expect(HTTP_STATUSES.NOT_FOUND_404)
+            .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
     it('should return 204 for existing video', async () => {
         const data: CreateVideoInputModel = {
@@ -169,12 +181,12 @@ describe('/video', () => {
         const createResponse = await request(app)
             .post('/videos')
             .send(data)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdVideo: GetMappedVideoOutputModel = createResponse?.body;
         await request(app)
             .delete(`/videos/${createdVideo.id}`)
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
 
     // testing post '/videos' api
@@ -182,57 +194,57 @@ describe('/video', () => {
         await request(app)
             .post('/videos')
             .send(invalidInputData.title1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.title2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.title3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.title4)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.author1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.author2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.author3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.availableResolutions1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.availableResolutions2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/videos')
             .send(invalidInputData.availableResolutions3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
 
         await request(app)
             .get('/videos')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(constants.HTTP_STATUS_OK, [])
     })
     it(`should create video with correct input data`, async () => {
         const data: CreateVideoInputModel = {
@@ -243,7 +255,7 @@ describe('/video', () => {
         const createResponse = await request(app)
             .post('/videos')
             .send(data)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdVideo: GetMappedVideoOutputModel = createResponse?.body;
         const expectedVideo: GetMappedVideoOutputModel = {
@@ -261,7 +273,7 @@ describe('/video', () => {
 
         await request(app)
             .get('/videos')
-            .expect(HTTP_STATUSES.OK_200, [createdVideo])
+            .expect(constants.HTTP_STATUS_OK, [createdVideo])
     })
 
     // testing put '/videos/:id' api
@@ -274,98 +286,98 @@ describe('/video', () => {
         const createResponse = await request(app)
             .post('/videos')
             .send(data)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdVideo = createResponse?.body
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.title1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.title2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.title3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.title4)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.author1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.author2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.author3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.availableResolutions1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.availableResolutions2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.availableResolutions3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.canBeDownloaded1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.canBeDownloaded2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.minAgeRestriction1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.minAgeRestriction2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.minAgeRestriction3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.publicationDate1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(invalidInputData.publicationDate2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .get('/videos')
-            .expect(HTTP_STATUSES.OK_200, [createdVideo])
+            .expect(constants.HTTP_STATUS_OK, [createdVideo])
     })
     it(`shouldn't update video if not exist`, async () => {
         const data: UpdateVideoInputModel = {
@@ -376,11 +388,11 @@ describe('/video', () => {
         await request(app)
             .put('/videos/63cde53de1eeeb34059bda94')
             .send(data)
-            .expect(HTTP_STATUSES.NOT_FOUND_404)
+            .expect(constants.HTTP_STATUS_NOT_FOUND)
 
         await request(app)
             .get('/videos')
-            .expect(HTTP_STATUSES.OK_200, [])
+            .expect(constants.HTTP_STATUS_OK, [])
     })
     it(`should update video with correct input data`, async () => {
         const dataForCreate: CreateVideoInputModel = {
@@ -397,20 +409,20 @@ describe('/video', () => {
         const createResponse = await request(app)
             .post('/videos')
             .send(dataForCreate)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdVideo = createResponse.body
 
         await request(app)
             .put(`/videos/${createdVideo?.id}`)
             .send(dataForUpdate)
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
 
         const updatedVideo = {...createdVideo, ...dataForUpdate};
 
         await request(app)
             .get('/videos')
-            .expect(HTTP_STATUSES.OK_200, [updatedVideo])
+            .expect(constants.HTTP_STATUS_OK, [updatedVideo])
     })
 
 });

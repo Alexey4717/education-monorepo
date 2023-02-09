@@ -1,7 +1,7 @@
 import {Response, Router} from "express";
+import {constants} from 'http2';
 import {
     CommentManageStatuses,
-    HTTP_STATUSES,
     RequestWithParams,
     RequestWithParamsAndBody,
 } from "../../../types/common";
@@ -30,10 +30,10 @@ commentsRouter.get(
     ) => {
         const foundComment = await commentsQueryRepository.getCommentById(req.params.id);
         if (!foundComment) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
-        res.status(HTTP_STATUSES.OK_200).json(getMappedCommentViewModel(foundComment));
+        res.status(constants.HTTP_STATUS_OK).json(getMappedCommentViewModel(foundComment));
     });
 
 commentsRouter.put(
@@ -47,7 +47,7 @@ commentsRouter.put(
         res: Response<GetMappedUserOutputModel>
     ) => {
         if (!req.context.user) {
-            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401)
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
 
@@ -58,16 +58,16 @@ commentsRouter.put(
         });
 
         if (result === CommentManageStatuses.NOT_OWNER) {
-            res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
+            res.sendStatus(constants.HTTP_STATUS_FORBIDDEN);
             return;
         }
 
         if (result === CommentManageStatuses.NOT_FOUND) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
 
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     });
 
 commentsRouter.delete(
@@ -79,7 +79,7 @@ commentsRouter.delete(
         res: Response
     ) => {
         if (!req.context.user) {
-            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401)
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
 
@@ -89,15 +89,15 @@ commentsRouter.delete(
         });
 
         if (result === CommentManageStatuses.NOT_OWNER) {
-            res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
+            res.sendStatus(constants.HTTP_STATUS_FORBIDDEN);
             return;
         }
 
         if (result === CommentManageStatuses.NOT_FOUND) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
 
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     });
 

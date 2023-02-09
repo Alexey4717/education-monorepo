@@ -1,8 +1,8 @@
 import {Response, Router} from "express";
+import {constants} from 'http2';
 
 import {
     Paginator,
-    HTTP_STATUSES,
     RequestWithBody,
     RequestWithParams,
     RequestWithParamsAndBody,
@@ -49,7 +49,7 @@ postsRouter.get(
             totalCount,
             items
         } = resData || {};
-        res.status(HTTP_STATUSES.OK_200).json({
+        res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
@@ -64,10 +64,10 @@ postsRouter.get(
     async (req: RequestWithParams<GetPostInputModel>, res: Response<GetPostOutputModel>) => {
         const resData = await postsQueryRepository.findPostById(req.params.id);
         if (!resData) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
-        res.status(HTTP_STATUSES.OK_200).json(getMappedPostViewModel(resData));
+        res.status(constants.HTTP_STATUS_OK).json(getMappedPostViewModel(resData));
     });
 postsRouter.get(
     `/:postId(${settings.ID_PATTERN_BY_DB_TYPE})/comments`,
@@ -86,7 +86,7 @@ postsRouter.get(
         });
 
         if (!resData) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
 
@@ -98,7 +98,7 @@ postsRouter.get(
             items
         } = resData || {};
 
-        res.status(HTTP_STATUSES.OK_200).json({
+        res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
@@ -118,10 +118,10 @@ postsRouter.post(
 
         // Если указан невалидный blogId
         if (!createdPost) {
-            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            res.sendStatus(constants.HTTP_STATUS_BAD_REQUEST)
             return;
         }
-        res.status(HTTP_STATUSES.CREATED_201).json(getMappedPostViewModel(createdPost));
+        res.status(constants.HTTP_STATUS_CREATED).json(getMappedPostViewModel(createdPost));
     })
 postsRouter.post(
     `/:postId(${settings.ID_PATTERN_BY_DB_TYPE})/comments`,
@@ -134,7 +134,7 @@ postsRouter.post(
         res: Response
     ) => {
         if (!req.context.user) {
-            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401)
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
 
@@ -147,10 +147,10 @@ postsRouter.post(
 
         // Если не найден пост
         if (!createdCommentInPost) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
-        res.status(HTTP_STATUSES.CREATED_201).json(getMappedCommentViewModel(createdCommentInPost));
+        res.status(constants.HTTP_STATUS_CREATED).json(getMappedCommentViewModel(createdCommentInPost));
     }
 )
 
@@ -166,11 +166,11 @@ postsRouter.put(
     ) => {
         const isPostUpdated = await postsService.updatePost({id: req.params.id, input: req.body});
         if (!isPostUpdated) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
 
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT)
     });
 
 postsRouter.delete(
@@ -183,8 +183,8 @@ postsRouter.delete(
     ) => {
         const resData = await postsService.deletePostById(req.params.id);
         if (!resData) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     });

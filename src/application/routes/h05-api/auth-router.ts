@@ -1,7 +1,8 @@
 import {Request, Response, Router} from "express";
+import {constants} from 'http2';
 
 import {usersService} from "../../../domain/users-service";
-import {HTTP_STATUSES, RequestWithBody} from "../../../types/common";
+import {RequestWithBody} from "../../../types/common";
 import {LoginInputModel} from "../../../models/AuthModels/LoginInputModel";
 import {jwtService} from "../../jwt-service";
 import {loginInputValidations} from "../../../validations/auth/loginInputValidations";
@@ -26,11 +27,11 @@ authRouter.post(
         } = req.body || {};
         const user = await usersService.checkCredentials({loginOrEmail, password});
         if (!user) {
-            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401);
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
             return;
         }
         const accessToken = await jwtService.createJWT(user);
-        res.status(HTTP_STATUSES.OK_200).json({accessToken});
+        res.status(constants.HTTP_STATUS_OK).json({accessToken});
     });
 
 authRouter.get(
@@ -41,9 +42,9 @@ authRouter.get(
         res: Response
     ) => {
         if (!req.context.user) {
-            res.sendStatus(HTTP_STATUSES.NOT_AUTH_401)
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
-        res.status(HTTP_STATUSES.OK_200).json(getMappedMeViewModel(req.context.user))
+        res.status(constants.HTTP_STATUS_OK).json(getMappedMeViewModel(req.context.user))
     }
 );

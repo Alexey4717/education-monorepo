@@ -1,6 +1,7 @@
 import {Response, Router} from "express";
+import {constants} from 'http2';
+
 import {
-    HTTP_STATUSES,
     Paginator,
     RequestWithBody,
     RequestWithParams,
@@ -45,7 +46,7 @@ usersRouter.get(
             totalCount,
             items
         } = resData || {};
-        res.status(HTTP_STATUSES.OK_200).json({
+        res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
@@ -64,7 +65,7 @@ usersRouter.post(
         res: Response<GetMappedUserOutputModel>
     ) => {
         const createdUser = await usersService.createUser(req.body);
-        res.status(HTTP_STATUSES.CREATED_201).json(getMappedUserViewModel(createdUser));
+        res.status(constants.HTTP_STATUS_CREATED).json(getMappedUserViewModel(createdUser));
     });
 
 usersRouter.delete(
@@ -77,9 +78,9 @@ usersRouter.delete(
     ) => {
         const resData = await usersService.deleteUserById(req.params.id);
         if (!resData) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     });
 

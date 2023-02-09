@@ -1,8 +1,8 @@
 import {Response, Router} from "express";
+import {constants} from 'http2';
 
 import {
     Paginator,
-    HTTP_STATUSES,
     RequestWithBody,
     RequestWithParams,
     RequestWithParamsAndBody, RequestWithParamsAndQuery,
@@ -46,7 +46,7 @@ blogsRouter.get(
             totalCount,
             items
         } = resData || {};
-        res.status(HTTP_STATUSES.OK_200).json({
+        res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
@@ -61,10 +61,10 @@ blogsRouter.get(
     async (req: RequestWithParams<{ id: string }>, res: Response<GetMappedBlogOutputModel>) => {
         const resData = await blogsQueryRepository.findBlogById(req.params.id);
         if (!resData) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
-        res.status(HTTP_STATUSES.OK_200).json(getMappedBlogViewModel(resData));
+        res.status(constants.HTTP_STATUS_OK).json(getMappedBlogViewModel(resData));
     });
 blogsRouter.get(
     '/:id([0-9a-f]{24})/posts',
@@ -82,7 +82,7 @@ blogsRouter.get(
         });
 
         if (!resData) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
 
@@ -93,7 +93,7 @@ blogsRouter.get(
             totalCount,
             items
         } = resData || {};
-        res.status(HTTP_STATUSES.OK_200).json({
+        res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
@@ -110,7 +110,7 @@ blogsRouter.post(
     async (req: RequestWithBody<CreateBlogInputModel>, res: Response<GetMappedBlogOutputModel>
     ) => {
         const createdBlog = await blogsService.createBlog(req.body);
-        res.status(HTTP_STATUSES.CREATED_201).json(getMappedBlogViewModel(createdBlog));
+        res.status(constants.HTTP_STATUS_CREATED).json(getMappedBlogViewModel(createdBlog));
     });
 blogsRouter.post(
     '/:id([0-9a-f]{24})/posts',
@@ -129,10 +129,10 @@ blogsRouter.post(
 
         // Если по какой-то причине не найден блог
         if (!createdPostInBlog) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
-        res.status(HTTP_STATUSES.CREATED_201).json(getMappedPostViewModel(createdPostInBlog));
+        res.status(constants.HTTP_STATUS_CREATED).json(getMappedPostViewModel(createdPostInBlog));
     });
 
 blogsRouter.put(
@@ -145,11 +145,11 @@ blogsRouter.put(
     ) => {
         const isBlogUpdated = await blogsService.updateBlog({id: req.params.id, input: req.body});
         if (!isBlogUpdated) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
 
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT)
     });
 
 blogsRouter.delete(
@@ -160,8 +160,8 @@ blogsRouter.delete(
     async (req: RequestWithParams<{id: string}>, res: Response<void>) => {
         const resData = await blogsService.deleteBlogById(req.params.id);
         if (!resData) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     });

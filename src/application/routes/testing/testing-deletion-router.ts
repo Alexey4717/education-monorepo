@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
+import {constants} from 'http2';
 
-import {HTTP_STATUSES} from "../../../types/common";
 import {db} from "../../../store/mockedDB";
 import {
     blogsCollection,
@@ -31,5 +31,5 @@ testingDeletionRouter.delete('/all-data', async (req: Request, res: Response<voi
         commentsCollection.deleteMany({})
     ]);
 
-    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+    res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
 });

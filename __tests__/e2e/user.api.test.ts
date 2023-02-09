@@ -1,9 +1,12 @@
 import request from "supertest";
+import {MongoMemoryServer} from "mongodb-memory-server";
+import {constants} from 'http2';
+
 import {app} from "../../src/app";
-import {HTTP_STATUSES} from '../../src/types/common'
 import {CreateUserInputModel} from "../../src/models/UserModels/CreateUserInputModel";
 import {GetMappedUserOutputModel} from '../../src/models/UserModels/GetUserOutputModel';
 import {getEncodedAuthToken} from "../../src/helpers";
+
 
 describe('/user', () => {
     const encodedBase64Token = getEncodedAuthToken();
@@ -16,16 +19,24 @@ describe('/user', () => {
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdUser: GetMappedUserOutputModel = createResponse?.body;
         return createdUser;
     };
 
+    let mongoMemoryServer: MongoMemoryServer
+
+    beforeAll(async () => {
+        mongoMemoryServer = await MongoMemoryServer.create()
+        const mongoUri = mongoMemoryServer.getUri()
+        process.env['MONGO_URI'] = mongoUri
+    })
+
     beforeEach(async () => {
         await request(app)
             .delete('/testing/all-data')
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
 
     const notExistingId = '63cde53de1eeeb34059bda94'; // valid format
@@ -59,20 +70,20 @@ describe('/user', () => {
     it('should remove all data', async () => {
         await request(app)
             .delete('/testing/all-data')
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
 
     // testing get '/users' api
     it('should return 401 for not auth user', async () => {
         await request(app)
             .get('/users')
-            .expect(HTTP_STATUSES.NOT_AUTH_401)
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
     it('should return 200 and empty array', async () => {
         await request(app)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 0,
                 page: 1,
                 pageSize: 10,
@@ -91,7 +102,7 @@ describe('/user', () => {
         await request(app)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,
@@ -109,7 +120,7 @@ describe('/user', () => {
         await request(app)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,
@@ -149,7 +160,7 @@ describe('/user', () => {
         await request(app)
             .get('/users?sortBy=login')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,
@@ -160,7 +171,7 @@ describe('/user', () => {
         await request(app)
             .get('/users?sortBy=email&sortDirection=asc')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,
@@ -200,7 +211,7 @@ describe('/user', () => {
         await request(app)
             .get('/users?searchLoginTerm=D')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,
@@ -211,7 +222,7 @@ describe('/user', () => {
         await request(app)
             .get('/users?searchEmailTerm=K')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,
@@ -223,7 +234,7 @@ describe('/user', () => {
         await request(app)
             .get('/users?searchLoginTerm=D&searchEmailTerm=K')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,
@@ -278,7 +289,7 @@ describe('/user', () => {
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(
-                HTTP_STATUSES.OK_200,
+                constants.HTTP_STATUS_OK,
                 {
                     pagesCount: 1,
                     page: 1,
@@ -291,7 +302,7 @@ describe('/user', () => {
         await request(app)
             .get('/users?pageSize=4')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 2,
                 page: 1,
                 pageSize: 4,
@@ -302,7 +313,7 @@ describe('/user', () => {
         await request(app)
             .get('/users?pageNumber=2&pageSize=2')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 3,
                 page: 2,
                 pageSize: 2,
@@ -315,20 +326,20 @@ describe('/user', () => {
     it('should return 401 for not auth user', async () => {
         await request(app)
             .delete(`/users/${notExistingId}`)
-            .expect(HTTP_STATUSES.NOT_AUTH_401)
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
     it('should return 404 for not existing user', async () => {
         await request(app)
             .delete(`/users/${notExistingId}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.NOT_FOUND_404)
+            .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
     it('should return 204 for existing user', async () => {
         const createdUser = await createUser();
         await request(app)
             .delete(`/users/${createdUser?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
 
     // testing post '/users' api
@@ -341,12 +352,12 @@ describe('/user', () => {
         await request(app)
             .post('/users')
             .send(input)
-            .expect(HTTP_STATUSES.NOT_AUTH_401)
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
 
         await request(app)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 0,
                 page: 1,
                 pageSize: 10,
@@ -359,132 +370,132 @@ describe('/user', () => {
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login4)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login5)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login6)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login7)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email4)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email5)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email6)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email7)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password1)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password2)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password3)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password4)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password5)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password6)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password7)
-            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
         await request(app)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 0,
                 page: 1,
                 pageSize: 10,
@@ -502,7 +513,7 @@ describe('/user', () => {
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
-            .expect(HTTP_STATUSES.CREATED_201)
+            .expect(constants.HTTP_STATUS_CREATED)
 
         const createdUser: GetMappedUserOutputModel = createResponse?.body;
         const expectedUser: GetMappedUserOutputModel = {
@@ -517,7 +528,7 @@ describe('/user', () => {
         await request(app)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
-            .expect(HTTP_STATUSES.OK_200, {
+            .expect(constants.HTTP_STATUS_OK, {
                 pagesCount: 1,
                 page: 1,
                 pageSize: 10,

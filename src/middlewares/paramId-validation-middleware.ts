@@ -1,7 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import {ObjectId} from "mongodb";
-
-import {HTTP_STATUSES} from '../types/common';
+import {constants} from 'http2';
 
 
 export const paramIdValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -15,7 +14,7 @@ export const paramIdValidationMiddleware = (req: Request, res: Response, next: N
         });
         const allIdsIsValid = idsEntries.every((entry) => ObjectId.isValid(entry[1]));
         if (!allIdsIsValid) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;
         }
         next();
