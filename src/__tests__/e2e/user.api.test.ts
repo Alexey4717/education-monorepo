@@ -2,7 +2,7 @@ import request from "supertest";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {constants} from 'http2';
 
-import {app} from "../../app";
+import {index} from "../../index";
 import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
 import {GetMappedUserOutputModel} from '../../models/UserModels/GetUserOutputModel';
 import {getEncodedAuthToken} from "../../helpers";
@@ -15,7 +15,7 @@ describe('/user', () => {
         email: 'example@gmail.com',
         password: 'pass123',
     }) => {
-        const createResponse = await request(app)
+        const createResponse = await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -34,7 +34,7 @@ describe('/user', () => {
     })
 
     beforeEach(async () => {
-        await request(app)
+        await request(index)
             .delete('/testing/all-data')
             .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
@@ -68,19 +68,19 @@ describe('/user', () => {
 
     // testing clear all data api
     it('should remove all data', async () => {
-        await request(app)
+        await request(index)
             .delete('/testing/all-data')
             .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
 
     // testing get '/users' api
     it('should return 401 for not auth user', async () => {
-        await request(app)
+        await request(index)
             .get('/users')
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
     it('should return 200 and empty array', async () => {
-        await request(app)
+        await request(index)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -99,7 +99,7 @@ describe('/user', () => {
         };
         const createdUser1 = await createUser(input1);
 
-        await request(app)
+        await request(index)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -117,7 +117,7 @@ describe('/user', () => {
         };
         const createdUser2 = await createUser(input2);
 
-        await request(app)
+        await request(index)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -157,7 +157,7 @@ describe('/user', () => {
         };
         const createdUser4 = await createUser(input4);
 
-        await request(app)
+        await request(index)
             .get('/users?sortBy=login')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -168,7 +168,7 @@ describe('/user', () => {
                 items: [createdUser1, createdUser4, createdUser2, createdUser3]
             });
 
-        await request(app)
+        await request(index)
             .get('/users?sortBy=email&sortDirection=asc')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -208,7 +208,7 @@ describe('/user', () => {
         };
         const createdUser4 = await createUser(input4);
 
-        await request(app)
+        await request(index)
             .get('/users?searchLoginTerm=D')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -219,7 +219,7 @@ describe('/user', () => {
                 items: [createdUser1]
             });
 
-        await request(app)
+        await request(index)
             .get('/users?searchEmailTerm=K')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -231,7 +231,7 @@ describe('/user', () => {
             });
 
         // Возможно некорректный кейс
-        await request(app)
+        await request(index)
             .get('/users?searchLoginTerm=D&searchEmailTerm=K')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -285,7 +285,7 @@ describe('/user', () => {
         };
         const createdUser6 = await createUser(input6);
 
-        await request(app)
+        await request(index)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(
@@ -299,7 +299,7 @@ describe('/user', () => {
                 }
             );
 
-        await request(app)
+        await request(index)
             .get('/users?pageSize=4')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -310,7 +310,7 @@ describe('/user', () => {
                 items: [createdUser6, createdUser5, createdUser4, createdUser3]
             });
 
-        await request(app)
+        await request(index)
             .get('/users?pageNumber=2&pageSize=2')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -324,19 +324,19 @@ describe('/user', () => {
 
     // testing delete '/users/:id' api
     it('should return 401 for not auth user', async () => {
-        await request(app)
+        await request(index)
             .delete(`/users/${notExistingId}`)
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
     it('should return 404 for not existing user', async () => {
-        await request(app)
+        await request(index)
             .delete(`/users/${notExistingId}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_NOT_FOUND)
     })
     it('should return 204 for existing user', async () => {
         const createdUser = await createUser();
-        await request(app)
+        await request(index)
             .delete(`/users/${createdUser?.id}`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_NO_CONTENT)
@@ -349,12 +349,12 @@ describe('/user', () => {
             email: 'example1@gmail.com',
             password: 'pass123',
         };
-        await request(app)
+        await request(index)
             .post('/users')
             .send(input)
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
 
-        await request(app)
+        await request(index)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -366,133 +366,133 @@ describe('/user', () => {
             })
     })
     it(`shouldn't create user with incorrect input data`, async () => {
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login6)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.login7)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email6)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.email7)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password1)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password2)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password3)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password4)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password6)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(invalidInputData.password7)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        await request(app)
+        await request(index)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
@@ -509,7 +509,7 @@ describe('/user', () => {
             email: 'example1@gmail.com',
             password: 'pass123',
         };
-        const createResponse = await request(app)
+        const createResponse = await request(index)
             .post('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send(input)
@@ -525,7 +525,7 @@ describe('/user', () => {
 
         expect(createdUser).toEqual(expectedUser);
 
-        await request(app)
+        await request(index)
             .get('/users')
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .expect(constants.HTTP_STATUS_OK, {
