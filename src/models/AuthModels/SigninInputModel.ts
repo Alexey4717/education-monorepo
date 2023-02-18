@@ -1,4 +1,4 @@
-export type LoginInputModel = {
+export type SigninInputModel = {
     /**
      * Set loginOrEmail for searching user by login or email.
      */

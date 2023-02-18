@@ -1,28 +1,8 @@
 import {ObjectId} from 'mongodb';
+import {AccountDataType, UserType} from "./CreateUserInsertToDBModel";
 
 
-export type GetUserOutputModel = {
-    /**
-     * User login, required.
-     */
-    login: string
-
-    /**
-     * User email, required.
-     */
-    email: string
-
-    /**
-     * User password hash.
-     */
-    // на время необязательным сделал, нужно разобраться
-    passwordHash?: string
-
-    /**
-     * Date of created user.
-     */
-    createdAt: string
-}
+export type GetUserOutputModel = UserType;
 
 export type GetUserOutputModelFromMongoDB = GetUserOutputModel & {
     /**
@@ -31,7 +11,7 @@ export type GetUserOutputModelFromMongoDB = GetUserOutputModel & {
     _id: ObjectId
 }
 
-export type GetMappedUserOutputModel = GetUserOutputModel & {
+export type GetMappedUserOutputModel = Omit<AccountDataType, 'passwordHash'> & {
     /**
      * Mapped id of user from db
      */

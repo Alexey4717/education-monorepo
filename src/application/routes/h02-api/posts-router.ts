@@ -142,7 +142,7 @@ postsRouter.post(
             postId: req.params.postId,
             content: req.body.content,
             userId: req.context.user._id.toString(),
-            userLogin: req.context.user.login
+            userLogin: req.context.user.accountData.login
         })
 
         // Если не найден пост

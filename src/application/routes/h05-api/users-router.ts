@@ -15,7 +15,7 @@ import {GetMappedUserOutputModel} from "../../../models/UserModels/GetUserOutput
 import {getMappedUserViewModel} from "../../../helpers";
 import {usersQueryRepository} from "../../../repositories/Queries-repo/users-query-repository";
 import {SortUsersBy} from "../../../models/UserModels/GetUsersInputModel";
-import {usersService} from "../../../domain/users-service";
+import {authService} from "../../../domain/auth-service";
 import {adminBasicAuthMiddleware} from "../../../middlewares/admin-basicAuth-middleware";
 import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
@@ -64,7 +64,7 @@ usersRouter.post(
         req: RequestWithBody<CreateUserInputModel>,
         res: Response<GetMappedUserOutputModel>
     ) => {
-        const createdUser = await usersService.createUser(req.body);
+        const createdUser = await authService.createUser(req.body);
         res.status(constants.HTTP_STATUS_CREATED).json(getMappedUserViewModel(createdUser));
     });
 
@@ -76,7 +76,7 @@ usersRouter.delete(
         req: RequestWithParams<DeleteUserInputModel>,
         res: Response
     ) => {
-        const resData = await usersService.deleteUserById(req.params.id);
+        const resData = await authService.deleteUserById(req.params.id);
         if (!resData) {
             res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
             return;

@@ -1,5 +1,6 @@
-import {usersCollection} from "../../store/db";
 import {ObjectId} from "mongodb";
+
+import {usersCollection} from "../../store/db";
 import {GetUserOutputModelFromMongoDB} from "../../models/UserModels/GetUserOutputModel";
 import {CreateUserInsertToDBModel} from "../../models/UserModels/CreateUserInsertToDBModel";
 
@@ -7,20 +8,11 @@ import {CreateUserInsertToDBModel} from "../../models/UserModels/CreateUserInser
 export const usersRepository = {
     async createUser(newUser: CreateUserInsertToDBModel): Promise<GetUserOutputModelFromMongoDB> {
         try {
-            const {
-                login,
-                email,
-                passwordHash,
-                createdAt
-            } = newUser
             const result = await usersCollection.insertOne(newUser);
             if (!result.insertedId) throw new Error('Insert user error');
             const createdUser = {
+                ...newUser,
                 _id: result.insertedId,
-                login,
-                email,
-                createdAt,
-                passwordHash
             };
             return createdUser
         } catch (error) {
@@ -41,5 +33,17 @@ export const usersRepository = {
             console.log(`usersRepository.deleteUserById error is occurred: ${error}`)
             return false;
         }
-    }
+    },
+
+    async updateConfirmation(userId: ObjectId): Promise<boolean> {
+        const result = await usersCollection.updateOne(
+            {_id: userId},
+            {$set: {'emailConfirmation.isConfirmed': true}}
+        );
+        return result.modifiedCount === 1;
+    },
+
+    async findByConfirmationCode(code: string): Promise<GetUserOutputModelFromMongoDB | null> {
+        return usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+    },
 };

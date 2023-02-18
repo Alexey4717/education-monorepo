@@ -67,23 +67,20 @@ export const getMappedPostViewModel = ({
 
 export const getMappedUserViewModel = ({
                                            _id,
-                                           login,
-                                           email,
-                                           createdAt
+                                           accountData,
                                        }: GetUserOutputModelFromMongoDB): GetMappedUserOutputModel => ({
     id: _id.toString(),
-    login,
-    email,
-    createdAt
+    login: accountData.login,
+    email: accountData.email,
+    createdAt: accountData.createdAt
 });
 
 export const getMappedMeViewModel = ({
                                          _id,
-                                         login,
-                                         email
+                                         accountData,
                                      }: GetUserOutputModelFromMongoDB): MeOutputModel => ({
-    email,
-    login,
+    email: accountData.email,
+    login: accountData.login,
     userId: _id.toString(),
 });
 

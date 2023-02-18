@@ -11,7 +11,7 @@ import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel
 import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
 import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
 import {GetMappedUserOutputModel} from "../../models/UserModels/GetUserOutputModel";
-import {LoginInputModel} from "../../models/AuthModels/LoginInputModel";
+import {SigninInputModel} from "../../models/AuthModels/SigninInputModel";
 
 
 const mockedcreatedBlogId = new ObjectId().toString();
@@ -868,7 +868,7 @@ describe('comments in post', () => {
         return createdUser;
     };
 
-    const auth = async (input: LoginInputModel = {
+    const auth = async (input: SigninInputModel = {
         loginOrEmail: 'example@gmail.com',
         password: 'pass123'
     }) => {

@@ -8,7 +8,7 @@ import {getEncodedAuthToken} from "../../helpers";
 import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
 import {app} from "../../index";
 import {GetMappedUserOutputModel} from "../../models/UserModels/GetUserOutputModel";
-import {LoginInputModel} from "../../models/AuthModels/LoginInputModel";
+import {SigninInputModel} from "../../models/AuthModels/SigninInputModel";
 import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel";
 import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
 import {CreatePostInputModel} from "../../models/PostModels/CreatePostInputModel";
@@ -36,7 +36,7 @@ describe('CRUD comments', () => {
         return createdUser;
     };
 
-    const auth = async (input: LoginInputModel = {
+    const auth = async (input: SigninInputModel = {
         loginOrEmail: 'example@gmail.com',
         password: 'pass123'
     }) => {
