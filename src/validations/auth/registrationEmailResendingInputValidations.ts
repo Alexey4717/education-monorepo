@@ -1,8 +1,8 @@
 import {commonValidationForBodyStrings} from "../common";
-import {emailValidation} from "./index";
+import {emailResendingValidation} from "./index";
 
 
 export const registrationEmailResendingInputValidations = [
     commonValidationForBodyStrings('email'),
-    emailValidation
+    emailResendingValidation
 ];

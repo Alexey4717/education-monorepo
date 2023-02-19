@@ -3,6 +3,7 @@ dotenv.config();
 
 import type {SendEmailConfirmationMessageInputType} from "./types";
 import {emailService} from "../domain/email-service";
+import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 
 
 export const emailManager = {
@@ -22,18 +23,17 @@ export const emailManager = {
         });
     },
 
-    async sendPasswordRecoveryMessage(user: any) {
-        const subject = 'Password recovery';
-        const message = `
-            <p>To recovery your password please follow the link below:
-                <a href='https://somesite.com/confirm-email?code=your_confirmation_code'>recovery password</a>
-            </p>
-        `;
-
-        await emailService.sendPasswordRecoveryMessage({
-            email: user.email,
-            subject,
-            message
+    async sendPasswordRecoveryMessage(user: GetUserOutputModelFromMongoDB) {
+        return await emailService.sendPasswordRecoveryMessage({
+            email: user.accountData.email,
+            subject: 'Password recovery',
+            message: `
+                <p>To recovery your password please follow the link below:
+                    <a href='${process.env.MAIN_URL}/confirm-registration?code=${user.emailConfirmation.confirmationCode}'>
+                        recovery password
+                    </a>
+                </p>
+            `,
         });
     },
 };

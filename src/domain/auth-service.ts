@@ -36,12 +36,8 @@ export const authService = {
 
     async resendConfirmationMessage(email: string): Promise<boolean> {
         const foundUser = await usersRepository.findByLoginOrEmail(email);
-
         if (!foundUser) return false;
-        return await emailManager.sendEmailConfirmationMessage({
-            email,
-            confirmationCode: foundUser.emailConfirmation.confirmationCode
-        });
+        return await emailManager.sendPasswordRecoveryMessage(foundUser);
     },
 
     async confirmEmail(code: string): Promise<boolean> {
@@ -87,10 +83,7 @@ export const authService = {
             },
             emailConfirmation: {
                 confirmationCode: uuidv4(), // generate unique id
-                expirationDate: add(new Date(), {
-                    // hours: 1,
-                    minutes: 3
-                }),
+                expirationDate: add(new Date(), {hours: 1}),
                 isConfirmed,
             },
         }

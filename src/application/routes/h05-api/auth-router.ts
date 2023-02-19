@@ -100,7 +100,7 @@ authRouter.post(
             return;
         }
 
-        res.status(constants.HTTP_STATUS_NO_CONTENT);
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     });
 
 // for testing mail sending

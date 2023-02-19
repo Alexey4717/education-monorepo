@@ -22,7 +22,12 @@ export const usersRepository = {
     },
 
     async findByLoginOrEmail(loginOrEmail: string): Promise<GetUserOutputModelFromMongoDB | null> {
-        return usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]});
+        return await usersCollection.findOne({
+            $or: [
+                {'accountData.login': loginOrEmail},
+                {'accountData.email': loginOrEmail}
+            ]
+        });
     },
 
     async deleteUserById(id: string): Promise<boolean> {

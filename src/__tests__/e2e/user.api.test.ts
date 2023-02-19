@@ -66,13 +66,6 @@ describe('/user', () => {
         password7: {login: 'login123', email: 'example@gmail.com', password: 'fffffffffffffffffffff'},
     }
 
-    // testing clear all data api
-    it('should remove all data', async () => {
-        await request(app)
-            .delete('/testing/all-data')
-            .expect(constants.HTTP_STATUS_NO_CONTENT)
-    })
-
     // testing get '/users' api
     it('should return 401 for not auth user', async () => {
         await request(app)
