@@ -35,5 +35,6 @@ export const emailResendingValidation = body('email').isEmail({})
     .custom(async (value: string) => {
         const foundUser = await usersRepository.findByLoginOrEmail(value);
         if (!foundUser) throw new Error(`User not found`);
+        if (foundUser.emailConfirmation.isConfirmed) throw new Error(`Email already confirmed`);
         return true;
     });

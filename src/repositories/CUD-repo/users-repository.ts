@@ -3,6 +3,7 @@ import {ObjectId} from "mongodb";
 import {usersCollection} from "../../store/db";
 import {GetUserOutputModelFromMongoDB} from "../../models/UserModels/GetUserOutputModel";
 import {CreateUserInsertToDBModel} from "../../models/UserModels/CreateUserInsertToDBModel";
+import {UpdateUserConfirmationCodeInputType} from "./types";
 
 
 export const usersRepository = {
@@ -44,6 +45,14 @@ export const usersRepository = {
         const result = await usersCollection.updateOne(
             {_id: userId},
             {$set: {'emailConfirmation.isConfirmed': true}}
+        );
+        return result.modifiedCount === 1;
+    },
+
+    async updateUserConfirmationCode({userId, newCode}: UpdateUserConfirmationCodeInputType): Promise<boolean> {
+        const result = await usersCollection.updateOne(
+            {_id: userId},
+            {$set: {'emailConfirmation.confirmationCode': newCode}}
         );
         return result.modifiedCount === 1;
     },

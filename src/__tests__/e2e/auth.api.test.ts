@@ -88,7 +88,7 @@ describe('/auth', () => {
     }
 
     // testing post '/auth/registration-email-resending' api
-    it('should return 204 if valid input data', async () => {
+    it('should return 204 if valid input data and new confirmation code', async () => {
         await request(app)
             .post('/auth/registration')
             .send({
@@ -98,10 +98,47 @@ describe('/auth', () => {
             })
             .expect(constants.HTTP_STATUS_NO_CONTENT)
 
+        const response = await request(app)
+            .get('/users')
+            .set('Authorization', `Basic ${adminBasicToken}`)
+
+        const userId = new ObjectId(response.body.items[0].id);
+
+        const {emailConfirmation} = await usersCollection.findOne({_id: new ObjectId(userId)}) || {};
+
+        const oldConfirmationCode = emailConfirmation?.confirmationCode
+        expect(oldConfirmationCode).not.toBeUndefined();
+        expect(emailConfirmation?.isConfirmed).not.toBeUndefined();
+        expect(emailConfirmation?.isConfirmed).toBe(false);
+
         await request(app)
             .post('/auth/registration-email-resending')
             .send({email: 'lehabourne@gmail.com'})
             .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        const {
+            emailConfirmation: newEmailConfirmation
+        } = await usersCollection.findOne({_id: new ObjectId(userId)}) || {};
+
+        const newConfirmationCode = newEmailConfirmation?.confirmationCode
+        expect(newConfirmationCode).not.toBeUndefined();
+        expect(oldConfirmationCode).not.toEqual(newConfirmationCode);
+    }, 10000)
+    it('should return 400 if email already verified', async () => {
+        const {id: userId} = await createUser({
+            login: 'login12',
+            email: 'lehabourne@gmail.com',
+            password: 'pass123',
+        }); // when user created by admin, he is already verified
+        const {emailConfirmation} = await usersCollection.findOne({_id: new ObjectId(userId)}) || {};
+
+        expect(emailConfirmation?.isConfirmed).not.toBeUndefined();
+        expect(emailConfirmation?.isConfirmed).toBe(true);
+
+        await request(app)
+            .post('/auth/registration-email-resending')
+            .send({email: 'lehabourne@gmail.com'})
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
     }, 10000)
     it('should return 400 if not found email', async () => {
         await request(app)
