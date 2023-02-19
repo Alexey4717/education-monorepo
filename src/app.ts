@@ -1,9 +1,10 @@
 import * as dotenv from "dotenv";
+
 dotenv.config();
 
 import express, {Request, Response, NextFunction, Express} from "express";
+import cookieParser from "cookie-parser";
 
-import {runDB} from "./store/db";
 import {authRouter} from "./application/routes/h05-api/auth-router";
 import {videosRouter} from "./application/routes/h01-videos/videos-router";
 import {blogsRouter} from "./application/routes/h02-api/blogs-router";
@@ -14,13 +15,13 @@ import {RequestContextType} from "./types/common";
 import {commentsRouter} from "./application/routes/h06-comments/comments-router";
 
 export const configApp = (app: Express) => {
-    const jsonMiddleware = express.json();
+    app.use(cookieParser());
+    app.use(express.json());
 
-    app.use(jsonMiddleware);
     app.use((req: Request, res: Response, next: NextFunction) => {
         req.context = {} as RequestContextType;
         next();
-    })
+    });
     app.use('/auth', authRouter);
     app.use('/users', usersRouter);
     app.use('/videos', videosRouter);

@@ -3,22 +3,48 @@ import {ObjectId} from 'mongodb';
 
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 import {settings} from "../settings";
+import {TokenTypes} from "../types/common";
+
+
+type CreateJWTInputType = {
+    accessToken: string
+    refreshToken: string
+};
+
+type ManageTokenInputType = {
+    token: string
+    type: TokenTypes
+};
 
 export const jwtService = {
-    async createJWT(user: GetUserOutputModelFromMongoDB): Promise<string> {
-        return jwt.sign(
+    async createJWT(user: GetUserOutputModelFromMongoDB): Promise<CreateJWTInputType> {
+        const accessToken = jwt.sign(
             {userId: user._id},
             settings.JWT_SECRET,
-            {expiresIn: '15m'}
+            {expiresIn: '10s'}
         );
+
+        const refreshToken = jwt.sign(
+            {userId: user._id},
+            settings.REFRESH_JWT_SECRET,
+            {expiresIn: '20s'}
+        );
+
+        return {
+            accessToken,
+            refreshToken
+        }
     },
 
-    async getUserIdByToken(token: string): Promise<ObjectId | null> {
+    async getUserIdByToken({token, type}: ManageTokenInputType): Promise<ObjectId | null> {
         try {
-            const decoded = jwt.verify(token, settings.JWT_SECRET);
+            const secret = type === TokenTypes.access
+                ? settings.JWT_SECRET
+                : settings.REFRESH_JWT_SECRET;
+            const decoded = jwt.verify(token, secret);
             return new ObjectId((decoded as JwtPayload).userId);
         } catch {
             return null;
         }
-    }
+    },
 };

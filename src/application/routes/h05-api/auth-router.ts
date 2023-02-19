@@ -2,7 +2,7 @@ import {Request, Response, Router} from "express";
 import {constants} from 'http2';
 
 import {authService} from "../../../domain/auth-service";
-import {RequestWithBody} from "../../../types/common";
+import {RequestWithBody, TokenTypes} from "../../../types/common";
 import {SigninInputModel} from "../../../models/AuthModels/SigninInputModel";
 import {jwtService} from "../../jwt-service";
 import {loginInputValidations} from "../../../validations/auth/loginInputValidations";
@@ -19,6 +19,9 @@ import {
 import {
     registrationEmailResendingInputValidations
 } from "../../../validations/auth/registrationEmailResendingInputValidations";
+import {refreshTokenInputValidations} from "../../../validations/auth/refreshTokenInputValidations";
+import {RefreshTokenInputModel} from "../../../models/AuthModels/RefreshTokenInputModel";
+import {usersQueryRepository} from "../../../repositories/Queries-repo/users-query-repository";
 
 
 export const authRouter = Router({})
@@ -41,8 +44,56 @@ authRouter.post(
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
             return;
         }
-        const accessToken = await jwtService.createJWT(user);
-        res.status(constants.HTTP_STATUS_OK).json({accessToken});
+        const {accessToken, refreshToken} = await jwtService.createJWT(user);
+        res
+            .status(constants.HTTP_STATUS_OK)
+            .cookie("refreshToken", refreshToken, {httpOnly: true, secure: true})
+            .json({accessToken});
+    });
+authRouter.post(
+    '/refresh-token',
+    refreshTokenInputValidations,
+    inputValidationsMiddleware,
+    async (
+        req: RequestWithBody<RefreshTokenInputModel>,
+        res: Response
+    ) => {
+        // If the JWT refreshToken inside cookie is missing, expired or incorrect return 401
+        const refreshToken = req?.cookies?.refreshToken;
+        if (!refreshToken) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+            return
+        }
+        const refreshTokenIsValid = Boolean(
+            await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh})
+        );
+        if (!refreshTokenIsValid) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+            return
+        }
+        // for what accessToken???
+        const {accessToken} = req.body || {};
+        const userId = await jwtService.getUserIdByToken({token: accessToken, type: TokenTypes.access});
+        if (!userId) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
+            return;
+        }
+        const user = await usersQueryRepository.findUserById(userId);
+        if (!user) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
+            return;
+        }
+        const {
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken
+        } = await jwtService.createJWT(user);
+
+        res
+            .status(constants.HTTP_STATUS_OK)
+            // rewrite after set new cookie??
+            // .clearCookie("refreshToken")
+            .cookie("refreshToken", newRefreshToken, {httpOnly: true, secure: true})
+            .json({newAccessToken});
     });
 authRouter.post(
     '/registration',
@@ -102,24 +153,29 @@ authRouter.post(
 
         res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     });
-
-// for testing mail sending
-// authRouter.post(
-//     '/send',
-//     async (
-//         req: RequestWithBody<any>,
-//         res: Response
-//     ) => {
-//         const {
-//             message,
-//             subject,
-//             email
-//         } = req.body || {};
-//
-//         const result = await emailManager.sendEmailConfirmationMessage({email});
-//
-//         res.status(constants.HTTP_STATUS_OK).json({result});
-//     });
+authRouter.post(
+    '/logout',
+    async (
+        req: Request,
+        res: Response
+    ) => {
+        // If the JWT refreshToken inside cookie is missing, expired or incorrect return 401
+        const refreshToken = req?.cookies?.refreshToken;
+        if (!refreshToken) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+            return
+        }
+        const refreshTokenIsValid = Boolean(
+            await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh})
+        );
+        if (!refreshTokenIsValid) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+            return
+        }
+        return res
+            .clearCookie("refreshToken")
+            .sendStatus(constants.HTTP_STATUS_NO_CONTENT);
+    });
 
 authRouter.get(
     '/me',

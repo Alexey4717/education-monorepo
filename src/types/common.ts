@@ -32,9 +32,15 @@ export const enum CommentManageStatuses {
     SUCCESS = 'SUCCESS',
 }
 
+export const enum TokenTypes {
+    refresh = 'refresh',
+    access = 'access'
+}
+
 export type SettingsType = {
     MONGO_URI: string
     JWT_SECRET: Secret
+    REFRESH_JWT_SECRET: Secret
     DB_NAME: string
     ID_PATTERN_BY_DB_TYPE: string
 }
