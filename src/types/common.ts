@@ -43,6 +43,8 @@ export type SettingsType = {
     REFRESH_JWT_SECRET: Secret
     DB_NAME: string
     ID_PATTERN_BY_DB_TYPE: string
+    JWT_EXPIRATION: string | number | undefined
+    JWT_REFRESH_EXPIRATION: string | number | undefined
 }
 
 export type RequestContextType = {

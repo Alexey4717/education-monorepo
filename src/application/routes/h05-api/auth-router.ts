@@ -19,9 +19,9 @@ import {
 import {
     registrationEmailResendingInputValidations
 } from "../../../validations/auth/registrationEmailResendingInputValidations";
-import {refreshTokenInputValidations} from "../../../validations/auth/refreshTokenInputValidations";
 import {RefreshTokenInputModel} from "../../../models/AuthModels/RefreshTokenInputModel";
 import {usersQueryRepository} from "../../../repositories/Queries-repo/users-query-repository";
+import {GetUserOutputModelFromMongoDB} from "../../../models/UserModels/GetUserOutputModel";
 
 
 export const authRouter = Router({})
@@ -52,8 +52,6 @@ authRouter.post(
     });
 authRouter.post(
     '/refresh-token',
-    refreshTokenInputValidations,
-    inputValidationsMiddleware,
     async (
         req: RequestWithBody<RefreshTokenInputModel>,
         res: Response
@@ -64,29 +62,15 @@ authRouter.post(
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
-        const refreshTokenIsValid = Boolean(
-            await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh})
-        );
-        if (!refreshTokenIsValid) {
+        const userId = await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh});
+        if (!userId) {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
-        }
-        // for what accessToken???
-        const {accessToken} = req.body || {};
-        const userId = await jwtService.getUserIdByToken({token: accessToken, type: TokenTypes.access});
-        if (!userId) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
-            return;
-        }
-        const user = await usersQueryRepository.findUserById(userId);
-        if (!user) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
-            return;
         }
         const {
             accessToken: newAccessToken,
             refreshToken: newRefreshToken
-        } = await jwtService.createJWT(user);
+        } = await jwtService.createJWT({_id: userId} as GetUserOutputModelFromMongoDB);
 
         res
             .status(constants.HTTP_STATUS_OK)

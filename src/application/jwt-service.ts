@@ -21,13 +21,13 @@ export const jwtService = {
         const accessToken = jwt.sign(
             {userId: user._id},
             settings.JWT_SECRET,
-            {expiresIn: '10s'}
+            {expiresIn: settings.JWT_EXPIRATION}
         );
 
         const refreshToken = jwt.sign(
             {userId: user._id},
             settings.REFRESH_JWT_SECRET,
-            {expiresIn: '20s'}
+            {expiresIn: settings.JWT_REFRESH_EXPIRATION}
         );
 
         return {
