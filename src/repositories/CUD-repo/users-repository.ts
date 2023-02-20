@@ -6,6 +6,11 @@ import {CreateUserInsertToDBModel} from "../../models/UserModels/CreateUserInser
 import {UpdateUserConfirmationCodeInputType} from "./types";
 
 
+type SetRefreshTokenToUserInputType = {
+    userId: ObjectId
+    refreshToken: string
+};
+
 export const usersRepository = {
     async createUser(newUser: CreateUserInsertToDBModel): Promise<GetUserOutputModelFromMongoDB> {
         try {
@@ -19,6 +24,42 @@ export const usersRepository = {
         } catch (error) {
             console.log(`usersRepository.createUser error is occurred: ${error}`)
             return {} as GetUserOutputModelFromMongoDB;
+        }
+    },
+
+    async setRefreshTokenToUser({userId, refreshToken}: SetRefreshTokenToUserInputType): Promise<boolean> {
+        try {
+            const result = await usersCollection.updateOne(
+                {_id: userId},
+                {$set: {'accountData.refreshToken': refreshToken}}
+            );
+            return result.modifiedCount === 1;
+        } catch (error) {
+            console.log(`usersRepository.setRefreshTokenToUser error is occurred: ${error}`)
+            return false;
+        }
+    },
+
+    async deleteRefreshTokenFromUser(userId: ObjectId): Promise<boolean> {
+        try {
+            const result = await usersCollection.updateOne(
+                {_id: userId},
+                {$unset: {'accountData.refreshToken': 1}}
+            );
+            return result.modifiedCount === 1;
+        } catch (error) {
+            console.log(`usersRepository.deleteRefreshTokenByUserId error is occurred: ${error}`)
+            return false;
+        }
+    },
+
+    async refreshTokenIsValid({userId, refreshToken}: SetRefreshTokenToUserInputType): Promise<boolean> {
+        try {
+            const user = await usersCollection.findOne({_id: userId});
+            return user?.accountData?.refreshToken === refreshToken;
+        } catch (error) {
+            console.log(`usersRepository.refreshTokenIsValid error is occurred: ${error}`)
+            return false;
         }
     },
 

@@ -63,12 +63,13 @@ authRouter.post(
             return
         }
         const userId = await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh});
-        if (!userId) {
+        const isFoundToken = await jwtService.findToken(refreshToken);
+        if (!userId || !isFoundToken) {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
         const {
-            accessToken: newAccessToken,
+            accessToken,
             refreshToken: newRefreshToken
         } = await jwtService.createJWT({_id: userId} as GetUserOutputModelFromMongoDB);
 
@@ -77,7 +78,7 @@ authRouter.post(
             // rewrite after set new cookie??
             // .clearCookie("refreshToken")
             .cookie("refreshToken", newRefreshToken, {httpOnly: true, secure: true})
-            .json({newAccessToken});
+            .json({accessToken});
     });
 authRouter.post(
     '/registration',
@@ -149,13 +150,13 @@ authRouter.post(
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
-        const refreshTokenIsValid = Boolean(
-            await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh})
-        );
-        if (!refreshTokenIsValid) {
+        const userId = await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh});
+        const isFoundToken = await jwtService.findToken(refreshToken);
+        if (!userId || !isFoundToken) {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
+        await jwtService.removeToken(userId);
         return res
             .clearCookie("refreshToken")
             .sendStatus(constants.HTTP_STATUS_NO_CONTENT);

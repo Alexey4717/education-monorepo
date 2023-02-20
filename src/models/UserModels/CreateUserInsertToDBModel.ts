@@ -21,6 +21,11 @@ export type AccountDataType = {
      * Created date of user.
      */
     createdAt: string
+
+    /**
+     * Refresh JWT token for auth user.
+     */
+    refreshToken?: string
 }
 
 export type EmailConfirmationType = {

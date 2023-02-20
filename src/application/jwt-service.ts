@@ -4,6 +4,7 @@ import {ObjectId} from 'mongodb';
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 import {settings} from "../settings";
 import {TokenTypes} from "../types/common";
+import {usersRepository} from "../repositories/CUD-repo/users-repository";
 
 
 type CreateJWTInputType = {
@@ -30,6 +31,10 @@ export const jwtService = {
             {expiresIn: settings.JWT_REFRESH_EXPIRATION}
         );
 
+        await usersRepository.setRefreshTokenToUser({userId: user._id, refreshToken});
+
+        // можно здесь сохранять в БД рефреш токен
+
         return {
             accessToken,
             refreshToken
@@ -46,5 +51,15 @@ export const jwtService = {
         } catch {
             return null;
         }
+    },
+
+    async removeToken(userId: ObjectId): Promise<boolean> {
+        return await usersRepository.deleteRefreshTokenFromUser(userId)
+    },
+
+    async findToken(refreshToken: string): Promise<boolean> {
+        const userId = await this.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh});
+        if (!userId) return false;
+        return await usersRepository.refreshTokenIsValid({userId, refreshToken});
     },
 };
