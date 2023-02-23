@@ -46,7 +46,7 @@ describe('/auth', () => {
                 expect(decoded).toBeUndefined();
             }
         );
-    }
+    };
 
     let mongoMemoryServer: MongoMemoryServer
 
@@ -711,6 +711,29 @@ describe('/auth', () => {
         await request(app)
             .post('/auth/logout')
             .set('Cookie', [`refreshToken=${expiredToken}`])
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+    }, 20000)
+    it(`after logout refreshToken should be not valid for refreshing`, async () => {
+        await createUser();
+        const loginResponse = await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'login12', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_OK)
+
+        const loginCookies = loginResponse.headers['set-cookie']
+
+        const refreshToken = getRefreshTokenFromCookie(loginCookies) as string;
+
+        expect(refreshToken).not.toBeUndefined();
+
+        await request(app)
+            .post('/auth/logout')
+            .set('Cookie', [`refreshToken=${refreshToken}`])
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        await request(app)
+            .post('/auth/refresh-token')
+            .set('Cookie', [`refreshToken=${refreshToken}`])
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     }, 20000)
 
