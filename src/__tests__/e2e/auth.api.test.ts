@@ -3,12 +3,14 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import {constants} from 'http2';
 import {v4 as uuidv4} from 'uuid';
 import {ObjectId} from "mongodb";
+import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken';
 
 import {app} from "../../index";
 import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
 import {GetMappedUserOutputModel} from '../../models/UserModels/GetUserOutputModel';
 import {getEncodedAuthToken} from "../../helpers";
 import {usersCollection} from "../../store/db";
+import {settings} from "../../settings";
 
 
 describe('/auth', () => {
@@ -27,6 +29,24 @@ describe('/auth', () => {
         const createdUser: GetMappedUserOutputModel = createResponse?.body;
         return createdUser;
     };
+
+    const getRefreshTokenFromCookie = (cookie?: string[]) => {
+        return cookie
+            ?.find((item: string) => item.split('=')[0] === 'refreshToken')
+            ?.split('=')[1];
+    };
+
+    const getExpiredToken = async (token: string) => {
+        return await jwt.verify(
+            token,
+            settings.REFRESH_JWT_SECRET,
+            {clockTimestamp: new Date('12-12-3000').valueOf()},
+            (error: VerifyErrors | null, decoded?: JwtPayload | string) => {
+                expect(error).not.toBeUndefined();
+                expect(decoded).toBeUndefined();
+            }
+        );
+    }
 
     let mongoMemoryServer: MongoMemoryServer
 
@@ -294,7 +314,7 @@ describe('/auth', () => {
             .post('/auth/registration')
             .send(invalidInputData.password7)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
-    })
+    }, 20000)
     it('should return 400 if email or login already exists', async () => {
         await request(app)
             .post('/auth/registration')
@@ -449,6 +469,21 @@ describe('/auth', () => {
             .get('/auth/me')
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
+    it('should return 401 if accessToken is expired', async () => {
+        await createUser();
+        const authData = await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_OK)
+
+        const {accessToken} = authData?.body || {};
+        const expiredToken = await getExpiredToken(accessToken);
+
+        await request(app)
+            .get('/auth/me')
+            .set('Authorization', `Bearer ${expiredToken}`)
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+    })
     it(
         'should return 200 and access token of current auth user if loginOrEmail and password are correct',
         async () => {
@@ -550,12 +585,133 @@ describe('/auth', () => {
             .send(invalidInputData.password5)
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
     })
-    it(`should auth with correct input data`, async () => {
+    it(`should return 200, accessToken in body and refreshToken with cookie if correct input data`, async () => {
         await createUser();
-        await request(app)
+        const response = await request(app)
             .post('/auth/login')
             .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
             .expect(constants.HTTP_STATUS_OK)
+
+        const cookies = response.headers['set-cookie']
+
+        const accessToken = response?.body?.accessToken;
+        const refreshToken = getRefreshTokenFromCookie(cookies);
+
+        expect(accessToken).not.toBeUndefined();
+        expect(refreshToken).not.toBeUndefined();
     })
+
+    // testing post '/auth/refresh-token' api
+    it(`should return 200, accessToken in body and refreshToken with cookie`, async () => {
+        await createUser();
+        const loginResponse = await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'login12', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_OK)
+
+        const loginCookies = loginResponse.headers['set-cookie']
+
+        const accessToken1 = loginResponse?.body?.accessToken;
+        const refreshToken1 = getRefreshTokenFromCookie(loginCookies);
+
+        expect(accessToken1).not.toBeUndefined();
+        expect(refreshToken1).not.toBeUndefined();
+
+        const refreshResponse = await request(app)
+            .post('/auth/refresh-token')
+            .set('Cookie', [`refreshToken=${refreshToken1}`])
+            .expect(constants.HTTP_STATUS_OK)
+
+        const refreshCookies = refreshResponse.headers['set-cookie']
+
+        const accessToken2 = refreshResponse?.body?.accessToken;
+        const refreshToken2 = getRefreshTokenFromCookie(refreshCookies);
+
+        expect(accessToken2).not.toBeUndefined();
+        expect(refreshToken2).not.toBeUndefined();
+
+        expect(accessToken1 === accessToken2).not.toBeTruthy();
+        expect(refreshToken1 === refreshToken2).not.toBeTruthy();
+    }, 20000)
+    it(`should return 401 if refreshToken inside cookie is missing`, async () => {
+        await request(app)
+            .post('/auth/refresh-token')
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+    }, 10000)
+    it(`should return 401 if refreshToken inside cookie is incorrect`, async () => {
+        await request(app)
+            .post('/auth/refresh-token')
+            .set('Cookie', [`refreshToken=incorrectToken`])
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+    }, 10000)
+    it(`should return 401 if refreshToken inside cookie is expired`, async () => {
+        await createUser();
+        const loginResponse = await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'login12', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_OK)
+
+        const loginCookies = loginResponse.headers['set-cookie']
+
+        const refreshToken = getRefreshTokenFromCookie(loginCookies) as string;
+
+        expect(refreshToken).not.toBeUndefined();
+
+        const expiredToken = await getExpiredToken(refreshToken);
+        await request(app)
+            .post('/auth/refresh-token')
+            .set('Cookie', [`refreshToken=${expiredToken}`])
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+    }, 20000)
+
+    // testing post '/auth/logout' api
+    it(`should return 204 if correct refreshToken in cookie`, async () => {
+        await createUser();
+        const loginResponse = await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'login12', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_OK)
+
+        const loginCookies = loginResponse.headers['set-cookie']
+
+        const refreshToken = getRefreshTokenFromCookie(loginCookies);
+
+        expect(refreshToken).not.toBeUndefined();
+
+        await request(app)
+            .post('/auth/logout')
+            .set('Cookie', [`refreshToken=${refreshToken}`])
+            .expect(constants.HTTP_STATUS_NO_CONTENT);
+    }, 20000)
+    it(`should return 401 if refreshToken inside cookie is missing`, async () => {
+        await request(app)
+            .post('/auth/logout')
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+    }, 10000)
+    it(`should return 401 if refreshToken inside cookie is incorrect`, async () => {
+        await request(app)
+            .post('/auth/logout')
+            .set('Cookie', [`refreshToken=incorrectToken`])
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+    }, 10000)
+    it(`should return 401 if refreshToken inside cookie is expired`, async () => {
+        await createUser();
+        const loginResponse = await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'login12', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_OK)
+
+        const loginCookies = loginResponse.headers['set-cookie']
+
+        const refreshToken = getRefreshTokenFromCookie(loginCookies) as string;
+
+        expect(refreshToken).not.toBeUndefined();
+
+        const expiredToken = await getExpiredToken(refreshToken);
+        await request(app)
+            .post('/auth/logout')
+            .set('Cookie', [`refreshToken=${expiredToken}`])
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+    }, 20000)
 
 });
