@@ -1,139 +1,47 @@
-import {Response, Router} from "express";
-import {constants} from 'http2';
+import {Router} from "express";
 
-import {
-    Paginator,
-    RequestWithBody,
-    RequestWithParams,
-    RequestWithParamsAndBody, RequestWithParamsAndQuery,
-    RequestWithQuery, SortDirections
-} from "../../../types/common";
-import {GetMappedBlogOutputModel} from "../../../models/BlogModels/GetBlogOutputModel";
-import {CreateBlogInputModel} from "../../../models/BlogModels/CreateBlogInputModel";
-import {UpdateBlogInputModel} from "../../../models/BlogModels/UpdateBlogInputModel";
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
 import {createBlogInputValidations} from "../../../validations/blog/createBlogInputValidations";
 import {updateBlogInputValidations} from "../../../validations/blog/updateBlogInputValidations";
 import {adminBasicAuthMiddleware} from "../../../middlewares/admin-basicAuth-middleware";
 import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
-import {blogsQueryRepository} from "../../../repositories/Queries-repo/blogs-query-repository";
-import {blogsService} from "../../../domain/blogs-service";
-import {getMappedBlogViewModel, getMappedPostViewModel} from "../../../helpers";
-import {GetBlogsInputModel, SortBlogsBy} from "../../../models/BlogModels/GetBlogsInputModel";
-import {CreatePostInBlogInputModel} from "../../../models/BlogModels/CreatePostInBlogInputModel";
 import {createPostInBlogInputValidations} from "../../../validations/blog/createPostInBlogInputValidations";
-import {GetMappedPostOutputModel} from "../../../models/PostModels/GetPostOutputModel";
-import {GetPostsInputModel, SortPostsBy} from "../../../models/PostModels/GetPostsInputModel";
+import {blogControllers} from "../../../controllers/blog-controllers";
 
 
 export const blogsRouter = Router({});
 
 blogsRouter.get(
     '/',
-    async (req: RequestWithQuery<GetBlogsInputModel>, res: Response<Paginator<GetMappedBlogOutputModel[]>>
-    ) => {
-        const resData = await blogsQueryRepository.getBlogs({
-            searchNameTerm: req.query.searchNameTerm?.toString() || null, // by-default null
-            sortBy: (req.query.sortBy?.toString() || 'createdAt') as SortBlogsBy, // by-default createdAt
-            sortDirection: (req.query.sortDirection?.toString() || SortDirections.desc) as SortDirections, // by-default desc
-            pageNumber: +(req.query.pageNumber || 1), // by-default 1,
-            pageSize: +(req.query.pageSize || 10) // by-default 10
-        });
-        const {
-            pagesCount,
-            page,
-            pageSize,
-            totalCount,
-            items
-        } = resData || {};
-        res.status(constants.HTTP_STATUS_OK).json({
-            pagesCount,
-            page,
-            pageSize,
-            totalCount,
-            items: items.map(getMappedBlogViewModel)
-        });
-    });
+    blogControllers.getBlogs
+);
 blogsRouter.get(
     '/:id([0-9a-f]{24})',
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
-    async (req: RequestWithParams<{ id: string }>, res: Response<GetMappedBlogOutputModel>) => {
-        const resData = await blogsQueryRepository.findBlogById(req.params.id);
-        if (!resData) {
-            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
-            return;
-        }
-        res.status(constants.HTTP_STATUS_OK).json(getMappedBlogViewModel(resData));
-    });
+    blogControllers.getBlog
+);
 blogsRouter.get(
     '/:id([0-9a-f]{24})/posts',
     paramIdValidationMiddleware,
-    async (
-        req: RequestWithParamsAndQuery<{ id: string }, GetPostsInputModel>,
-        res: Response<Paginator<GetMappedPostOutputModel[]>>
-    ) => {
-        const resData = await blogsQueryRepository.getPostsInBlog({
-            blogId: req.params.id,
-            sortBy: (req.query.sortBy?.toString() || 'createdAt') as SortPostsBy, // by-default createdAt
-            sortDirection: (req.query.sortDirection?.toString() || SortDirections.desc) as SortDirections, // by-default desc
-            pageNumber: +(req.query.pageNumber || 1), // by-default 1
-            pageSize: +(req.query.pageSize || 10) // by-default 10
-        });
-
-        if (!resData) {
-            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
-            return;
-        }
-
-        const {
-            pagesCount,
-            page,
-            pageSize,
-            totalCount,
-            items
-        } = resData || {};
-        res.status(constants.HTTP_STATUS_OK).json({
-            pagesCount,
-            page,
-            pageSize,
-            totalCount,
-            items: items.map(getMappedPostViewModel)
-        });
-    });
+    blogControllers.getPostsOfBlog
+);
 
 blogsRouter.post(
     '/',
     adminBasicAuthMiddleware,
     createBlogInputValidations,
     inputValidationsMiddleware,
-    async (req: RequestWithBody<CreateBlogInputModel>, res: Response<GetMappedBlogOutputModel>
-    ) => {
-        const createdBlog = await blogsService.createBlog(req.body);
-        res.status(constants.HTTP_STATUS_CREATED).json(getMappedBlogViewModel(createdBlog));
-    });
+    blogControllers.createBlog
+);
 blogsRouter.post(
     '/:id([0-9a-f]{24})/posts',
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     createPostInBlogInputValidations,
     inputValidationsMiddleware,
-    async (
-        req: RequestWithParamsAndBody<{ id: string }, CreatePostInBlogInputModel>,
-        res: Response<GetMappedPostOutputModel>
-    ) => {
-        const createdPostInBlog = await blogsService.createPostInBlog({
-            blogId: req.params.id,
-            input: req.body
-        });
-
-        // Если по какой-то причине не найден блог
-        if (!createdPostInBlog) {
-            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
-            return;
-        }
-        res.status(constants.HTTP_STATUS_CREATED).json(getMappedPostViewModel(createdPostInBlog));
-    });
+    blogControllers.createPostInBlog
+);
 
 blogsRouter.put(
     '/:id([0-9a-f]{24})',
@@ -141,27 +49,13 @@ blogsRouter.put(
     paramIdValidationMiddleware,
     updateBlogInputValidations,
     inputValidationsMiddleware,
-    async (req: RequestWithParamsAndBody<{id: string}, UpdateBlogInputModel>, res: Response
-    ) => {
-        const isBlogUpdated = await blogsService.updateBlog({id: req.params.id, input: req.body});
-        if (!isBlogUpdated) {
-            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
-            return;
-        }
-
-        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT)
-    });
+    blogControllers.updateBlog
+);
 
 blogsRouter.delete(
     '/:id([0-9a-f]{24})',
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
-    async (req: RequestWithParams<{id: string}>, res: Response<void>) => {
-        const resData = await blogsService.deleteBlogById(req.params.id);
-        if (!resData) {
-            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
-            return;
-        }
-        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
-    });
+    blogControllers.deleteBlog
+);
