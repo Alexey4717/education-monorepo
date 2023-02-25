@@ -5,12 +5,12 @@ import {RequestWithBody, TokenTypes} from "../types/common";
 import {SigninInputModel} from "../models/AuthModels/SigninInputModel";
 import {authService} from "../domain/auth-service";
 import {jwtService} from "../application/jwt-service";
-import {RefreshTokenInputModel} from "../models/AuthModels/RefreshTokenInputModel";
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 import {SignupInputModel} from "../models/AuthModels/SignupInputModel";
 import {RegistrationConfirmInputModel} from "../models/AuthModels/RegistrationConfirmInputModel";
 import {ResendRegistrationInputModel} from "../models/AuthModels/ResendRegistrationInputModel";
 import {getMappedMeViewModel} from "../helpers";
+import {securityDevicesService} from "../domain/security-devices-service";
 
 
 export const authControllers = {
@@ -28,7 +28,15 @@ export const authControllers = {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
             return;
         }
-        const {accessToken, refreshToken} = await jwtService.createJWT(user);
+
+        const accessToken = await jwtService.createAccessJWT(user);
+        const refreshToken = await securityDevicesService.createSecurityDevice({
+            user,
+            title: req.headers["user-agent"] || 'Unknown',
+            ip: req.ip // на проде делать нужно по-другому (тут trust proxy - не очень практика, т.к. можно вручную изменить в headers)
+            // req.headers["x-forwarded-for"] || req.socket.remoteAddress
+        });
+
         res
             .status(constants.HTTP_STATUS_OK)
             .cookie("refreshToken", refreshToken, {httpOnly: true, secure: true})
@@ -36,30 +44,40 @@ export const authControllers = {
     },
 
     async refreshToken(
-        req: RequestWithBody<RefreshTokenInputModel>,
+        req: Request,
         res: Response
     ) {
-        // If the JWT refreshToken inside cookie is missing, expired or incorrect return 401
         const refreshToken = req?.cookies?.refreshToken;
+
         if (!refreshToken) {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
-        const userId = await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh});
-        const isFoundToken = await jwtService.findToken(refreshToken);
-        if (!userId || !isFoundToken) {
+
+        const {deviceId, userId} = await jwtService.getDeviceAndUserIdsByRefreshToken(refreshToken) || {};
+
+        if (!userId || !deviceId) {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
-        const {
-            accessToken,
-            refreshToken: newRefreshToken
-        } = await jwtService.createJWT({_id: userId} as GetUserOutputModelFromMongoDB);
+
+        const user = {_id: userId} as GetUserOutputModelFromMongoDB;
+
+        const accessToken = await jwtService.createAccessJWT(user);
+        const newRefreshToken = await securityDevicesService.updateSecurityDeviceById({
+            userId: user._id,
+            deviceId,
+            title: req.headers["user-agent"] || 'Unknown',
+            ip: req.ip
+        });
+
+        if (!newRefreshToken) {
+            res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR);
+            return;
+        }
 
         res
             .status(constants.HTTP_STATUS_OK)
-            // rewrite after set new cookie??
-            // .clearCookie("refreshToken")
             .cookie("refreshToken", newRefreshToken, {httpOnly: true, secure: true})
             .json({accessToken});
     },
@@ -74,7 +92,11 @@ export const authControllers = {
             email
         } = req.body || {};
 
-        const result = await authService.createUserAndSendConfirmationMessage({email, login, password});
+        const result = await authService.createUserAndSendConfirmationMessage({
+            email,
+            login,
+            password
+        });
 
         if (!result) {
             // maybe need send other status code
@@ -123,13 +145,14 @@ export const authControllers = {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
-        const userId = await jwtService.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh});
-        const isFoundToken = await jwtService.findToken(refreshToken);
-        if (!userId || !isFoundToken) {
+
+        const {deviceId, userId} = await jwtService.getDeviceAndUserIdsByRefreshToken(refreshToken) || {};
+
+        if (!deviceId || !userId) {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
             return
         }
-        await jwtService.removeToken(userId);
+        await securityDevicesService.deleteSecurityDeviceById(deviceId);
         return res
             .clearCookie("refreshToken")
             .sendStatus(constants.HTTP_STATUS_NO_CONTENT);

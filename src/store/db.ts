@@ -6,6 +6,7 @@ import {GetVideoOutputModel} from "../models/VideoModels/GetVideoOutputModel";
 import {GetUserOutputModel} from "../models/UserModels/GetUserOutputModel";
 import {settings} from "../settings";
 import {GetCommentOutputModel} from "../models/CommentsModels/GetCommentOutputModel";
+import {GetSecurityDeviceOutputModel} from "../models/SecurityDeviceModels/GetSecurityDeviceOutputModel";
 
 
 const mongoUri = settings.MONGO_URI;
@@ -20,6 +21,7 @@ export const blogsCollection = db01.collection<GetBlogOutputModel>("blogs");
 export const postsCollection = db01.collection<GetPostOutputModel>("posts");
 export const videosCollection = db01.collection<GetVideoOutputModel>("videos");
 export const commentsCollection = db01.collection<GetCommentOutputModel>("comments");
+export const securityDevicesCollection = db01.collection<GetSecurityDeviceOutputModel>("security-devices");
 
 export const runDB = async () => {
     try {
@@ -30,5 +32,4 @@ export const runDB = async () => {
         console.error('Error connection to mongodb is occurred')
         await client.close();
     }
-}
-
+};

@@ -13,8 +13,11 @@ import {testingDeletionRouter} from "./application/routes/testing/testing-deleti
 import {usersRouter} from "./application/routes/h05-api/users-router";
 import {RequestContextType} from "./types/common";
 import {commentsRouter} from "./application/routes/h06-comments/comments-router";
+import {securityDevicesRouter} from "./application/routes/h09-security-devices/security-devices-router";
 
 export const configApp = (app: Express) => {
+    app.set('trust proxy', true);
+
     app.use(cookieParser());
     app.use(express.json());
 
@@ -28,6 +31,7 @@ export const configApp = (app: Express) => {
     app.use('/blogs', blogsRouter);
     app.use('/posts', postsRouter);
     app.use('/comments', commentsRouter);
+    app.use('/security/devices', securityDevicesRouter);
     app.use('/testing', testingDeletionRouter);
 
     app.get('/', (req: Request, res: Response) => {

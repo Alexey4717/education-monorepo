@@ -18,7 +18,7 @@ postsRouter.get(
     postControllers.getPosts
 );
 postsRouter.get(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     postControllers.getPost
@@ -45,7 +45,7 @@ postsRouter.post(
 );
 
 postsRouter.put(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     updatePostInputValidations,
@@ -54,7 +54,7 @@ postsRouter.put(
 );
 
 postsRouter.delete(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     postControllers.deletePost

@@ -5,6 +5,7 @@ import {updateVideoInputValidations} from "../../../validations/video/updateVide
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
 import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
 import {videoControllers} from "../../../controllers/video-controllers";
+import {settings} from "../../../settings";
 
 
 export const videosRouter = Router({});
@@ -14,7 +15,7 @@ videosRouter.get(
     videoControllers.getVideos
 );
 videosRouter.get(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     videoControllers.getVideo
@@ -28,7 +29,7 @@ videosRouter.post(
 );
 
 videosRouter.put(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
     updateVideoInputValidations,
     inputValidationsMiddleware,
@@ -36,7 +37,7 @@ videosRouter.put(
 );
 
 videosRouter.delete(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     videoControllers.deleteVideo

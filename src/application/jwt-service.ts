@@ -5,40 +5,35 @@ import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputM
 import {settings} from "../settings";
 import {TokenTypes} from "../types/common";
 import {usersRepository} from "../repositories/CUD-repo/users-repository";
+import {securityDevicesService} from "../domain/security-devices-service";
+import {securityDevicesQueryRepository} from "../repositories/Queries-repo/security-devices-query-repository";
 
-
-type CreateJWTInputType = {
-    accessToken: string
-    refreshToken: string
-};
 
 type ManageTokenInputType = {
     token: string
     type: TokenTypes
 };
 
+type CreateRefreshJWTArg = {
+    userId: ObjectId
+    deviceId: ObjectId
+};
+
 export const jwtService = {
-    async createJWT(user: GetUserOutputModelFromMongoDB): Promise<CreateJWTInputType> {
-        const accessToken = jwt.sign(
+    async createAccessJWT(user: GetUserOutputModelFromMongoDB): Promise<string> {
+        return jwt.sign(
             {userId: user._id},
             settings.JWT_SECRET,
             {expiresIn: settings.JWT_EXPIRATION}
         );
+    },
 
-        const refreshToken = jwt.sign(
-            {userId: user._id},
+    async createRefreshJWT(payload: CreateRefreshJWTArg) {
+        return jwt.sign(
+            payload,
             settings.REFRESH_JWT_SECRET,
             {expiresIn: settings.JWT_REFRESH_EXPIRATION}
         );
-
-        await usersRepository.setRefreshTokenToUser({userId: user._id, refreshToken});
-
-        // можно здесь сохранять в БД рефреш токен
-
-        return {
-            accessToken,
-            refreshToken
-        }
     },
 
     async getUserIdByToken({token, type}: ManageTokenInputType): Promise<ObjectId | null> {
@@ -47,19 +42,18 @@ export const jwtService = {
                 ? settings.JWT_SECRET
                 : settings.REFRESH_JWT_SECRET;
             const decoded = jwt.verify(token, secret);
-            return new ObjectId((decoded as JwtPayload).userId);
+            return (decoded as JwtPayload).userId;
         } catch {
             return null;
         }
     },
 
-    async removeToken(userId: ObjectId): Promise<boolean> {
-        return await usersRepository.deleteRefreshTokenFromUser(userId)
-    },
-
-    async findToken(refreshToken: string): Promise<boolean> {
-        const userId = await this.getUserIdByToken({token: refreshToken, type: TokenTypes.refresh});
-        if (!userId) return false;
-        return await usersRepository.refreshTokenIsValid({userId, refreshToken});
+    async getDeviceAndUserIdsByRefreshToken(refreshToken: string): Promise<{ deviceId: ObjectId, userId: ObjectId } | null> {
+        try {
+            const {deviceId, userId} = jwt.verify(refreshToken, settings.REFRESH_JWT_SECRET) as JwtPayload;
+            return {deviceId, userId};
+        } catch {
+            return null;
+        }
     },
 };

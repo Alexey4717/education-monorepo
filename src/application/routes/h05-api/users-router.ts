@@ -5,6 +5,7 @@ import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validati
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
 import {createUserInputValidations} from "../../../validations/user/createVideoInputValidations";
 import {userControllers} from "../../../controllers/user-controllers";
+import {settings} from "../../../settings";
 
 
 export const usersRouter = Router({});
@@ -24,7 +25,7 @@ usersRouter.post(
 );
 
 usersRouter.delete(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     userControllers.deleteUser

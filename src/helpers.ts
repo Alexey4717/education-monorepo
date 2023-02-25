@@ -9,6 +9,10 @@ import {
     GetCommentOutputModelFromMongoDB,
     GetMappedCommentOutputModel
 } from "./models/CommentsModels/GetCommentOutputModel";
+import {
+    GetMappedSecurityDeviceOutputModel,
+    GetSecurityDeviceOutputModelFromMongoDB
+} from "./models/SecurityDeviceModels/GetSecurityDeviceOutputModel";
 
 
 export const getMappedVideoViewModel = ({
@@ -85,11 +89,11 @@ export const getMappedMeViewModel = ({
 });
 
 export const getMappedCommentViewModel = ({
-                                         _id,
-                                         content,
-                                         commentatorInfo,
-                                         createdAt
-                                     }: GetCommentOutputModelFromMongoDB): GetMappedCommentOutputModel => {
+                                              _id,
+                                              content,
+                                              commentatorInfo,
+                                              createdAt
+                                          }: GetCommentOutputModelFromMongoDB): GetMappedCommentOutputModel => {
     const {userId, userLogin} = commentatorInfo || {};
     return {
         id: _id.toString(),
@@ -99,6 +103,21 @@ export const getMappedCommentViewModel = ({
             userLogin
         },
         createdAt
+    }
+};
+
+export const getMappedSecurityDevicesViewModel = ({
+                                                      _id,
+                                                      ip,
+                                                      title,
+                                                      lastActiveDate
+
+                                                  }: GetSecurityDeviceOutputModelFromMongoDB): GetMappedSecurityDeviceOutputModel => {
+    return {
+        deviceId: _id.toString(),
+        ip,
+        title,
+        lastActiveDate
     }
 };
 

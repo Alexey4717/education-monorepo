@@ -7,6 +7,7 @@ import {adminBasicAuthMiddleware} from "../../../middlewares/admin-basicAuth-mid
 import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
 import {createPostInBlogInputValidations} from "../../../validations/blog/createPostInBlogInputValidations";
 import {blogControllers} from "../../../controllers/blog-controllers";
+import {settings} from "../../../settings";
 
 
 export const blogsRouter = Router({});
@@ -16,13 +17,13 @@ blogsRouter.get(
     blogControllers.getBlogs
 );
 blogsRouter.get(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     blogControllers.getBlog
 );
 blogsRouter.get(
-    '/:id([0-9a-f]{24})/posts',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})/posts`,
     paramIdValidationMiddleware,
     blogControllers.getPostsOfBlog
 );
@@ -35,7 +36,7 @@ blogsRouter.post(
     blogControllers.createBlog
 );
 blogsRouter.post(
-    '/:id([0-9a-f]{24})/posts',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})/posts`,
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     createPostInBlogInputValidations,
@@ -44,7 +45,7 @@ blogsRouter.post(
 );
 
 blogsRouter.put(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     updateBlogInputValidations,
@@ -53,7 +54,7 @@ blogsRouter.put(
 );
 
 blogsRouter.delete(
-    '/:id([0-9a-f]{24})',
+    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
