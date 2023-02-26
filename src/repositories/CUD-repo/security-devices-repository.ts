@@ -35,12 +35,18 @@ export const securityDevicesRepository = {
         }
     },
 
-    async updateSecurityDeviceById({deviceId, updateSecurityDeviceData}: updateSecurityDeviceByIdArgs): Promise<boolean> {
+    async updateSecurityDeviceById({
+                                       deviceId,
+                                       updateSecurityDeviceData
+                                   }: updateSecurityDeviceByIdArgs): Promise<boolean> {
         try {
+            const devices = await securityDevicesCollection.find({}).toArray();
+
             const result = await securityDevicesCollection.updateOne(
-                {_id: deviceId},
-                updateSecurityDeviceData
+                {_id: new ObjectId(deviceId)},
+                {$set: {...updateSecurityDeviceData}}
             );
+
             return result?.matchedCount === 1;
         } catch (error) {
             console.log(`securityDevicesRepository.updateSecurityDeviceById error is occurred: ${error}`);
@@ -51,12 +57,12 @@ export const securityDevicesRepository = {
     async deleteAllUserSecurityDevicesOmitCurrent({
                                                       deviceId,
                                                       userId
-    }: DeleteAllUserSecurityDevicesOmitCurrentArgs): Promise<boolean> {
+                                                  }: DeleteAllUserSecurityDevicesOmitCurrentArgs): Promise<boolean> {
         try {
             const result = await securityDevicesCollection.deleteMany({
                 userId: userId.toString(),
                 // $not: { deviceId }
-                deviceId : { $ne: deviceId }
+                _id: {$ne: deviceId}
             });
             return result?.deletedCount > 0;
         } catch (error) {
@@ -67,7 +73,7 @@ export const securityDevicesRepository = {
 
     async deleteSecurityDeviceById(deviceId: ObjectId): Promise<boolean> {
         try {
-            const result = await securityDevicesCollection.deleteOne({_id: deviceId});
+            const result = await securityDevicesCollection.deleteOne({_id: new ObjectId(deviceId)});
             return result?.deletedCount === 1;
         } catch (error) {
             console.log(`securityDevicesRepository.deleteSecurityDeviceById error is occurred: ${error}`);

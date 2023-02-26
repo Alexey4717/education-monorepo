@@ -8,6 +8,7 @@ import {SortBlogsBy} from "../models/BlogModels/GetBlogsInputModel";
 import {SortPostsBy} from "../models/PostModels/GetPostsInputModel";
 import {SortUsersBy} from "../models/UserModels/GetUsersInputModel";
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
+import {GetSecurityDeviceOutputModelFromMongoDB} from "../models/SecurityDeviceModels/GetSecurityDeviceOutputModel";
 
 
 export enum AvailableResolutions {
@@ -49,6 +50,7 @@ export type SettingsType = {
 
 export type RequestContextType = {
     user: GetUserOutputModelFromMongoDB | null
+    securityDevice: GetSecurityDeviceOutputModelFromMongoDB | null;
 };
 
 type CommonQueryParamsTypes = {

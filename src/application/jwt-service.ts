@@ -4,9 +4,6 @@ import {ObjectId} from 'mongodb';
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 import {settings} from "../settings";
 import {TokenTypes} from "../types/common";
-import {usersRepository} from "../repositories/CUD-repo/users-repository";
-import {securityDevicesService} from "../domain/security-devices-service";
-import {securityDevicesQueryRepository} from "../repositories/Queries-repo/security-devices-query-repository";
 
 
 type ManageTokenInputType = {
@@ -51,7 +48,7 @@ export const jwtService = {
     async getDeviceAndUserIdsByRefreshToken(refreshToken: string): Promise<{ deviceId: ObjectId, userId: ObjectId } | null> {
         try {
             const {deviceId, userId} = jwt.verify(refreshToken, settings.REFRESH_JWT_SECRET) as JwtPayload;
-            return {deviceId, userId};
+            return {deviceId: new ObjectId(deviceId), userId: new ObjectId(userId)};
         } catch {
             return null;
         }

@@ -34,17 +34,17 @@ export const securityDevicesService = {
         };
 
         const refreshToken = await jwtService.createRefreshJWT(refreshTokenPayload);
-        const {eat, iat} = jwt.verify(refreshToken, settings.REFRESH_JWT_SECRET) as JwtPayload;
+        const {exp, iat} = jwt.verify(refreshToken, settings.REFRESH_JWT_SECRET) as JwtPayload;
 
-        if (!eat || !iat) return null;
+        if (!exp || !iat) return null;
 
         const newSecurityDevice = {
             ip,
             title,
-            lastActiveDate: new Date(iat as number).toISOString(),
+            lastActiveDate: new Date((iat as number) * 1000).toISOString(),
             _id: refreshTokenPayload.deviceId,
             userId: refreshTokenPayload.userId.toString(),
-            expiredAt: new Date(eat).toISOString() // в ДЗ написано хранить в БД дату окончания токена чтобы чистить протухшие
+            expiredAt: new Date((exp as number) * 1000).toISOString() // в ДЗ написано хранить в БД дату окончания токена чтобы чистить протухшие
             // как это делать пока не понятно
         };
 
@@ -67,12 +67,12 @@ export const securityDevicesService = {
         };
         const newRefreshToken = await jwtService.createRefreshJWT(newRefreshTokenPayload);
 
-        const {iat, eat} = jwt.verify(newRefreshToken, settings.REFRESH_JWT_SECRET) as JwtPayload;
+        const {iat, exp} = jwt.verify(newRefreshToken, settings.REFRESH_JWT_SECRET) as JwtPayload;
         const updateSecurityDeviceData = {
             ip,
             title,
-            lastActiveDate: new Date(iat as number).toISOString(),
-            expiredAt: new Date(eat as number).toISOString()
+            lastActiveDate: new Date((iat as number) * 1000).toISOString(),
+            expiredAt: new Date((exp as number) * 1000).toISOString()
         };
 
         const result = await securityDevicesRepository.updateSecurityDeviceById({

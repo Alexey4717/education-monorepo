@@ -9,8 +9,7 @@ import {
 export const securityDevicesQueryRepository = {
     async getAllSecurityDevicesByUserId(userId: string): Promise<GetSecurityDeviceOutputModelFromMongoDB[]> {
         try {
-            // TODO разобраться с типизацией
-            return await securityDevicesCollection.find({userId}) as unknown as GetSecurityDeviceOutputModelFromMongoDB[];
+            return await securityDevicesCollection.find({userId}).toArray();
         } catch (error) {
             console.log(`securityDevicesQueryRepository.getAllSecurityDevicesByUserId error is occurred: ${error}`);
             return [] as GetSecurityDeviceOutputModelFromMongoDB[];

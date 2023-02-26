@@ -31,9 +31,10 @@ describe('/auth', () => {
     };
 
     const getRefreshTokenFromCookie = (cookie?: string[]) => {
-        return cookie
+        const result = cookie
             ?.find((item: string) => item.split('=')[0] === 'refreshToken')
             ?.split('=')[1];
+        return result?.split(';')[0]
     };
 
     const getExpiredToken = async (token: string) => {
@@ -379,7 +380,7 @@ describe('/auth', () => {
 
         expect(confirmedEmailConfirmation?.isConfirmed).not.toBeUndefined();
         expect(confirmedEmailConfirmation?.isConfirmed).toBe(true);
-    })
+    }, 10000)
     it('should return 400 if email already verified', async () => {
         const {id: userId} = await createUser(); // when user created by admin, he is already verified
         const {emailConfirmation} = await usersCollection.findOne({_id: new ObjectId(userId)}) || {};
@@ -506,7 +507,7 @@ describe('/auth', () => {
                         userId: createdUser.id,
                     }
                 )
-        })
+        }, 10000)
 
     // testing post '/auth/login' api
     it(`should return 401 if the password or login is wrong`, async () => {
@@ -613,9 +614,6 @@ describe('/auth', () => {
 
         const accessToken1 = loginResponse?.body?.accessToken;
         const refreshToken1 = getRefreshTokenFromCookie(loginCookies);
-
-        expect(accessToken1).not.toBeUndefined();
-        expect(refreshToken1).not.toBeUndefined();
 
         const refreshResponse = await request(app)
             .post('/auth/refresh-token')

@@ -6,6 +6,7 @@ import {
     blogsCollection,
     commentsCollection,
     postsCollection,
+    securityDevicesCollection,
     usersCollection,
     videosCollection
 } from "../store/db";
@@ -29,7 +30,8 @@ export const testingControllers = {
             postsCollection.deleteMany({}),
             videosCollection.deleteMany({}),
             usersCollection.deleteMany({}),
-            commentsCollection.deleteMany({})
+            commentsCollection.deleteMany({}),
+            securityDevicesCollection.deleteMany({}),
         ]);
 
         res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);

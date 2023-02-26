@@ -11,6 +11,7 @@ import {
     registrationEmailResendingInputValidations
 } from "../../../validations/auth/registrationEmailResendingInputValidations";
 import {authControllers} from "../../../controllers/auth-controllers";
+import {cookieRefreshTokenMiddleware} from "../../../middlewares/cookie-refresh-token-middleware";
 
 
 export const authRouter = Router({});
@@ -23,6 +24,7 @@ authRouter.post(
 );
 authRouter.post(
     '/refresh-token',
+    cookieRefreshTokenMiddleware,
     authControllers.refreshToken
 );
 authRouter.post(
@@ -45,6 +47,7 @@ authRouter.post(
 );
 authRouter.post(
     '/logout',
+    cookieRefreshTokenMiddleware,
     authControllers.logout
 );
 

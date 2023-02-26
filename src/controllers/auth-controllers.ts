@@ -1,5 +1,6 @@
 import {Request, Response} from "express";
 import {constants} from "http2";
+import {ObjectId} from 'mongodb';
 
 import {RequestWithBody, TokenTypes} from "../types/common";
 import {SigninInputModel} from "../models/AuthModels/SigninInputModel";
@@ -47,26 +48,18 @@ export const authControllers = {
         req: Request,
         res: Response
     ) {
-        const refreshToken = req?.cookies?.refreshToken;
+        const user = req.context?.user;
+        const deviceId = req.context?.securityDevice?._id;
 
-        if (!refreshToken) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
-            return
+        if (!user || !deviceId) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
+            return;
         }
 
-        const {deviceId, userId} = await jwtService.getDeviceAndUserIdsByRefreshToken(refreshToken) || {};
-
-        if (!userId || !deviceId) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
-            return
-        }
-
-        const user = {_id: userId} as GetUserOutputModelFromMongoDB;
-
-        const accessToken = await jwtService.createAccessJWT(user);
+        const newAccessToken = await jwtService.createAccessJWT(user);
         const newRefreshToken = await securityDevicesService.updateSecurityDeviceById({
-            userId: user._id,
-            deviceId,
+            userId: new ObjectId(user._id),
+            deviceId: new ObjectId(deviceId),
             title: req.headers["user-agent"] || 'Unknown',
             ip: req.ip
         });
@@ -79,7 +72,7 @@ export const authControllers = {
         res
             .status(constants.HTTP_STATUS_OK)
             .cookie("refreshToken", newRefreshToken, {httpOnly: true, secure: true})
-            .json({accessToken});
+            .json({accessToken: newAccessToken});
     },
 
     async registration(
@@ -139,20 +132,21 @@ export const authControllers = {
         req: Request,
         res: Response
     ) {
-        // If the JWT refreshToken inside cookie is missing, expired or incorrect return 401
-        const refreshToken = req?.cookies?.refreshToken;
-        if (!refreshToken) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
-            return
+        const user = req.context?.user;
+        const deviceId = req.context?.securityDevice?._id;
+
+        if (!user || !deviceId) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
+            return;
         }
 
-        const {deviceId, userId} = await jwtService.getDeviceAndUserIdsByRefreshToken(refreshToken) || {};
+        const deleteResult = await securityDevicesService.deleteSecurityDeviceById(deviceId);
 
-        if (!deviceId || !userId) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
-            return
+        if (!deleteResult) {
+            res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR);
+            return;
         }
-        await securityDevicesService.deleteSecurityDeviceById(deviceId);
+
         return res
             .clearCookie("refreshToken")
             .sendStatus(constants.HTTP_STATUS_NO_CONTENT);
