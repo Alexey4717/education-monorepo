@@ -145,6 +145,48 @@ describe('/auth', () => {
         expect(newConfirmationCode).not.toBeUndefined();
         expect(oldConfirmationCode).not.toEqual(newConfirmationCode);
     }, 10000)
+    it('should return 429 if do more 5 request per 10 seconds to registration-email-resending', async () => {
+        await request(app)
+            .post('/auth/registration')
+            .send({
+                login: "user5",
+                email: "lehabourne5@gmail.com",
+                password: "pass1234"
+            })
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        Promise.all([
+            request(app)
+                .post('/auth/registration-email-resending')
+                .send({email: 'lehabourne5@gmail.com'})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration-email-resending')
+                .send({email: 'lehabourne5@gmail.com'})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration-email-resending')
+                .send({email: 'lehabourne5@gmail.com'})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration-email-resending')
+                .send({email: 'lehabourne5@gmail.com'})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration-email-resending')
+                .send({email: 'lehabourne5@gmail.com'})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+        ]);
+
+        await request(app)
+            .post('/auth/registration-email-resending')
+            .send({email: 'lehabourne5@gmail.com'})
+            .expect(constants.HTTP_STATUS_TOO_MANY_REQUESTS)
+    }, 10000)
     it('should return 400 if email already verified', async () => {
         const {id: userId} = await createUser({
             login: 'login12',
@@ -210,6 +252,63 @@ describe('/auth', () => {
             })
             .expect(constants.HTTP_STATUS_NO_CONTENT)
     })
+    it('should return 429 if do more 5 request per 10 seconds to registration', async () => {
+        Promise.all([
+            request(app)
+                .post('/auth/registration')
+                .send({
+                    login: "user1",
+                    email: "lehabourne1@gmail.com",
+                    password: "pass1234"
+                })
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration')
+                .send({
+                    login: "user2",
+                    email: "lehabourne2@gmail.com",
+                    password: "pass1234"
+                })
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration')
+                .send({
+                    login: "user3",
+                    email: "lehabourne3@gmail.com",
+                    password: "pass1234"
+                })
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration')
+                .send({
+                    login: "user4",
+                    email: "lehabourne4@gmail.com",
+                    password: "pass1234"
+                })
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration')
+                .send({
+                    login: "user5",
+                    email: "lehabourne5@gmail.com",
+                    password: "pass1234"
+                })
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+        ]);
+
+        await request(app)
+            .post('/auth/registration')
+            .send({
+                login: "user6",
+                email: "lehabourne6@gmail.com",
+                password: "pass1234"
+            })
+            .expect(constants.HTTP_STATUS_TOO_MANY_REQUESTS)
+    }, 10000)
     it('should return 400 if not valid input data', async () => {
         await request(app)
             .post('/auth/registration')
@@ -381,6 +480,61 @@ describe('/auth', () => {
         expect(confirmedEmailConfirmation?.isConfirmed).not.toBeUndefined();
         expect(confirmedEmailConfirmation?.isConfirmed).toBe(true);
     }, 10000)
+    it('should return 429 if do more 5 request per 10 seconds to registration-confirmation', async () => {
+        await request(app)
+            .post('/auth/registration')
+            .send({
+                login: "user2",
+                email: "lehabourne@gmail.com",
+                password: "pass1234"
+            })
+            .expect(constants.HTTP_STATUS_NO_CONTENT);
+
+        const response = await request(app)
+            .get('/users')
+            .set('Authorization', `Basic ${adminBasicToken}`)
+
+        const userId = new ObjectId(response.body.items[0].id);
+        expect(ObjectId.isValid(userId)).toBe(true);
+
+        const {emailConfirmation} = await usersCollection.findOne({_id: userId}) || {};
+
+        expect(emailConfirmation?.confirmationCode).not.toBeUndefined();
+        expect(emailConfirmation?.isConfirmed).not.toBeUndefined();
+        expect(emailConfirmation?.isConfirmed).toBe(false);
+
+        Promise.all([
+            request(app)
+                .post('/auth/registration-confirmation')
+                .send({code: emailConfirmation?.confirmationCode})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration-confirmation')
+                .send({code: emailConfirmation?.confirmationCode})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration-confirmation')
+                .send({code: emailConfirmation?.confirmationCode})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration-confirmation')
+                .send({code: emailConfirmation?.confirmationCode})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+
+            request(app)
+                .post('/auth/registration-confirmation')
+                .send({code: emailConfirmation?.confirmationCode})
+                .expect(constants.HTTP_STATUS_NO_CONTENT),
+        ]);
+
+        request(app)
+            .post('/auth/registration-confirmation')
+            .send({code: emailConfirmation?.confirmationCode})
+            .expect(constants.HTTP_STATUS_TOO_MANY_REQUESTS)
+    }, 20000)
     it('should return 400 if email already verified', async () => {
         const {id: userId} = await createUser(); // when user created by admin, he is already verified
         const {emailConfirmation} = await usersCollection.findOne({_id: new ObjectId(userId)}) || {};
@@ -533,6 +687,41 @@ describe('/auth', () => {
             .send({loginOrEmail: 'example2@gmail.com', password: 'pass1234'})
             .expect(constants.HTTP_STATUS_UNAUTHORIZED)
     })
+    it('should return 429 if do more 5 request per 10 seconds to login', async () => {
+        await createUser();
+
+        Promise.all([
+            request(app)
+                .post('/auth/login')
+                .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
+                .expect(constants.HTTP_STATUS_OK),
+
+            request(app)
+                .post('/auth/login')
+                .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
+                .expect(constants.HTTP_STATUS_OK),
+
+            request(app)
+                .post('/auth/login')
+                .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
+                .expect(constants.HTTP_STATUS_OK),
+
+            request(app)
+                .post('/auth/login')
+                .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
+                .expect(constants.HTTP_STATUS_OK),
+
+            request(app)
+                .post('/auth/login')
+                .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
+                .expect(constants.HTTP_STATUS_OK),
+        ]);
+
+        await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'example@gmail.com', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_TOO_MANY_REQUESTS)
+    }, 10000)
     it(`shouldn't login with incorrect input data`, async () => {
         await createUser();
 

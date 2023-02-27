@@ -12,12 +12,14 @@ import {
 } from "../../../validations/auth/registrationEmailResendingInputValidations";
 import {authControllers} from "../../../controllers/auth-controllers";
 import {cookieRefreshTokenMiddleware} from "../../../middlewares/cookie-refresh-token-middleware";
+import {rateLimitMiddleware} from "../../../middlewares/rate-limit-middleware";
 
 
 export const authRouter = Router({});
 
 authRouter.post(
     '/login',
+    rateLimitMiddleware,
     loginInputValidations,
     inputValidationsMiddleware,
     authControllers.login
@@ -29,18 +31,21 @@ authRouter.post(
 );
 authRouter.post(
     '/registration',
+    rateLimitMiddleware,
     registrationInputValidations,
     inputValidationsMiddleware,
     authControllers.registration
 );
 authRouter.post(
     '/registration-confirmation',
+    rateLimitMiddleware,
     registrationConfirmationInputValidations,
     inputValidationsMiddleware,
     authControllers.registrationConfirmation
 );
 authRouter.post(
     '/registration-email-resending',
+    rateLimitMiddleware,
     registrationEmailResendingInputValidations,
     inputValidationsMiddleware,
     authControllers.registrationEmailResending
