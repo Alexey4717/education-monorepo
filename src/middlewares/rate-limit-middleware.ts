@@ -2,7 +2,7 @@ import rateLimit from 'express-rate-limit'
 
 
 export const rateLimitMiddleware = rateLimit({
-    windowMs: 10,
+    windowMs: 10 * 1000,
     max: 5,
     message:
         'Too many queries sent from this IP, please try again after an 10 seconds',
