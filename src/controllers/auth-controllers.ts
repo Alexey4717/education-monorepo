@@ -132,14 +132,7 @@ export const authControllers = {
         req: Request,
         res: Response
     ) {
-        const user = req.context?.user;
-        const deviceId = req.context?.securityDevice?._id;
-
-        if (!user || !deviceId) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
-            return;
-        }
-
+        const deviceId = req.context?.securityDevice!._id;
         const deleteResult = await securityDevicesService.deleteSecurityDeviceById(deviceId);
 
         if (!deleteResult) {
