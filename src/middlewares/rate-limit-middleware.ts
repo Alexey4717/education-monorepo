@@ -12,15 +12,17 @@ type ConnectionType = {
 let connections: ConnectionType[] = []
 
 export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    let newConnections = [];
+    // тесты в ДЗ не проходят
 
-    for (let i = 0; i < connections.length; i++) {
-        if (((+new Date() - connections[i].connectionDate) / 1000) <= 10) {
-            newConnections.push(connections[i]);
-        }
-    }
+    // let newConnections = [];
 
-    connections = newConnections
+    // for (let i = 0; i < connections.length; i++) {
+    //     if (((+new Date() - connections[i].connectionDate) / 1000) <= 10) {
+    //         newConnections.push(connections[i]);
+    //     }
+    // }
+
+    // connections = newConnections
 
     const blockInterval = 10 * 1000;
     const ip = req.ip;
