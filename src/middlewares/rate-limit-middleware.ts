@@ -32,11 +32,16 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
     const connectionDate = +new Date();
 
     const connectionSessions = connections
-        .filter(c => c.ip === ip && c.url === url && c.method === method);
+        .filter(c => (
+            c.ip === ip &&
+            c.url === url &&
+            c.method === method &&
+            ((+new Date() - c.connectionDate) <= blockInterval)
+        ));
 
     const connectionsCount = connectionSessions.length
 
-    if (connectionsCount >= 5) {
+    if (connectionsCount > 5) {
         res.sendStatus(constants.HTTP_STATUS_TOO_MANY_REQUESTS);
         return;
     }
