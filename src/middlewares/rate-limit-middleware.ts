@@ -15,7 +15,7 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
     let newConnections = [];
 
     for (let i = 0; i < connections.length; i++) {
-        if (((+new Date() - connections[i].connectionDate) / 1000) < 10) {
+        if (((+new Date() - connections[i].connectionDate) / 1000) <= 10) {
             newConnections.push(connections[i]);
         }
     }
