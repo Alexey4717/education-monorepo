@@ -31,6 +31,13 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
 
     const connectionDate = +new Date();
 
+    connections.push({
+        ip,
+        url,
+        method,
+        connectionDate
+    });
+
     const connectionSessions = connections
         .filter(c => (
             c.ip === ip &&
@@ -39,6 +46,10 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
             ((+new Date() - c.connectionDate) <= blockInterval)
         ));
 
+    // console.log({url})
+    // console.log({connections})
+    // console.log({connectionSessions})
+
     const connectionsCount = connectionSessions.length
 
     if (connectionsCount > 5) {
@@ -46,12 +57,7 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
         return;
     }
 
-    connections.push({
-        ip,
-        url,
-        method,
-        connectionDate
-    })
+
 
     next();
 }
