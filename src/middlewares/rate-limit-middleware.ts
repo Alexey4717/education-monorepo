@@ -27,7 +27,7 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
 
     // connections = newConnections
 
-    const blockInterval = 10 * 1000;
+    const blockInterval = 9 * 1000;
     const ip = req.ip;
     const url = req.originalUrl;
     const method = req.method;
