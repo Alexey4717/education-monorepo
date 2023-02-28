@@ -35,7 +35,7 @@ export const authControllers = {
             user,
             title: req.headers["user-agent"] || 'Unknown',
             ip: req.ip // на проде делать нужно по-другому (тут trust proxy - не очень практика, т.к. можно вручную изменить в headers)
-            // req.headers["x-forwarded-for"] || req.socket.remoteAddress
+            // ip:  req.headers["x-forwarded-for"] || req.socket.remoteAddress
         });
 
         res

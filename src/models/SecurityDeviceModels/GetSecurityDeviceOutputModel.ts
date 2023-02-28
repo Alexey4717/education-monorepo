@@ -1,4 +1,4 @@
-import {ObjectId} from 'mongodb';
+import {ObjectId, WithId} from 'mongodb';
 
 
 export type GetSecurityDeviceOutputModel = {
@@ -28,12 +28,7 @@ export type GetSecurityDeviceOutputModel = {
     expiredAt: string
 }
 
-export type GetSecurityDeviceOutputModelFromMongoDB = GetSecurityDeviceOutputModel & {
-    /**
-     * Inserted id security device from mongodb
-     */
-    _id: ObjectId
-}
+export type GetSecurityDeviceOutputModelFromMongoDB = WithId<GetSecurityDeviceOutputModel>
 
 export type GetMappedSecurityDeviceOutputModel = Omit<GetSecurityDeviceOutputModel, 'userId' | 'expiredAt'> & {
     /**
