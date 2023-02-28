@@ -15,13 +15,14 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
     let newConnections = [];
 
     for (let i = 0; i < connections.length; i++) {
-        if (((+new Date() - connections[i].connectionDate) / 1000) <= 10) {
+        if (((+new Date() - connections[i].connectionDate) / 1000) < 10) {
             newConnections.push(connections[i]);
         }
     }
 
     connections = newConnections
 
+    const blockInterval = 10 * 1000;
     const ip = req.ip;
     const url = req.originalUrl;
     const method = req.method;
