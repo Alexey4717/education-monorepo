@@ -12,6 +12,9 @@ type ConnectionType = {
 let connections: ConnectionType[] = []
 
 export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunction) => {
+
+    const now = +new Date();
+
     // тесты в ДЗ не проходят
 
     // let newConnections = [];
@@ -29,13 +32,11 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
     const url = req.originalUrl;
     const method = req.method;
 
-    const connectionDate = +new Date();
-
     connections.push({
         ip,
         url,
         method,
-        connectionDate
+        connectionDate: now
     });
 
     const connectionSessions = connections
@@ -43,12 +44,15 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
             c.ip === ip &&
             c.url === url &&
             c.method === method &&
-            ((+new Date() - c.connectionDate) <= blockInterval)
+            ((now - c.connectionDate) <= blockInterval)
         ));
 
-    // console.log({url})
-    // console.log({connections})
-    // console.log({connectionSessions})
+    const connectionErrors = connectionSessions
+        .filter(c => ((+new Date() - c.connectionDate) < blockInterval));
+
+    console.log({url})
+    console.log({connections})
+    console.log({connectionSessions})
 
     const connectionsCount = connectionSessions.length
 
@@ -56,8 +60,6 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
         res.sendStatus(constants.HTTP_STATUS_TOO_MANY_REQUESTS);
         return;
     }
-
-
 
     next();
 }
