@@ -9,25 +9,12 @@ type ConnectionType = {
     connectionDate: number
 }
 
-let connections: ConnectionType[] = []
+let connections: ConnectionType[] = [];
 
 export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunction) => {
-
     const now = +new Date();
+    const blockInterval = 10 * 1000;
 
-    // тесты в ДЗ не проходят
-
-    // let newConnections = [];
-
-    // for (let i = 0; i < connections.length; i++) {
-    //     if (((+new Date() - connections[i].connectionDate) / 1000) <= 10) {
-    //         newConnections.push(connections[i]);
-    //     }
-    // }
-
-    // connections = newConnections
-
-    const blockInterval = 9 * 1000;
     const ip = req.ip;
     const url = req.originalUrl;
     const method = req.method;
@@ -47,11 +34,6 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
             ((now - c.connectionDate) <= blockInterval)
         ));
 
-    const connectionErrors = connectionSessions
-        .filter(c => ((+new Date() - c.connectionDate) < blockInterval));
-
-    console.log({url})
-    console.log({connections})
     console.log({connectionSessions})
 
     const connectionsCount = connectionSessions.length
