@@ -9,7 +9,8 @@ import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputM
 import {usersRepository} from "../repositories/CUD-repo/users-repository";
 import {CheckCredentialsInputArgs} from "../types/common";
 import {emailManager} from "../managers/email-manager";
-import {CreateUserInsertToDBModel} from "../models/UserModels/CreateUserInsertToDBModel";
+import {CreateUserInsertToDBModel, RecoveryDataType} from "../models/UserModels/CreateUserInsertToDBModel";
+import {ChangeUserPasswordInputType} from "./types";
 
 
 export const authService = {
@@ -22,10 +23,7 @@ export const authService = {
         const newUser = await this._getNewUser({login, email, password, isConfirmed: false});
         const createdUser = await usersRepository.createUser(newUser);
         try {
-            await emailManager.sendEmailConfirmationMessage({
-                email,
-                confirmationCode: createdUser.emailConfirmation.confirmationCode
-            });
+            await emailManager.sendEmailConfirmationMessage({user: createdUser});
         } catch (error) {
             console.error(`authService.registerUser error is occurred: ${error}`);
             await usersRepository.deleteUserById(createdUser._id.toString());
@@ -37,7 +35,15 @@ export const authService = {
     async resendConfirmationMessage(email: string): Promise<boolean> {
         const foundUser = await usersRepository.findByLoginOrEmail(email);
         if (!foundUser) return false;
-        return await emailManager.sendPasswordRecoveryMessage(foundUser);
+        const confirmationCode = uuidv4();
+        return await emailManager.sendEmailConfirmationMessage({
+            user: foundUser,
+            confirmationCode
+        });
+    },
+
+    async recoveryPassword(email: string): Promise<boolean> {
+        return await emailManager.sendPasswordRecoveryMessage(email);
     },
 
     async confirmEmail(code: string): Promise<boolean> {
@@ -49,6 +55,20 @@ export const authService = {
             user.emailConfirmation.expirationDate <= new Date()
         ) return false;
         return await usersRepository.updateConfirmation(user._id);
+    },
+
+    async changeUserPassword({recoveryCode, newPassword}: ChangeUserPasswordInputType): Promise<boolean> {
+        const user = await usersRepository.findUserByRecoveryCode(recoveryCode);
+        if (
+            !user ||
+            !user?.recoveryData ||
+            user.recoveryData?.recoveryCode !== recoveryCode ||
+            user.recoveryData?.expirationDate <= new Date()
+        ) return false;
+        return await usersRepository.changeUserPasswordAndNullifyRecoveryData({
+            userId: user._id,
+            newPassword
+        });
     },
 
     async deleteUserById(id: string): Promise<boolean> {
@@ -86,6 +106,7 @@ export const authService = {
                 expirationDate: add(new Date(), {hours: 1}),
                 isConfirmed,
             },
+            recoveryData: null
         }
     },
 };

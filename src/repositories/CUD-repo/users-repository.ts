@@ -1,9 +1,9 @@
 import {ObjectId} from "mongodb";
 
-import {securityDevicesCollection, usersCollection} from "../../store/db";
+import {usersCollection} from "../../store/db";
 import {GetUserOutputModelFromMongoDB} from "../../models/UserModels/GetUserOutputModel";
 import {CreateUserInsertToDBModel} from "../../models/UserModels/CreateUserInsertToDBModel";
-import {UpdateUserConfirmationCodeInputType} from "./types";
+import {ChangeUserPasswordArgs, SetUserRecoveryDataInputType, UpdateUserConfirmationCodeInputType} from "./types";
 
 
 export const usersRepository = {
@@ -46,7 +46,28 @@ export const usersRepository = {
             {_id: userId},
             {$set: {'emailConfirmation.isConfirmed': true}}
         );
-        return result.modifiedCount === 1;
+        return result.matchedCount === 1;
+    },
+
+    async changeUserPasswordAndNullifyRecoveryData({userId, newPassword}: ChangeUserPasswordArgs): Promise<boolean> {
+        const result = await usersCollection.updateOne(
+            {_id: userId},
+            {
+                $set: {
+                    'accountData.password': newPassword,
+                    recoveryData: null
+                }
+            }
+        );
+        return result.matchedCount === 1;
+    },
+
+    async setUserRecoveryData({userId, recoveryData}: SetUserRecoveryDataInputType): Promise<boolean> {
+        const result = await usersCollection.updateOne(
+            {_id: userId},
+            {$set: {recoveryData}}
+        );
+        return result.matchedCount === 1;
     },
 
     async updateUserConfirmationCode({userId, newCode}: UpdateUserConfirmationCodeInputType): Promise<boolean> {
@@ -54,10 +75,14 @@ export const usersRepository = {
             {_id: userId},
             {$set: {'emailConfirmation.confirmationCode': newCode}}
         );
-        return result.modifiedCount === 1;
+        return result.matchedCount === 1;
     },
 
     async findByConfirmationCode(code: string): Promise<GetUserOutputModelFromMongoDB | null> {
         return usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+    },
+
+    async findUserByRecoveryCode(code: string): Promise<GetUserOutputModelFromMongoDB | null> {
+        return usersCollection.findOne({'recoveryData.recoveryCode': code});
     },
 };

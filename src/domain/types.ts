@@ -9,3 +9,8 @@ export type SendEmailConfirmationMessageInputType = {
 export type CreateUserInputType = CreateUserInputModel & {
     isConfirmed: boolean
 };
+
+export type ChangeUserPasswordInputType = {
+    recoveryCode: string
+    newPassword: string
+};

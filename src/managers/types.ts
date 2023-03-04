@@ -1,4 +1,9 @@
+import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
+
+
 export type SendEmailConfirmationMessageInputType = {
-    email: string
-    confirmationCode: string
+    user: GetUserOutputModelFromMongoDB
+    confirmationCode?: string
 };
+
+

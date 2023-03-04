@@ -6,36 +6,54 @@ import type {SendEmailConfirmationMessageInputType} from "./types";
 import {emailService} from "../domain/email-service";
 import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
 import {usersRepository} from "../repositories/CUD-repo/users-repository";
+import {add} from "date-fns";
 
 
 export const emailManager = {
-    async sendEmailConfirmationMessage({email, confirmationCode}: SendEmailConfirmationMessageInputType) {
+    async sendPasswordRecoveryMessage(email: string) {
+        const foundUser = await usersRepository.findByLoginOrEmail(email);
+        // Even if current email is not registered (for prevent user's email detection)
+        if (!foundUser) return true;
+
+        const recoveryData = {
+            recoveryCode: uuidv4(),
+            expirationDate: add(new Date(), {days: 1}),
+        };
+
+        const result = await usersRepository.setUserRecoveryData({userId: foundUser._id, recoveryData});
+        // Even if current email is not registered (for prevent user's email detection)
+        if (!result) return true;
+
         return await emailService.sendEmailConfirmationMessage({
             email,
-            subject: 'Registration confirmation',
-            // тут непонятно как формировать ссылку на сайт и как из бади доставать код если он в query params
+            subject: 'Password recovery',
             message: `
-                <h1>Thank for your registration</h1>
-                <p>To finish registration please follow the link below:
-                    <a href="${process.env.MAIN_URL}/confirm-email?code=${confirmationCode}">
-                        complete registration
+                <h1>Password recovery</h1>
+                <p>To finish password recovery please follow the link below:
+                    <a href='${process.env.MAIN_URL}/password-recovery?recoveryCode=${recoveryData.recoveryCode}'>
+                        recovery password
                     </a>
                 </p>
             `,
         });
     },
 
-    async sendPasswordRecoveryMessage(user: GetUserOutputModelFromMongoDB): Promise<boolean> {
-        const newCode = uuidv4();
-        const result = await usersRepository.updateUserConfirmationCode({userId: user._id, newCode});
-        if (!result) return false;
+    async sendEmailConfirmationMessage({user, confirmationCode}: SendEmailConfirmationMessageInputType): Promise<boolean> {
+        if (confirmationCode) {
+            const result = await usersRepository.updateUserConfirmationCode({
+                userId: user._id,
+                newCode: confirmationCode
+            });
+            if (!result) return false;
+        }
+
         return await emailService.sendPasswordRecoveryMessage({
             email: user.accountData.email,
-            subject: 'Password recovery',
+            subject: 'Registration confirmation',
             message: `
-                <p>To recovery your password please follow the link below:
-                    <a href='${process.env.MAIN_URL}/confirm-registration?code=${newCode}'>
-                        recovery password
+                <p>To confirm registration please follow the link below:
+                    <a href='${process.env.MAIN_URL}/confirm-registration?code=${confirmationCode || user.emailConfirmation.confirmationCode}'>
+                        confirm registration
                     </a>
                 </p>
             `,

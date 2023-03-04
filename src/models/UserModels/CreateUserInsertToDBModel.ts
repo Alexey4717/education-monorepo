@@ -45,9 +45,22 @@ export type EmailConfirmationType = {
     isConfirmed: boolean
 }
 
+export type RecoveryDataType = {
+    /**
+     * Code for recovery password
+     */
+    recoveryCode: string
+
+    /**
+     * Expiration date of recovery link.
+     */
+    expirationDate: Date
+}
+
 export type UserType = {
     accountData: AccountDataType
     emailConfirmation: EmailConfirmationType
+    recoveryData: RecoveryDataType | null
 }
 
 export type CreateUserInsertToDBModel = UserType & {

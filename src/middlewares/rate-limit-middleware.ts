@@ -34,8 +34,6 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
             ((now - c.connectionDate) <= blockInterval)
         ));
 
-    console.log({connectionSessions})
-
     const connectionsCount = connectionSessions.length
 
     if (connectionsCount > 5) {

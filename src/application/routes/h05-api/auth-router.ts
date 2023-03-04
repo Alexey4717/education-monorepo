@@ -13,6 +13,8 @@ import {
 import {authControllers} from "../../../controllers/auth-controllers";
 import {cookieRefreshTokenMiddleware} from "../../../middlewares/cookie-refresh-token-middleware";
 import {rateLimitMiddleware} from "../../../middlewares/rate-limit-middleware";
+import {newPasswordInputValidations} from "../../../validations/auth/newPasswordInputValidations";
+import {passwordRecoveryInputValidations} from "../../../validations/auth/passwordRecoveryInputValidations";
 
 
 export const authRouter = Router({});
@@ -42,6 +44,20 @@ authRouter.post(
     registrationConfirmationInputValidations,
     inputValidationsMiddleware,
     authControllers.registrationConfirmation
+);
+authRouter.post(
+    '/password-recovery',
+    rateLimitMiddleware,
+    passwordRecoveryInputValidations,
+    inputValidationsMiddleware,
+    authControllers.recoveryPassword
+);
+authRouter.post(
+    '/new-password',
+    rateLimitMiddleware,
+    newPasswordInputValidations,
+    inputValidationsMiddleware,
+    authControllers.newPassword
 );
 authRouter.post(
     '/registration-email-resending',

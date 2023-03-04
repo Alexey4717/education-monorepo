@@ -12,6 +12,8 @@ import {RegistrationConfirmInputModel} from "../models/AuthModels/RegistrationCo
 import {ResendRegistrationInputModel} from "../models/AuthModels/ResendRegistrationInputModel";
 import {getMappedMeViewModel} from "../helpers";
 import {securityDevicesService} from "../domain/security-devices-service";
+import {NewPasswordInputModel} from "../models/AuthModels/NewPasswordInputModel";
+import {RecoveryPasswordInputModel} from "../models/AuthModels/RcoveryPasswordInputModel";
 
 
 export const authControllers = {
@@ -110,6 +112,35 @@ export const authControllers = {
             res.sendStatus(constants.HTTP_STATUS_BAD_REQUEST);
             return;
         }
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
+    },
+
+    async newPassword(
+        req: RequestWithBody<NewPasswordInputModel>,
+        res: Response
+    ) {
+        const {newPassword, recoveryCode} = req.body || {};
+        const result = await authService.changeUserPassword({recoveryCode, newPassword});
+        if (!result) {
+            // maybe need send other status code
+            res.sendStatus(constants.HTTP_STATUS_BAD_REQUEST);
+            return;
+        }
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
+    },
+
+    async recoveryPassword(
+        req: RequestWithBody<RecoveryPasswordInputModel>,
+        res: Response
+    ) {
+        const {email} = req.body || {};
+        const result = await authService.recoveryPassword(email);
+
+        if (!result) {
+            res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
         res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     },
 

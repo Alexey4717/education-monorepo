@@ -38,3 +38,8 @@ export const emailResendingValidation = body('email').isEmail({})
         if (foundUser.emailConfirmation.isConfirmed) throw new Error(`Email already confirmed`);
         return true;
     });
+
+export const emailRecoveryPasswordValidation = body('email').isEmail({});
+
+export const newPasswordValidation = body('newPassword')
+    .isLength({min: 6, max: 20}).withMessage("Max field length should be from 6 to 20 symbols");
