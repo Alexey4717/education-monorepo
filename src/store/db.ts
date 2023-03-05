@@ -1,4 +1,5 @@
 import {MongoClient} from 'mongodb';
+import mongoose from 'mongoose';
 
 import {GetBlogOutputModel} from "../models/BlogModels/GetBlogOutputModel";
 import {GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
@@ -26,10 +27,12 @@ export const securityDevicesCollection = db01.collection<GetSecurityDeviceOutput
 export const runDB = async () => {
     try {
         await client.connect();
+        await mongoose.connect(mongoUri);
         await client.db("test").command({ping: 1});
         console.log('Connected successfully to mongo server')
     } catch {
         console.error('Error connection to mongodb is occurred')
         await client.close();
+        await mongoose.disconnect();
     }
 };

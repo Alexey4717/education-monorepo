@@ -1,5 +1,4 @@
 import * as dotenv from "dotenv";
-
 dotenv.config();
 
 import express, {Request, Response, NextFunction, Express} from "express";
@@ -14,6 +13,7 @@ import {usersRouter} from "./application/routes/h05-api/users-router";
 import {RequestContextType} from "./types/common";
 import {commentsRouter} from "./application/routes/h06-comments/comments-router";
 import {securityDevicesRouter} from "./application/routes/h09-security-devices/security-devices-router";
+
 
 export const configApp = (app: Express) => {
     app.set('trust proxy', true);

@@ -1,3 +1,5 @@
+import {ObjectId} from 'mongodb';
+
 import {CreateVideoInputModel} from "../models/VideoModels/CreateVideoInputModel";
 import {GetVideoOutputModelFromMongoDB} from "../models/VideoModels/GetVideoOutputModel";
 import {UpdateVideoInputModel} from "../models/VideoModels/UpdateVideoInputModel";
@@ -26,6 +28,7 @@ export const videosService = {
         const minAgeRestriction = null; // default
 
         const newVideo = {
+            _id: new ObjectId(),
             title,
             author,
             canBeDownloaded,
