@@ -49,12 +49,12 @@ export const usersRepository = {
         return result.matchedCount === 1;
     },
 
-    async changeUserPasswordAndNullifyRecoveryData({userId, newPassword}: ChangeUserPasswordArgs): Promise<boolean> {
+    async changeUserPasswordAndNullifyRecoveryData({userId, passwordHash}: ChangeUserPasswordArgs): Promise<boolean> {
         const result = await usersCollection.updateOne(
             {_id: userId},
             {
                 $set: {
-                    'accountData.password': newPassword,
+                    'accountData.passwordHash': passwordHash,
                     recoveryData: null
                 }
             }

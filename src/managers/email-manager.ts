@@ -10,7 +10,7 @@ import {add} from "date-fns";
 
 
 export const emailManager = {
-    async sendPasswordRecoveryMessage(email: string) {
+    async sendPasswordRecoveryMessage(email: string): Promise<boolean> {
         const foundUser = await usersRepository.findByLoginOrEmail(email);
         // Even if current email is not registered (for prevent user's email detection)
         if (!foundUser) return true;

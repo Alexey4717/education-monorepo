@@ -1,9 +1,10 @@
 import {commonValidationForBodyStrings} from "../common";
-import {newPasswordValidation} from "./index";
+import {newPasswordValidation, recoveryCodeValidation} from "./index";
 
 
 export const newPasswordInputValidations = [
     commonValidationForBodyStrings('newPassword'),
     newPasswordValidation,
     commonValidationForBodyStrings('recoveryCode'),
+    recoveryCodeValidation,
 ];

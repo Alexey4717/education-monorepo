@@ -9,7 +9,7 @@ export type UpdateUserConfirmationCodeInputType = {
 
 export type ChangeUserPasswordArgs = {
     userId: ObjectId
-    newPassword: string
+    passwordHash: string
 };
 
 export type SetUserRecoveryDataInputType = {

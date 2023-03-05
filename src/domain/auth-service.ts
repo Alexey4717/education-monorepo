@@ -65,9 +65,10 @@ export const authService = {
             user.recoveryData?.recoveryCode !== recoveryCode ||
             user.recoveryData?.expirationDate <= new Date()
         ) return false;
+        const passwordHash = await this._generateHash(newPassword);
         return await usersRepository.changeUserPasswordAndNullifyRecoveryData({
             userId: user._id,
-            newPassword
+            passwordHash
         });
     },
 

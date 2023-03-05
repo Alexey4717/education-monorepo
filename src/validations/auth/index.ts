@@ -43,3 +43,15 @@ export const emailRecoveryPasswordValidation = body('email').isEmail({});
 
 export const newPasswordValidation = body('newPassword')
     .isLength({min: 6, max: 20}).withMessage("Max field length should be from 6 to 20 symbols");
+export const recoveryCodeValidation = body('recoveryCode')
+    .custom(async (value: string) => {
+        const foundUser = await usersRepository.findUserByRecoveryCode(value);
+        if (!foundUser) throw new Error(`User not found`);
+        if (!foundUser?.recoveryData || foundUser.recoveryData?.recoveryCode !== value) {
+            throw new Error(`recoveryCode is not valid`);
+        }
+        if (foundUser.recoveryData.expirationDate <= new Date()) {
+            throw new Error(`recoveryCode is expired`);
+        }
+        return true;
+    });

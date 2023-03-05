@@ -902,11 +902,16 @@ describe('/auth', () => {
     }, 10000)
 
     // testing post '/auth/new-password' api
-    it(`should return 204 if valid email`, async () => {
+    it(`should return 204 for new-password if valid email and login with new password`, async () => {
         const response = await createUser();
 
         const userId = new ObjectId(response.id);
         expect(ObjectId.isValid(userId)).toBe(true);
+
+        await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'login12', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_OK)
 
         await request(app)
             .post('/auth/password-recovery')
@@ -920,6 +925,16 @@ describe('/auth', () => {
             .post('/auth/new-password')
             .send({newPassword: 'qwerty123', recoveryCode: recoveryData?.recoveryCode})
             .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'login12', password: 'pass123'})
+            .expect(constants.HTTP_STATUS_UNAUTHORIZED)
+
+        await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: 'login12', password: 'qwerty123'})
+            .expect(constants.HTTP_STATUS_OK)
     }, 10000)
     it(`should return 400 if invalid password`, async () => {
         const response = await createUser();
@@ -944,6 +959,12 @@ describe('/auth', () => {
         await request(app)
             .post('/auth/new-password')
             .send({newPassword: '123rtyhge', recoveryCode: uuidv4()})
+            .expect(constants.HTTP_STATUS_BAD_REQUEST)
+    })
+    it('should return 400 if invalid code', async () => {
+        await request(app)
+            .post('/auth/new-password')
+            .send({newPassword: 'validvalid', recoveryCode: "incorrect"})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
     })
     it('should return 429 if do more 5 request per 10 seconds to password-recovery', async () => {
