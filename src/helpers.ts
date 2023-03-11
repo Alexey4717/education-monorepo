@@ -7,12 +7,15 @@ import {GetMappedUserOutputModel, GetUserOutputModelFromMongoDB} from "./models/
 import {MeOutputModel} from "./models/AuthModels/MeOutputModel";
 import {
     GetCommentOutputModelFromMongoDB,
-    GetMappedCommentOutputModel
+    GetMappedCommentOutputModel,
+    LikesInfo,
+    LikeStatus
 } from "./models/CommentsModels/GetCommentOutputModel";
 import {
     GetMappedSecurityDeviceOutputModel,
     GetSecurityDeviceOutputModelFromMongoDB
 } from "./models/SecurityDeviceModels/GetSecurityDeviceOutputModel";
+import {GetCommentLikeStatusOutputModel} from "./models/CommentLikeStatusModels/GetCommentLikeStatusOutputModel";
 
 
 export const getMappedVideoViewModel = ({
@@ -92,9 +95,30 @@ export const getMappedCommentViewModel = ({
                                               _id,
                                               content,
                                               commentatorInfo,
-                                              createdAt
-                                          }: GetCommentOutputModelFromMongoDB): GetMappedCommentOutputModel => {
+                                              createdAt,
+                                              likeStatuses,
+                                              currentUserId
+                                          }: GetCommentOutputModelFromMongoDB & { currentUserId?: string }
+): GetMappedCommentOutputModel => {
     const {userId, userLogin} = commentatorInfo || {};
+
+    const likesInfo = likeStatuses?.length > 0
+        ? (likeStatuses.reduce((result: LikesInfo, likeStatus: GetCommentLikeStatusOutputModel) => {
+                if (likeStatus.likeStatus === LikeStatus.Like) result.likesCount += 1;
+                if (likeStatus.likeStatus === LikeStatus.Dislike) result.dislikesCount += 1;
+                if (currentUserId && likeStatus.userId === currentUserId) result.myStatus = likeStatus.likeStatus;
+                return result;
+            }, {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.None
+            })
+        ) : ({
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: LikeStatus.None
+        });
+
     return {
         id: _id.toString(),
         content,
@@ -102,7 +126,8 @@ export const getMappedCommentViewModel = ({
             userId,
             userLogin
         },
-        createdAt
+        createdAt,
+        likesInfo,
     }
 };
 
@@ -126,6 +151,11 @@ export const getCorrectIncludesAvailableResolutions = (availableResolutions: Ava
     const intersections = availableResolutions
         .filter((key) => !enumValues.includes(key));
     return Boolean(intersections.length);
+};
+
+export const getCorrectCommentLikeStatus = (commentLikeStatus: LikeStatus): boolean => {
+    const enumValues = Object.values(LikeStatus)
+    return enumValues.includes(commentLikeStatus);
 };
 
 export const getEncodedAuthToken = () => {

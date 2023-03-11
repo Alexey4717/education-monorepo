@@ -3,7 +3,11 @@ import {ObjectId} from 'mongodb';
 import {commentsRepository} from "../repositories/CUD-repo/comments-repository";
 import {CommentManageStatuses} from "../types/common";
 import {postsQueryRepository} from "../repositories/Queries-repo/posts-query-repository";
-import {GetCommentOutputModelFromMongoDB} from "../models/CommentsModels/GetCommentOutputModel";
+import {
+    GetCommentOutputModel,
+    GetCommentOutputModelFromMongoDB,
+    LikeStatus
+} from "../models/CommentsModels/GetCommentOutputModel";
 import {commentsQueryRepository} from "../repositories/Queries-repo/comments-query-repository";
 
 
@@ -22,6 +26,12 @@ interface UpdateCommentArgs {
 interface DeleteCommentArgs {
     commentId: string
     userId: string
+}
+
+interface UpdateCommentLikeStatusArgs {
+    commentId: string
+    userId: string
+    likeStatus: LikeStatus
 }
 
 export const commentsService = {
@@ -43,11 +53,26 @@ export const commentsService = {
             content,
             commentatorInfo: {userId, userLogin},
             createdAt: new Date().toISOString(),
+            likeStatuses: [],
         }
         const result = await commentsRepository.createCommentInPost(newComment)
         if (!result) return null;
         return newComment;
     },
+
+    // async createCommentLikeStatus() {},
+
+    async updateCommentLikeStatus({commentId, userId, likeStatus}: UpdateCommentLikeStatusArgs): Promise<boolean> {
+        return await commentsRepository.updateCommentLikeStatusByCommentId({
+            commentId,
+            userId,
+            likeStatus
+        })
+    },
+
+    // async deleteCommentLikeStatusById() {},
+    //
+    // async getAllLikeStatusesByCommentId() {},
 
     async updateCommentById({
                                 id,

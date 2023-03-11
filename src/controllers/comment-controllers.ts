@@ -21,7 +21,10 @@ export const commentControllers = {
             res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
-        res.status(constants.HTTP_STATUS_OK).json(getMappedCommentViewModel(foundComment));
+        res.status(constants.HTTP_STATUS_OK).json(getMappedCommentViewModel({
+            ...foundComment,
+            currentUserId: req?.context?.user?._id.toString()
+        }));
     },
 
     async updateComment(
@@ -77,5 +80,28 @@ export const commentControllers = {
         }
 
         res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
-    }
+    },
+
+    async changeLikeStatus(
+        req: RequestWithParams<GetCommentInputModel>,
+        res: Response
+    ) {
+        if (!req.context.user) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+            return
+        }
+
+        const result = await commentsService.updateCommentLikeStatus({
+            commentId: req.params.commentId,
+            userId: req.context.user._id.toString(),
+            likeStatus: req.body.likeStatus
+        });
+
+        if (!result) {
+            res.sendStatus(constants.HTTP_STATUS_NOT_FOUND);
+            return;
+        }
+
+        res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
+    },
 };

@@ -4,12 +4,14 @@ import {constants} from "http2";
 import {db} from "../store/mockedDB";
 import {
     blogsCollection,
-    commentsCollection,
+    // commentsCollection,
     postsCollection,
     securityDevicesCollection,
     usersCollection,
-    videosCollection
+    // videosCollection
 } from "../store/db";
+import VideoModel from "../models/VideoModels/Video-model";
+import CommentModel from "../models/CommentsModels/Comment-model";
 
 
 export const testingControllers = {
@@ -28,9 +30,11 @@ export const testingControllers = {
         await Promise.all([
             blogsCollection.deleteMany({}),
             postsCollection.deleteMany({}),
-            videosCollection.deleteMany({}),
+            // videosCollection.deleteMany({}),
+            VideoModel.deleteMany({}),
             usersCollection.deleteMany({}),
-            commentsCollection.deleteMany({}),
+            // commentsCollection.deleteMany({}),
+            CommentModel.deleteMany({}),
             securityDevicesCollection.deleteMany({}),
         ]);
 

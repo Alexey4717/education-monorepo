@@ -1,7 +1,7 @@
 import {model, Schema} from "mongoose";
 import {GetVideoOutputModel} from "./GetVideoOutputModel";
-import {AvailableResolutions} from "../../types/common";
 import {add} from "date-fns";
+import {AvailableResolutions} from "../../types/common";
 
 
 const now = new Date();
@@ -17,7 +17,7 @@ const VideoSchema = new Schema<GetVideoOutputModel>({
         required: true,
         default: add(now, {days: 1}).toISOString()
     },
-    availableResolutions: {type: [String], default: null},
+    availableResolutions: {type: [String], enum: AvailableResolutions, default: null},
 });
 
 export default model("Video", VideoSchema);

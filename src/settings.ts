@@ -10,6 +10,6 @@ export const settings: SettingsType = {
     REFRESH_JWT_SECRET: process.env.REFRESH_JWT_SECRET || 'my_refresh_jwt_secret',
     DB_NAME: process.env.DB_NAME || "It-incubator-01-dev",
     ID_PATTERN_BY_DB_TYPE: '[0-9a-f]{24}',
-    JWT_EXPIRATION: '10s',
-    JWT_REFRESH_EXPIRATION: '20s',
+    JWT_EXPIRATION: '5m',
+    JWT_REFRESH_EXPIRATION: '24h',
 };

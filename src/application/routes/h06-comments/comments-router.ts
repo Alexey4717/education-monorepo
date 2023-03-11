@@ -6,6 +6,9 @@ import {authMiddleware} from "../../../middlewares/auth-middleware";
 import {settings} from "../../../settings";
 import {updateCommentInputValidations} from "../../../validations/comment/updateCommentInputValidations";
 import {commentControllers} from "../../../controllers/comment-controllers";
+import {
+    updateCommentLikeStatusInputValidations
+} from "../../../validations/comment/updateCommenLikeStatusInputValidations";
 
 
 export const commentsRouter = Router({});
@@ -23,6 +26,14 @@ commentsRouter.put(
     updateCommentInputValidations,
     inputValidationsMiddleware,
     commentControllers.updateComment
+);
+commentsRouter.put(
+    `/:commentId(${settings.ID_PATTERN_BY_DB_TYPE})/like-status`,
+    authMiddleware,
+    paramIdValidationMiddleware,
+    updateCommentLikeStatusInputValidations,
+    inputValidationsMiddleware,
+    commentControllers.changeLikeStatus
 );
 
 commentsRouter.delete(

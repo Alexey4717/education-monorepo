@@ -89,12 +89,14 @@ export const postControllers = {
             items
         } = resData || {};
 
+        const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId: req?.context?.user?._id.toString()}));
+
         res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: items.map(getMappedCommentViewModel)
+            items: itemsWithCurrentUserID.map(getMappedCommentViewModel)
         });
     },
 
@@ -123,10 +125,11 @@ export const postControllers = {
             return
         }
 
+        const currentUserId = req.context.user._id.toString()
         const createdCommentInPost = await commentsService.createCommentInPost({
             postId: req.params.postId,
             content: req.body.content,
-            userId: req.context.user._id.toString(),
+            userId: currentUserId,
             userLogin: req.context.user.accountData.login
         })
 
@@ -135,7 +138,10 @@ export const postControllers = {
             res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
-        res.status(constants.HTTP_STATUS_CREATED).json(getMappedCommentViewModel(createdCommentInPost));
+        res.status(constants.HTTP_STATUS_CREATED).json(getMappedCommentViewModel({
+            ...createdCommentInPost,
+            currentUserId
+        }));
     },
 
     async updatePost(
