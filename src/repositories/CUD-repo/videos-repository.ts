@@ -9,7 +9,7 @@ interface UpdateVideoArgs {
     input: UpdateVideoInputModel
 }
 
-export const videosRepository = {
+export class VideosRepository {
     async createVideo(newVideo: GetVideoOutputModel): Promise<boolean> {
         try {
             // const result =  await videosCollection.insertOne(newVideo);
@@ -20,7 +20,7 @@ export const videosRepository = {
             console.log(`VideosRepository create video error is occurred: ${error}`)
             return false;
         }
-    },
+    }
 
     async updateVideo({id, input}: UpdateVideoArgs): Promise<boolean> {
         try {
@@ -37,7 +37,7 @@ export const videosRepository = {
             console.log(`VideosRepository update video error is occurred: ${error}`)
             return false;
         }
-    },
+    }
 
     async deleteVideoById(id: string): Promise<boolean> {
         try {

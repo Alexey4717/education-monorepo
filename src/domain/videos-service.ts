@@ -3,14 +3,20 @@ import {ObjectId} from 'mongodb';
 import {CreateVideoInputModel} from "../models/VideoModels/CreateVideoInputModel";
 import {GetVideoOutputModelFromMongoDB} from "../models/VideoModels/GetVideoOutputModel";
 import {UpdateVideoInputModel} from "../models/VideoModels/UpdateVideoInputModel";
-import {videosRepository} from "../repositories/CUD-repo/videos-repository";
+import {VideosRepository} from "../repositories/CUD-repo/videos-repository";
 
 interface UpdateVideoArgs {
     id: string
     input: UpdateVideoInputModel
 }
 
-export const videosService = {
+export class VideosService {
+    private videosRepository: VideosRepository;
+
+    constructor() {
+        this.videosRepository = new VideosRepository();
+    }
+
     async createVideo(input: CreateVideoInputModel): Promise<GetVideoOutputModelFromMongoDB> {
         const {
             title,
@@ -38,15 +44,15 @@ export const videosService = {
             availableResolutions: availableResolutions ?? null // null is default
         };
 
-        await videosRepository.createVideo(newVideo);
+        await this.videosRepository.createVideo(newVideo);
         return newVideo as GetVideoOutputModelFromMongoDB;
-    },
+    }
 
     async updateVideo({id, input}: UpdateVideoArgs): Promise<boolean> {
-        return await videosRepository.updateVideo({id, input})
-    },
+        return await this.videosRepository.updateVideo({id, input})
+    }
 
     async deleteVideoById(id: string): Promise<boolean> {
-        return await videosRepository.deleteVideoById(id);
+        return await this.videosRepository.deleteVideoById(id);
     }
 };

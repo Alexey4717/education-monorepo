@@ -12,20 +12,20 @@ export const videosRouter = Router({});
 
 videosRouter.get(
     '/',
-    videoControllers.getVideos
+    videoControllers.getVideos.bind(videoControllers)
 );
 videosRouter.get(
     `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
-    videoControllers.getVideo
+    videoControllers.getVideo.bind(videoControllers)
 );
 
 videosRouter.post(
     '/',
     createVideoInputValidations,
     inputValidationsMiddleware,
-    videoControllers.createVideo
+    videoControllers.createVideo.bind(videoControllers)
 );
 
 videosRouter.put(
@@ -33,12 +33,12 @@ videosRouter.put(
     paramIdValidationMiddleware,
     updateVideoInputValidations,
     inputValidationsMiddleware,
-    videoControllers.updateVideo
+    videoControllers.updateVideo.bind(videoControllers)
 );
 
 videosRouter.delete(
     `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
-    videoControllers.deleteVideo
+    videoControllers.deleteVideo.bind(videoControllers)
 );

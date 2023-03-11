@@ -2,16 +2,10 @@ import {ObjectId} from "mongodb";
 
 import {videosCollection} from '../../store/db';
 import {GetVideoOutputModelFromMongoDB} from "../../models/VideoModels/GetVideoOutputModel";
-import {UpdateVideoInputModel} from "../../models/VideoModels/UpdateVideoInputModel";
 import VideoModel from '../../models/VideoModels/Video-model';
 
 
-interface UpdateVideoArgs {
-    id: number
-    input: UpdateVideoInputModel
-}
-
-export const videosQueryRepository = {
+export class VideosQueryRepository {
     async getVideos(): Promise<GetVideoOutputModelFromMongoDB[]> {
         try {
             // return await videosCollection.find({}).toArray();
@@ -20,7 +14,7 @@ export const videosQueryRepository = {
             console.log(`VideosQueryRepository get videos error is occurred: ${error}`);
             return [];
         }
-    },
+    }
 
     async findVideoById(id: string): Promise<GetVideoOutputModelFromMongoDB | null> {
         try {
@@ -30,5 +24,5 @@ export const videosQueryRepository = {
             console.log(`VideosQueryRepository find video by id error is occurred: ${error}`);
             return null;
         }
-    },
+    }
 };
