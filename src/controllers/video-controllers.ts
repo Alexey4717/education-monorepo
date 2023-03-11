@@ -12,13 +12,13 @@ import {VideosService} from "../domain/videos-service";
 import {UpdateVideoInputModel} from "../models/VideoModels/UpdateVideoInputModel";
 
 
-class VideoControllers {
-    private videosQueryRepository: VideosQueryRepository;
-    private videosService: VideosService;
-
-    constructor() {
-        this.videosQueryRepository = new VideosQueryRepository();
-        this.videosService = new VideosService();
+export class VideoControllers {
+    constructor(
+        protected videosQueryRepository: VideosQueryRepository,
+        protected videosService: VideosService
+    ) {
+        this.videosQueryRepository = videosQueryRepository;
+        this.videosService = videosService;
     }
 
     async getVideos(
@@ -91,5 +91,3 @@ class VideoControllers {
         res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
     }
 };
-
-export const videoControllers = new VideoControllers();

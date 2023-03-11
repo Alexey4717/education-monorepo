@@ -4,8 +4,8 @@ import {createVideoInputValidations} from "../../../validations/video/createVide
 import {updateVideoInputValidations} from "../../../validations/video/updateVideoInputValidations";
 import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
 import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
-import {videoControllers} from "../../../controllers/video-controllers";
 import {settings} from "../../../settings";
+import {videoControllers} from "../../../composition-root";
 
 
 export const videosRouter = Router({});

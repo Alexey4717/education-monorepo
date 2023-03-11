@@ -5,16 +5,15 @@ import {GetVideoOutputModelFromMongoDB} from "../models/VideoModels/GetVideoOutp
 import {UpdateVideoInputModel} from "../models/VideoModels/UpdateVideoInputModel";
 import {VideosRepository} from "../repositories/CUD-repo/videos-repository";
 
+
 interface UpdateVideoArgs {
     id: string
     input: UpdateVideoInputModel
 }
 
 export class VideosService {
-    private videosRepository: VideosRepository;
-
-    constructor() {
-        this.videosRepository = new VideosRepository();
+    constructor(protected videosRepository: VideosRepository) {
+        this.videosRepository = videosRepository;
     }
 
     async createVideo(input: CreateVideoInputModel): Promise<GetVideoOutputModelFromMongoDB> {
