@@ -12,9 +12,7 @@ interface UpdateVideoArgs {
 }
 
 export class VideosService {
-    constructor(protected videosRepository: VideosRepository) {
-        this.videosRepository = videosRepository;
-    }
+    constructor(protected videosRepository: VideosRepository) {}
 
     async createVideo(input: CreateVideoInputModel): Promise<GetVideoOutputModelFromMongoDB> {
         const {

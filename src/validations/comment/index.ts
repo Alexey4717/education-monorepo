@@ -8,4 +8,4 @@ export const contentValidation = body('content')
 
 // validation for comment/id/like-status body (put method)
 export const commentLikeStatusValidation = body('likeStatus')
-    .custom((value) => !getCorrectCommentLikeStatus(value)).withMessage('Invalid likeStatus')
+    .custom((value) => getCorrectCommentLikeStatus(value)).withMessage('Invalid likeStatus')

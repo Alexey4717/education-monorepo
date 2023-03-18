@@ -54,7 +54,7 @@ export const commentsQueryRepository = {
     async getCommentById(id: string): Promise<GetCommentOutputModelFromMongoDB | null> {
         try {
             // return await commentsCollection.findOne({_id: new ObjectId(id)})
-            return await CommentModel.findOne({_id: new ObjectId(id)});
+            return await CommentModel.findOne({_id: new ObjectId(id)}).lean();
         } catch (error) {
             console.log(`commentsQueryRepository.getCommentById error is occurred: ${error}`)
             return null

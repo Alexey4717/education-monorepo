@@ -16,10 +16,7 @@ export class VideoControllers {
     constructor(
         protected videosQueryRepository: VideosQueryRepository,
         protected videosService: VideosService
-    ) {
-        this.videosQueryRepository = videosQueryRepository;
-        this.videosService = videosService;
-    }
+    ) {}
 
     async getVideos(
         req: Request,
