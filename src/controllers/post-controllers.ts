@@ -138,10 +138,12 @@ export const postControllers = {
             res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
-        res.status(constants.HTTP_STATUS_CREATED).json(getMappedCommentViewModel({
-            ...createdCommentInPost,
-            currentUserId
-        }));
+
+        res.status(201).json(createdCommentInPost)
+        // res.status(constants.HTTP_STATUS_CREATED).json(getMappedCommentViewModel({
+        //     ...createdCommentInPost,
+        //     currentUserId
+        // }));
     },
 
     async updatePost(

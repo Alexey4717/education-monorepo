@@ -3,11 +3,7 @@ import {ObjectId} from 'mongodb';
 import {commentsRepository} from "../repositories/CUD-repo/comments-repository";
 import {CommentManageStatuses} from "../types/common";
 import {postsQueryRepository} from "../repositories/Queries-repo/posts-query-repository";
-import {
-    GetCommentOutputModel,
-    GetCommentOutputModelFromMongoDB,
-    LikeStatus
-} from "../models/CommentsModels/GetCommentOutputModel";
+import {GetMappedCommentOutputModel, LikeStatus, TCommentDb} from "../models/CommentsModels/GetCommentOutputModel";
 import {commentsQueryRepository} from "../repositories/Queries-repo/comments-query-repository";
 
 
@@ -35,9 +31,24 @@ interface UpdateCommentLikeStatusArgs {
 }
 
 export const commentsService = {
+    _mapCommentToViewType(comment: TCommentDb): GetMappedCommentOutputModel {
+        return {
+            id: comment._id.toString(),
+            content: comment.content,
+            commentatorInfo: comment.commentatorInfo,
+            createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.None
+            }
+        }
+    },
+
     async createCommentInPost(
         input: CreateCommentInput
-    ): Promise<GetCommentOutputModelFromMongoDB | null> {
+    // ): Promise<GetCommentOutputModelFromMongoDB | null> {
+    ): Promise<GetMappedCommentOutputModel | null> {
         const {
             postId,
             content,
@@ -47,17 +58,17 @@ export const commentsService = {
         const foundPost = await postsQueryRepository.findPostById(postId);
         if (!foundPost) return null;
 
-        const newComment = {
+        const newComment: TCommentDb = {
             _id: new ObjectId(),
             postId,
             content,
             commentatorInfo: {userId, userLogin},
             createdAt: new Date().toISOString(),
-            likeStatuses: [],
+            reactions: [],
         }
         const result = await commentsRepository.createCommentInPost(newComment)
         if (!result) return null;
-        return newComment;
+        return this._mapCommentToViewType(newComment);
     },
 
     // async createCommentLikeStatus() {},

@@ -1,21 +1,21 @@
-import {GetVideoOutputModelFromMongoDB, GetMappedVideoOutputModel} from "./models/VideoModels/GetVideoOutputModel";
+import {GetMappedVideoOutputModel, GetVideoOutputModelFromMongoDB} from "./models/VideoModels/GetVideoOutputModel";
 import {GetBlogOutputModelFromMongoDB, GetMappedBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
-import {GetPostOutputModelFromMongoDB, GetMappedPostOutputModel} from "./models/PostModels/GetPostOutputModel";
+import {GetMappedPostOutputModel, GetPostOutputModelFromMongoDB} from "./models/PostModels/GetPostOutputModel";
 import {AvailableResolutions} from './types/common';
 import {db} from "./store/mockedDB";
 import {GetMappedUserOutputModel, GetUserOutputModelFromMongoDB} from "./models/UserModels/GetUserOutputModel";
 import {MeOutputModel} from "./models/AuthModels/MeOutputModel";
 import {
-    GetCommentOutputModelFromMongoDB,
     GetMappedCommentOutputModel,
     LikesInfo,
-    LikeStatus
+    LikeStatus,
+    TCommentDb,
+    TReactions
 } from "./models/CommentsModels/GetCommentOutputModel";
 import {
     GetMappedSecurityDeviceOutputModel,
     GetSecurityDeviceOutputModelFromMongoDB
 } from "./models/SecurityDeviceModels/GetSecurityDeviceOutputModel";
-import {GetCommentLikeStatusOutputModel} from "./models/CommentLikeStatusModels/GetCommentLikeStatusOutputModel";
 
 
 export const getMappedVideoViewModel = ({
@@ -96,17 +96,21 @@ export const getMappedCommentViewModel = ({
                                               content,
                                               commentatorInfo,
                                               createdAt,
-                                              likeStatuses,
+                                              reactions,
                                               currentUserId
-                                          }: GetCommentOutputModelFromMongoDB & { currentUserId?: string }
+                                          }: TCommentDb & { currentUserId?: string }
 ): GetMappedCommentOutputModel => {
     const {userId, userLogin} = commentatorInfo || {};
 
-    const likesInfo = likeStatuses?.length > 0
-        ? (likeStatuses.reduce((result: LikesInfo, likeStatus: GetCommentLikeStatusOutputModel) => {
+    console.log(currentUserId)
+    console.log(reactions)
+    const likesInfo = reactions?.length > 0
+        ? (reactions.reduce((result: LikesInfo, likeStatus: TReactions) => {
                 if (likeStatus.likeStatus === LikeStatus.Like) result.likesCount += 1;
                 if (likeStatus.likeStatus === LikeStatus.Dislike) result.dislikesCount += 1;
-                if (currentUserId && likeStatus.userId === currentUserId) result.myStatus = likeStatus.likeStatus;
+                if (likeStatus.userId === currentUserId) {
+                    result.myStatus = likeStatus.likeStatus;
+                }
                 return result;
             }, {
                 likesCount: 0,

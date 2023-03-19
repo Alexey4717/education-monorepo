@@ -13,7 +13,7 @@ import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel
 import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
 import {CreatePostInputModel} from "../../models/PostModels/CreatePostInputModel";
 import {GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
-import {GetMappedCommentOutputModel} from "../../models/CommentsModels/GetCommentOutputModel";
+import {GetMappedCommentOutputModel, LikeStatus} from "../../models/CommentsModels/GetCommentOutputModel";
 
 
 describe('CRUD comments', () => {
@@ -154,6 +154,29 @@ describe('CRUD comments', () => {
             .get(`/comments/${createdComment.id}/`)
             .set('Authorization', `Bearer ${accessToken}`)
             .expect(constants.HTTP_STATUS_OK)
+    })
+    it(`should return 200 and correct likes count`, async () => {
+        const result = await request(app)
+            .get(`/comments/${createdComment.id}/`)
+            .set('Authorization', `Bearer ${accessToken}`)
+
+
+        expect(result.status).toBe(constants.HTTP_STATUS_OK)
+
+        await request(app)
+            .put(`/comments/${createdComment.id}/like-status`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        const commentAfterLike = await  request(app)
+            .get(`/comments/${createdComment.id}/`)
+            .auth(accessToken, {type: 'bearer'})
+
+        expect(commentAfterLike.status).toBe(constants.HTTP_STATUS_OK)
+        expect(commentAfterLike.body.likesInfo.likesCount).toBe(1)
+        expect(commentAfterLike.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
     })
 
     // testing put '/comments/:commentId' api

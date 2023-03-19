@@ -1,7 +1,7 @@
 import {Response} from "express";
 import {constants} from "http2";
 
-import {CommentManageStatuses, RequestWithParams, RequestWithParamsAndBody} from "../types/common";
+import {CommentManageStatuses, RequestWithParams, RequestWithParamsAndBody, TokenTypes} from "../types/common";
 import {GetMappedCommentOutputModel} from "../models/CommentsModels/GetCommentOutputModel";
 import {commentsQueryRepository} from "../repositories/Queries-repo/comments-query-repository";
 import {getMappedCommentViewModel} from "../helpers";
@@ -9,6 +9,7 @@ import {GetCommentInputModel} from "../models/CommentsModels/GetCommentInputMode
 import {UpdateCommentInputModel} from "../models/CommentsModels/UpdateCommentInputModel";
 import {GetMappedUserOutputModel} from "../models/UserModels/GetUserOutputModel";
 import {commentsService} from "../domain/comments-service";
+import {jwtService} from "../application/jwt-service";
 
 
 export const commentControllers = {
@@ -21,9 +22,19 @@ export const commentControllers = {
             res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
+        const authData = req?.headers?.authorization;
+        if (!authData) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+            return;
+        }
+
+        const splitAuthData = authData.split(' ');
+        const token = splitAuthData[1];
+
+        const userId = await jwtService.getUserIdByToken({token, type: TokenTypes.access});
         res.status(constants.HTTP_STATUS_OK).json(getMappedCommentViewModel({
             ...foundComment,
-            currentUserId: req?.context?.user?._id.toString()
+            currentUserId: userId?.toString()
         }));
     },
 

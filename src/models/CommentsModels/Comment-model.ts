@@ -1,11 +1,15 @@
 import {model, Schema} from "mongoose";
-import {GetCommentOutputModelFromMongoDB, LikeStatus} from "./GetCommentOutputModel";
+import {LikeStatus, TCommentDb, TReactions} from "./GetCommentOutputModel";
 import {CommentLikeStatusSchema} from "../CommentLikeStatusModels/CommentLikeStatus-model";
 
 
-const now = new Date();
+const ReactionsSchema = new Schema<TReactions>({
+    userId: {type: String, required: true},
+    likeStatus: {type: String, enum: LikeStatus, required: true},
+    createdAt: {type: String, required: true, default: new Date().toISOString()}
+}, {_id: false, id: false})
 
-const CommentSchema = new Schema<GetCommentOutputModelFromMongoDB>({
+const CommentSchema = new Schema<TCommentDb>({
     postId: {type: String, required: true},
     content: {type: String, required: true, min: 20, max: 300},
     commentatorInfo: {
@@ -13,11 +17,7 @@ const CommentSchema = new Schema<GetCommentOutputModelFromMongoDB>({
         userLogin: {type: String, required: true},
     },
     createdAt: {type: String, default: new Date().toISOString()},
-    likeStatuses: {
-        likesCount: {type: Number, default: 0},
-        dislikesCount: {type: Number, default: 0},
-        likeStatuses: {type: [CommentLikeStatusSchema], default: []}
-    }
+    reactions: {type: [ReactionsSchema], default: []   }
 });
 
 export default model("Comment", CommentSchema);

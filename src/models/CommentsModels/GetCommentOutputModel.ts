@@ -1,5 +1,4 @@
-import {WithId} from 'mongodb';
-import {GetCommentLikeStatusOutputModel} from "../CommentLikeStatusModels/GetCommentLikeStatusOutputModel";
+import {ObjectId, WithId} from 'mongodb';
 
 
 export enum LikeStatus {
@@ -30,7 +29,18 @@ export type GetMappedCommentOutputModel = GetCommentOutputModel & {
     id: string
 };
 
-export type GetCommentOutputModelFromMongoDB = WithId<Omit<GetCommentOutputModel, 'likesInfo'>> & {
-    postId?: string
-    likeStatuses: GetCommentLikeStatusOutputModel[]
-};
+export type TReactions = {
+    userId: string
+    likeStatus: LikeStatus
+    createdAt: string
+}
+
+export type TCommentDb = {
+    _id: ObjectId
+    postId: string,
+    content: string
+    commentatorInfo: CommentatorInfoType
+    createdAt: string
+    reactions: TReactions []
+}
+

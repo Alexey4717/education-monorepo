@@ -1,14 +1,18 @@
 import {ObjectId} from "mongodb";
 
-// import {commentsCollection} from "../../store/db";
-import {GetCommentOutputModelFromMongoDB, LikeStatus} from "../../models/CommentsModels/GetCommentOutputModel";
+import {commentsCollection} from "../../store/db";
+import {
+    LikeStatus,
+    TCommentDb, TReactions
+} from "../../models/CommentsModels/GetCommentOutputModel";
 import CommentModel from '../../models/CommentsModels/Comment-model';
 import CommentLikeStatusModel from "../../models/CommentLikeStatusModels/CommentLikeStatus-model";
+import {commentsQueryRepository} from "../Queries-repo/comments-query-repository";
 
 
 export const commentsRepository = {
     async createCommentInPost(
-        newComment: GetCommentOutputModelFromMongoDB & { postId: string }
+        newComment: TCommentDb
     ): Promise<boolean> {
         try {
             await CommentModel.create(newComment);
@@ -44,33 +48,48 @@ export const commentsRepository = {
                                                  likeStatus
                                              }: { commentId: string, userId: string, likeStatus: LikeStatus }): Promise<boolean> {
         try {
-            const foundCommentLikeStatus = await CommentLikeStatusModel.findOne({commentId, userId});
+            const filter = {_id: new ObjectId(commentId)};
+            const foundComment = await commentsQueryRepository.getCommentById(commentId);
 
+            if (!foundComment) return false
+
+            const foundCommentLikeStatus = foundComment.reactions.find((likeStatus: TReactions) => likeStatus.userId === userId);
+
+            console.log(foundCommentLikeStatus)
             if (!foundCommentLikeStatus) {
-                const newCommentLikeStatus = await CommentLikeStatusModel.create({
-                    commentId,
+                const newCommentLikeStatus: TReactions = {
                     userId,
                     likeStatus,
-                });
+                    createdAt: new Date().toISOString()
+                };
 
                 const result = await CommentModel.updateOne(
-                    {"_id": new ObjectId(commentId)},
-                    {$push: {likeStatuses: newCommentLikeStatus}},
+                    filter,
+                    {$push: {reactions: newCommentLikeStatus}},
                 )
-                return result?.matchedCount === 1;
+                return result.matchedCount === 1;
             }
 
+            if (foundCommentLikeStatus.likeStatus === likeStatus) return true;
+
+            // if (foundCommentLikeStatus.likeStatus === LikeStatus.None) {
+            //     const result = await CommentModel.updateOne(
+            //         filter,
+            //         {$pull: {reactions: {userId}}}
+            //     )
+            // }
+
             const result = await CommentModel.updateOne(
-                {"_id": new ObjectId(commentId), "likeStatuses.userId": userId},
+                { ...filter, 'reactions.userId': userId },
                 {
                     $set: {
-                        'likeStatuses.$.likeStatus': likeStatus,
-                        'likeStatuses.$.createdAt': new Date().toISOString()
+                        'reactions.$.likeStatus': likeStatus,
+                        'reactions.$.createdAt': new Date().toISOString()
                     }
                 }
             )
 
-            return result?.matchedCount === 1;
+            return result.matchedCount === 1;
         } catch (error) {
             console.log('commentsRepository.updateCommentLikeStatusByCommentId error is occurred: ', error);
             return false;

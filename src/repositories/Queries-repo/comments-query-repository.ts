@@ -1,6 +1,6 @@
 import {ObjectId} from 'mongodb';
 
-import {GetCommentOutputModelFromMongoDB} from "../../models/CommentsModels/GetCommentOutputModel";
+import {TCommentDb} from "../../models/CommentsModels/GetCommentOutputModel";
 // import {commentsCollection, postsCollection} from "../../store/db";
 import {GetPostsInputModel} from "../../models/CommentsModels/GetPostCommentsInputModel";
 import {calculateAndGetSkipValue} from "../../helpers";
@@ -16,7 +16,8 @@ export const commentsQueryRepository = {
                               pageNumber,
                               pageSize,
                               postId
-                          }: GetPostsInputModel): Promise<Paginator<GetCommentOutputModelFromMongoDB[]> | null> {
+                           }: GetPostsInputModel) {
+                              // : Promise<Paginator<GetCommentOutputModelFromMongoDB[]> | null> {
         try {
             const foundPost = await postsQueryRepository.findPostById(postId);
             if (!foundPost) return null;
@@ -46,12 +47,13 @@ export const commentsQueryRepository = {
             };
         } catch (error) {
             console.log(`commentsQueryRepository.getPostComments error is occurred: ${error}`)
-            return {} as Paginator<GetCommentOutputModelFromMongoDB[]>;
+            return {} as Paginator<TCommentDb[]>;
         }
 
     },
 
-    async getCommentById(id: string): Promise<GetCommentOutputModelFromMongoDB | null> {
+    async getCommentById(id: string): Promise<TCommentDb | null> {
+    // async getCommentById(id: string): Promise<GetCommentOutputModelFromMongoDB | null> {
         try {
             // return await commentsCollection.findOne({_id: new ObjectId(id)})
             return await CommentModel.findOne({_id: new ObjectId(id)}).lean();
