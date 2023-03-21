@@ -12,6 +12,7 @@ import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputMod
 import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
 import {GetMappedUserOutputModel} from "../../models/UserModels/GetUserOutputModel";
 import {SigninInputModel} from "../../models/AuthModels/SigninInputModel";
+import {LikeStatus} from "../../models/CommentsModels/GetCommentOutputModel";
 
 
 const mockedcreatedBlogId = new ObjectId().toString();
@@ -968,6 +969,176 @@ describe('comments in post', () => {
                 items: [createdComment2.body, createdComment1.body]
             })
     })
+    it(`create 6 comments then: like comment 1 by user 1, user 2; like comment 2 by user 2, user 3; dislike comment 3 by user 1; like comment 4 by user 1, user 4, user 2, user 3; like comment 5 by user 2, dislike by user 3; like comment 6 by user 1, dislike by user 2`, async () => {
+        const createdUser1 = await createUser({
+            password: 'password1',
+            email: 'example1@mail.ru',
+            login: 'user1'
+        });
+        const createdUser2 = await createUser({
+            password: 'password1',
+            email: 'example2@mail.ru',
+            login: 'user2'
+        });
+        const createdUser3 = await createUser({
+            password: 'password1',
+            email: 'example3@mail.ru',
+            login: 'user3'
+        });
+        const createdUser4 = await createUser({
+            password: 'password1',
+            email: 'example4@mail.ru',
+            login: 'user4'
+        });
+
+        const accessTokenUser1 = await auth({
+            loginOrEmail: 'user1',
+            password: 'password1'
+        });
+        const accessTokenUser2 = await auth({
+            loginOrEmail: 'user2',
+            password: 'password1'
+        });
+        const accessTokenUser3 = await auth({
+            loginOrEmail: 'user3',
+            password: 'password1'
+        });
+        const accessTokenUser4 = await auth({
+            loginOrEmail: 'user4',
+            password: 'password1'
+        });
+
+        const createdComment1 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: '11111111111111 first comment'})
+            .expect(constants.HTTP_STATUS_CREATED)
+        const createdComment2 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: '22222222222222 second comment'})
+            .expect(constants.HTTP_STATUS_CREATED)
+        const createdComment3 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: '333333333333333 third comment'})
+            .expect(constants.HTTP_STATUS_CREATED)
+        const createdComment4 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: '444444444444444 fourth comment'})
+            .expect(constants.HTTP_STATUS_CREATED)
+        const createdComment5 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: '555555555555555 fifth comment'})
+            .expect(constants.HTTP_STATUS_CREATED)
+        const createdComment6 = await request(app)
+            .post(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({content: '6666666666666666 sixth comment'})
+            .expect(constants.HTTP_STATUS_CREATED)
+
+        await request(app)
+            .get(`/posts/${createdPost.id}/comments`)
+            .expect(constants.HTTP_STATUS_OK, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 6,
+                items: [
+                    createdComment6.body,
+                    createdComment5.body,
+                    createdComment4.body,
+                    createdComment3.body,
+                    createdComment2.body,
+                    createdComment1.body
+                ]
+            })
+
+        // like comment 1 by user 1, user 2;
+        await request(app)
+            .put(`/comments/${createdComment1.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/comments/${createdComment1.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser2}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        // like comment 2 by user 2, user 3
+        await request(app)
+            .put(`/comments/${createdComment2.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser2}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/comments/${createdComment2.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser3}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        // dislike comment 3 by user 1
+        await request(app)
+            .put(`/comments/${createdComment3.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .send({likeStatus: LikeStatus.Dislike})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        // like comment 4 by user 1, user 4, user 2, user 3
+        await request(app)
+            .put(`/comments/${createdComment4.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/comments/${createdComment4.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser4}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/comments/${createdComment4.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser2}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/comments/${createdComment4.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser3}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        // like comment 5 by user 2, dislike by user 3
+        await request(app)
+            .put(`/comments/${createdComment5.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser2}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/comments/${createdComment5.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser3}`)
+            .send({likeStatus: LikeStatus.Dislike})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        // like comment 6 by user 1, dislike by user 2
+        await request(app)
+            .put(`/comments/${createdComment6.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/comments/${createdComment6.body.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser2}`)
+            .send({likeStatus: LikeStatus.Dislike})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        // Get the comments by user 1 after all likes
+        await request(app)
+            .get(`/posts/${createdPost.id}/comments`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .expect(constants.HTTP_STATUS_OK)
+    }, 20000)
 
     // testing post '/posts/:postId/comments' api
     it(`should return 401 if not auth`, async () => {

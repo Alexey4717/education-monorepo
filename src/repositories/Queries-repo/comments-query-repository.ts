@@ -34,7 +34,8 @@ export const commentsQueryRepository = {
                 .find(filter)
                 .sort({[sortBy]: sortDirection === SortDirections.desc ? -1 : 1})
                 .skip(skipValue)
-                .limit(pageSize);
+                .limit(pageSize)
+                .lean();
             // const totalCount = await commentsCollection.countDocuments(filter);
             const totalCount = await CommentModel.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);

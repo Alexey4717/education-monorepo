@@ -124,7 +124,7 @@ export const getMappedCommentViewModel = ({
         });
 
     return {
-        id: _id.toString(),
+        id: _id?.toString(),
         content,
         commentatorInfo: {
             userId,

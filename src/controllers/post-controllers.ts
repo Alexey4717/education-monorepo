@@ -89,7 +89,7 @@ export const postControllers = {
             items
         } = resData || {};
 
-        const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId: req?.context?.user?._id.toString()}));
+        const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId: req?.context?.user?._id?.toString()}));
 
         res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
