@@ -23,15 +23,16 @@ export const commentControllers = {
             return;
         }
         const authData = req?.headers?.authorization;
-        if (!authData) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
-            return;
+
+        const splitAuthData = authData?.split(' ');
+        const token = splitAuthData?.[1];
+
+        let userId;
+
+        if (token) {
+            userId = await jwtService.getUserIdByToken({token, type: TokenTypes.access});
         }
 
-        const splitAuthData = authData.split(' ');
-        const token = splitAuthData[1];
-
-        const userId = await jwtService.getUserIdByToken({token, type: TokenTypes.access});
         res.status(constants.HTTP_STATUS_OK).json(getMappedCommentViewModel({
             ...foundComment,
             currentUserId: userId?.toString()
