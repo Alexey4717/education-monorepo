@@ -105,11 +105,13 @@ export const getMappedCommentViewModel = ({
     console.log(currentUserId)
     console.log(reactions)
     const likesInfo = reactions?.length > 0
-        ? (reactions.reduce((result: LikesInfo, likeStatus: TReactions) => {
-                if (likeStatus.likeStatus === LikeStatus.Like) result.likesCount += 1;
-                if (likeStatus.likeStatus === LikeStatus.Dislike) result.dislikesCount += 1;
-                if (likeStatus.userId === currentUserId) {
-                    result.myStatus = likeStatus.likeStatus;
+        ? (reactions.reduce((result: LikesInfo, reaction: TReactions) => {
+                if (reaction.likeStatus === LikeStatus.Like) result.likesCount += 1;
+                if (reaction.likeStatus === LikeStatus.Dislike) result.dislikesCount += 1;
+                if (reaction.userId === currentUserId) {
+                    result.myStatus = reaction.likeStatus;
+                } else {
+                    result.myStatus = LikeStatus.None;
                 }
                 return result;
             }, {

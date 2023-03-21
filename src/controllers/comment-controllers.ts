@@ -1,5 +1,6 @@
 import {Response} from "express";
 import {constants} from "http2";
+import {ObjectId} from 'mongodb';
 
 import {CommentManageStatuses, RequestWithParams, RequestWithParamsAndBody, TokenTypes} from "../types/common";
 import {GetMappedCommentOutputModel} from "../models/CommentsModels/GetCommentOutputModel";
@@ -25,7 +26,7 @@ export const commentControllers = {
         const authData = req?.headers?.authorization;
 
         const splitAuthData = authData?.split(' ');
-        const token = splitAuthData?.[1];
+        const token = splitAuthData ? splitAuthData[1] : undefined;
 
         let userId;
 
@@ -35,7 +36,7 @@ export const commentControllers = {
 
         res.status(constants.HTTP_STATUS_OK).json(getMappedCommentViewModel({
             ...foundComment,
-            currentUserId: userId?.toString()
+            currentUserId: token ? new ObjectId(userId as ObjectId).toString() : undefined
         }));
     },
 

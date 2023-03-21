@@ -1138,6 +1138,116 @@ describe('comments in post', () => {
             .get(`/posts/${createdPost.id}/comments`)
             .set('Authorization', `Bearer ${accessTokenUser1}`)
             .expect(constants.HTTP_STATUS_OK)
+
+        const comment1User1AfterReactions = await  request(app)
+            .get(`/comments/${createdComment1.body.id}/`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+
+        expect(comment1User1AfterReactions.status).toBe(constants.HTTP_STATUS_OK)
+        expect(comment1User1AfterReactions.body.likesInfo.likesCount).toBe(2)
+        expect(comment1User1AfterReactions.body.likesInfo.dislikesCount).toBe(0)
+        expect(comment1User1AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment1User2AfterReactions = await  request(app)
+            .get(`/comments/${createdComment1.body.id}/`)
+            .auth(accessTokenUser2, {type: 'bearer'})
+
+        expect(comment1User2AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment1NotAuthAfterReactions = await  request(app)
+            .get(`/comments/${createdComment1.body.id}/`)
+
+        expect(comment1NotAuthAfterReactions.status).toBe(constants.HTTP_STATUS_OK)
+        expect(comment1NotAuthAfterReactions.body.likesInfo.likesCount).toBe(2)
+        expect(comment1NotAuthAfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.None)
+
+        const comment2User2AfterReactions = await  request(app)
+            .get(`/comments/${createdComment2.body.id}/`)
+            .auth(accessTokenUser2, {type: 'bearer'})
+
+        expect(comment2User2AfterReactions.status).toBe(constants.HTTP_STATUS_OK)
+        expect(comment2User2AfterReactions.body.likesInfo.likesCount).toBe(2)
+        expect(comment2User2AfterReactions.body.likesInfo.dislikesCount).toBe(0)
+        expect(comment2User2AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment2User3AfterReactions = await  request(app)
+            .get(`/comments/${createdComment2.body.id}/`)
+            .auth(accessTokenUser3, {type: 'bearer'})
+
+        expect(comment2User3AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment3User1AfterReactions = await  request(app)
+            .get(`/comments/${createdComment3.body.id}/`)
+            .auth(accessTokenUser1, {type: 'bearer'})
+
+        expect(comment3User1AfterReactions.status).toBe(constants.HTTP_STATUS_OK)
+        expect(comment3User1AfterReactions.body.likesInfo.likesCount).toBe(0)
+        expect(comment3User1AfterReactions.body.likesInfo.dislikesCount).toBe(1)
+        expect(comment3User1AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Dislike)
+
+        const comment3User2AfterReactions = await  request(app)
+            .get(`/comments/${createdComment3.body.id}/`)
+            .auth(accessTokenUser2, {type: 'bearer'})
+
+        expect(comment3User1AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.None)
+
+        const comment4User1AfterReactions = await  request(app)
+            .get(`/comments/${createdComment4.body.id}/`)
+            .auth(accessTokenUser1, {type: 'bearer'})
+
+        expect(comment4User1AfterReactions.status).toBe(constants.HTTP_STATUS_OK)
+        expect(comment4User1AfterReactions.body.likesInfo.likesCount).toBe(4)
+        expect(comment4User1AfterReactions.body.likesInfo.dislikesCount).toBe(0)
+        expect(comment4User1AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment4User2AfterReactions = await  request(app)
+            .get(`/comments/${createdComment4.body.id}/`)
+            .auth(accessTokenUser2, {type: 'bearer'})
+
+        expect(comment4User2AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment4User3AfterReactions = await  request(app)
+            .get(`/comments/${createdComment4.body.id}/`)
+            .auth(accessTokenUser3, {type: 'bearer'})
+
+        expect(comment4User3AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment4User4AfterReactions = await  request(app)
+            .get(`/comments/${createdComment4.body.id}/`)
+            .auth(accessTokenUser4, {type: 'bearer'})
+
+        expect(comment4User4AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment5User2AfterReactions = await  request(app)
+            .get(`/comments/${createdComment5.body.id}/`)
+            .auth(accessTokenUser2, {type: 'bearer'})
+
+        expect(comment5User2AfterReactions.status).toBe(constants.HTTP_STATUS_OK)
+        expect(comment5User2AfterReactions.body.likesInfo.likesCount).toBe(1)
+        expect(comment5User2AfterReactions.body.likesInfo.dislikesCount).toBe(1)
+        expect(comment5User2AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment5User3AfterReactions = await  request(app)
+            .get(`/comments/${createdComment5.body.id}/`)
+            .auth(accessTokenUser3, {type: 'bearer'})
+
+        expect(comment5User3AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Dislike)
+
+        const comment6User1AfterReactions = await  request(app)
+            .get(`/comments/${createdComment6.body.id}/`)
+            .auth(accessTokenUser1, {type: 'bearer'})
+
+        expect(comment6User1AfterReactions.status).toBe(constants.HTTP_STATUS_OK)
+        expect(comment6User1AfterReactions.body.likesInfo.likesCount).toBe(1)
+        expect(comment6User1AfterReactions.body.likesInfo.dislikesCount).toBe(1)
+        expect(comment6User1AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+        const comment6User2AfterReactions = await  request(app)
+            .get(`/comments/${createdComment6.body.id}/`)
+            .auth(accessTokenUser2, {type: 'bearer'})
+
+        expect(comment6User2AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.Dislike)
+
     }, 20000)
 
     // testing post '/posts/:postId/comments' api
