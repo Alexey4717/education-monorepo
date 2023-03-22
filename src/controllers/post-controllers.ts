@@ -91,16 +91,23 @@ export const postControllers = {
             items
         } = resData || {};
 
+        const currentUserId = req?.context?.user?._id ? new ObjectId(req.context.user._id).toString() : undefined;
 
+        // const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId: req?.context?.user?._id?.toString()}));
+        const itemsWithMyStatus = items.map((item) => {
+            const foundReactionByUserId = item.reactions.find((reaction) => reaction.userId === currentUserId);
+            const myStatus = foundReactionByUserId?.likeStatus ?? LikeStatus.None;
+            return {...item, myStatus};
+        });
 
-        const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId: req?.context?.user?._id?.toString()}));
+        // reaction.userId === currentUserId
 
         res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: itemsWithCurrentUserID.map(getMappedCommentViewModel2)
+            items: itemsWithMyStatus.map(getMappedCommentViewModel)
         });
     },
 
