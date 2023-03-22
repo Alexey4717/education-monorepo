@@ -7,7 +7,7 @@ import {
     RequestWithParams,
     RequestWithParamsAndBody,
     RequestWithQuery,
-    SortDirections
+    SortDirections, TokenTypes
 } from "../types/common";
 import {GetPostsInputModel, SortPostsBy} from "../models/PostModels/GetPostsInputModel";
 import {GetMappedPostOutputModel, GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
@@ -23,6 +23,7 @@ import {commentsService} from "../domain/comments-service";
 import {UpdatePostInputModel} from "../models/PostModels/UpdatePostInputModel";
 import {ObjectId} from "mongodb";
 import {LikeStatus} from "../models/CommentsModels/GetCommentOutputModel";
+import {jwtService} from "../application/jwt-service";
 
 
 export const postControllers = {
@@ -91,7 +92,18 @@ export const postControllers = {
             items
         } = resData || {};
 
-        const currentUserId = req?.context?.user?._id ? new ObjectId(req.context.user._id).toString() : undefined;
+        const authData = req?.headers?.authorization;
+
+        const splitAuthData = authData?.split(' ');
+        const token = splitAuthData ? splitAuthData[1] : undefined;
+
+        let userId;
+
+        if (token) {
+            userId = await jwtService.getUserIdByToken({token, type: TokenTypes.access});
+        }
+
+        const currentUserId = userId ? new ObjectId(userId as ObjectId).toString() : undefined;
 
         // const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId: req?.context?.user?._id?.toString()}));
         const itemsWithMyStatus = items.map((item) => {

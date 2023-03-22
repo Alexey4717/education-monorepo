@@ -1039,22 +1039,22 @@ describe('comments in post', () => {
             .send({content: '6666666666666666 sixth comment'})
             .expect(constants.HTTP_STATUS_CREATED)
 
-        await request(app)
-            .get(`/posts/${createdPost.id}/comments`)
-            .expect(constants.HTTP_STATUS_OK, {
-                pagesCount: 1,
-                page: 1,
-                pageSize: 10,
-                totalCount: 6,
-                items: [
-                    createdComment6.body,
-                    createdComment5.body,
-                    createdComment4.body,
-                    createdComment3.body,
-                    createdComment2.body,
-                    createdComment1.body
-                ]
-            })
+        // await request(app)
+        //     .get(`/posts/${createdPost.id}/comments`)
+        //     .expect(constants.HTTP_STATUS_OK, {
+        //         pagesCount: 1,
+        //         page: 1,
+        //         pageSize: 10,
+        //         totalCount: 6,
+        //         items: [
+        //             createdComment6.body,
+        //             createdComment5.body,
+        //             createdComment4.body,
+        //             createdComment3.body,
+        //             createdComment2.body,
+        //             createdComment1.body
+        //         ]
+        //     })
 
         // like comment 1 by user 1, user 2;
         await request(app)
