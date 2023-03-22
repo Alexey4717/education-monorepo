@@ -1189,7 +1189,7 @@ describe('comments in post', () => {
             .get(`/comments/${createdComment3.body.id}/`)
             .auth(accessTokenUser2, {type: 'bearer'})
 
-        expect(comment3User1AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.None)
+        expect(comment3User2AfterReactions.body.likesInfo.myStatus).toBe(LikeStatus.None)
 
         const comment4User1AfterReactions = await  request(app)
             .get(`/comments/${createdComment4.body.id}/`)

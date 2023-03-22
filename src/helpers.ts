@@ -91,7 +91,7 @@ export const getMappedMeViewModel = ({
     userId: _id.toString(),
 });
 
-export const getMappedCommentViewModel = ({
+export const getMappedCommentViewModel2 = ({
                                               _id,
                                               content,
                                               commentatorInfo,
@@ -134,6 +134,49 @@ export const getMappedCommentViewModel = ({
         },
         createdAt,
         likesInfo,
+    }
+};
+
+export const getMappedCommentViewModel = ({
+                                              _id,
+                                              content,
+                                              commentatorInfo,
+                                              createdAt,
+                                              reactions,
+                                              // какая-то хрень с передачей currentUserId - всегда undefined
+                                              myStatus,
+                                          }: TCommentDb & { myStatus: LikeStatus }
+): GetMappedCommentOutputModel => {
+    const {userId, userLogin} = commentatorInfo || {};
+
+    console.log(myStatus)
+    console.log(reactions)
+    const reactionsInfo = reactions?.length > 0
+        ? (reactions.reduce((result: Omit<LikesInfo, 'myStatus'>, reaction: TReactions) => {
+                if (reaction.likeStatus === LikeStatus.Like) result.likesCount += 1;
+                if (reaction.likeStatus === LikeStatus.Dislike) result.dislikesCount += 1;
+                return result;
+            }, {
+                likesCount: 0,
+                dislikesCount: 0,
+            })
+        ) : ({
+            likesCount: 0,
+            dislikesCount: 0,
+        });
+
+    return {
+        id: _id?.toString(),
+        content,
+        commentatorInfo: {
+            userId,
+            userLogin
+        },
+        createdAt,
+        likesInfo: {
+            ...reactionsInfo,
+            myStatus
+        },
     }
 };
 

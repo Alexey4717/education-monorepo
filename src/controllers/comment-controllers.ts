@@ -3,7 +3,7 @@ import {constants} from "http2";
 import {ObjectId} from 'mongodb';
 
 import {CommentManageStatuses, RequestWithParams, RequestWithParamsAndBody, TokenTypes} from "../types/common";
-import {GetMappedCommentOutputModel} from "../models/CommentsModels/GetCommentOutputModel";
+import {GetMappedCommentOutputModel, LikeStatus} from "../models/CommentsModels/GetCommentOutputModel";
 import {commentsQueryRepository} from "../repositories/Queries-repo/comments-query-repository";
 import {getMappedCommentViewModel} from "../helpers";
 import {GetCommentInputModel} from "../models/CommentsModels/GetCommentInputModel";
@@ -34,9 +34,13 @@ export const commentControllers = {
             userId = await jwtService.getUserIdByToken({token, type: TokenTypes.access});
         }
 
+        const currentUserId = userId ? new ObjectId(userId as ObjectId).toString() : undefined;
+        const foundReactionByUserId = foundComment.reactions.find((reaction) => reaction.userId === currentUserId);
+        const myStatus = foundReactionByUserId?.likeStatus ?? LikeStatus.None;
+
         res.status(constants.HTTP_STATUS_OK).json(getMappedCommentViewModel({
             ...foundComment,
-            currentUserId: token ? new ObjectId(userId as ObjectId).toString() : undefined
+            myStatus
         }));
     },
 

@@ -12,7 +12,7 @@ import {
 import {GetPostsInputModel, SortPostsBy} from "../models/PostModels/GetPostsInputModel";
 import {GetMappedPostOutputModel, GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
 import {postsQueryRepository} from "../repositories/Queries-repo/posts-query-repository";
-import {getMappedCommentViewModel, getMappedPostViewModel} from "../helpers";
+import {getMappedCommentViewModel, getMappedCommentViewModel2, getMappedPostViewModel} from "../helpers";
 import {GetPostInputModel} from "../models/PostModels/GetPostInputModel";
 import {commentsQueryRepository} from "../repositories/Queries-repo/comments-query-repository";
 import {SortPostCommentsBy} from "../models/CommentsModels/GetPostCommentsInputModel";
@@ -21,6 +21,8 @@ import {postsService} from "../domain/posts-service";
 import {CreateCommentInputModel} from "../models/CommentsModels/CreateCommentInputModel";
 import {commentsService} from "../domain/comments-service";
 import {UpdatePostInputModel} from "../models/PostModels/UpdatePostInputModel";
+import {ObjectId} from "mongodb";
+import {LikeStatus} from "../models/CommentsModels/GetCommentOutputModel";
 
 
 export const postControllers = {
@@ -89,6 +91,8 @@ export const postControllers = {
             items
         } = resData || {};
 
+
+
         const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId: req?.context?.user?._id?.toString()}));
 
         res.status(constants.HTTP_STATUS_OK).json({
@@ -96,7 +100,7 @@ export const postControllers = {
             page,
             pageSize,
             totalCount,
-            items: itemsWithCurrentUserID.map(getMappedCommentViewModel)
+            items: itemsWithCurrentUserID.map(getMappedCommentViewModel2)
         });
     },
 
