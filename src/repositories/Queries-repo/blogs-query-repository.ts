@@ -1,10 +1,11 @@
 import {ObjectId} from "mongodb";
 
-import {blogsCollection, postsCollection} from '../../store/db';
+import {blogsCollection} from '../../store/db';
 import {GetBlogOutputModelFromMongoDB} from "../../models/BlogModels/GetBlogOutputModel";
 import {SortDirections, GetBlogsArgs, GetPostsInBlogArgs, Paginator} from "../../types/common";
 import {calculateAndGetSkipValue} from "../../helpers";
-import {GetPostOutputModelFromMongoDB} from "../../models/PostModels/GetPostOutputModel";
+import {GetPostOutputModelFromMongoDB, TPostDb} from "../../models/PostModels/GetPostOutputModel";
+import PostModel from "../../models/PostModels/Post-model";
 
 
 export const blogsQueryRepository = {
@@ -46,19 +47,19 @@ export const blogsQueryRepository = {
                              sortDirection,
                              pageNumber,
                              pageSize
-                         }: GetPostsInBlogArgs): Promise<Paginator<GetPostOutputModelFromMongoDB[]> | null> {
+                         }: GetPostsInBlogArgs): Promise<Paginator<TPostDb[]> | null> {
         try {
             const foundBlog = await blogsCollection.findOne({"_id": new ObjectId(blogId)});
             if (!foundBlog) return null;
             const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
             const filter = {blogId: {$regex: blogId}}
-            const items = await postsCollection
+            const items = await PostModel
                 .find(filter)
                 .sort({[sortBy]: sortDirection === SortDirections.desc ? -1 : 1})
                 .skip(skipValue)
                 .limit(pageSize)
-                .toArray();
-            const totalCount = await postsCollection.count(filter);
+                .lean();
+            const totalCount = await PostModel.count(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
             return {
                 page: pageNumber,

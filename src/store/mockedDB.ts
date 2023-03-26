@@ -1,4 +1,4 @@
-import {AvailableResolutions, DataBase} from "../types/common";
+import {AvailableResolutions, DataBase, LikeStatus} from "../types/common";
 
 export const db: DataBase = {
     users: [
@@ -43,7 +43,13 @@ export const db: DataBase = {
             content: "content",
             blogId: "123",
             blogName: "blog1",
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.None,
+                newestLikes: [],
+            }
         }
     ]
 };

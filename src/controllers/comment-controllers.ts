@@ -3,13 +3,14 @@ import {constants} from "http2";
 import {ObjectId} from 'mongodb';
 
 import {CommentManageStatuses, RequestWithParams, RequestWithParamsAndBody, TokenTypes} from "../types/common";
-import {GetMappedCommentOutputModel, LikeStatus} from "../models/CommentsModels/GetCommentOutputModel";
+import {GetMappedCommentOutputModel} from "../models/CommentsModels/GetCommentOutputModel";
 import {commentsQueryRepository} from "../repositories/Queries-repo/comments-query-repository";
 import {getMappedCommentViewModel} from "../helpers";
 import {GetCommentInputModel} from "../models/CommentsModels/GetCommentInputModel";
 import {UpdateCommentInputModel} from "../models/CommentsModels/UpdateCommentInputModel";
 import {GetMappedUserOutputModel} from "../models/UserModels/GetUserOutputModel";
 import {commentsService} from "../domain/comments-service";
+import {LikeStatus} from '../types/common';
 
 
 export const commentControllers = {

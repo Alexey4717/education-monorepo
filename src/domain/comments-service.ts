@@ -3,8 +3,9 @@ import {ObjectId} from 'mongodb';
 import {commentsRepository} from "../repositories/CUD-repo/comments-repository";
 import {CommentManageStatuses} from "../types/common";
 import {postsQueryRepository} from "../repositories/Queries-repo/posts-query-repository";
-import {GetMappedCommentOutputModel, LikeStatus, TCommentDb} from "../models/CommentsModels/GetCommentOutputModel";
+import {GetMappedCommentOutputModel, TCommentDb} from "../models/CommentsModels/GetCommentOutputModel";
 import {commentsQueryRepository} from "../repositories/Queries-repo/comments-query-repository";
+import {LikeStatus} from '../types/common';
 
 
 interface CreateCommentInput {

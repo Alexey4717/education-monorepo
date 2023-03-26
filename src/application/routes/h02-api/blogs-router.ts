@@ -8,6 +8,7 @@ import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validati
 import {createPostInBlogInputValidations} from "../../../validations/blog/createPostInBlogInputValidations";
 import {blogControllers} from "../../../controllers/blog-controllers";
 import {settings} from "../../../settings";
+import {setUserDataMiddleware} from "../../../middlewares/set-user-data-middleware";
 
 
 export const blogsRouter = Router({});
@@ -25,6 +26,7 @@ blogsRouter.get(
 blogsRouter.get(
     `/:id(${settings.ID_PATTERN_BY_DB_TYPE})/posts`,
     paramIdValidationMiddleware,
+    setUserDataMiddleware,
     blogControllers.getPostsOfBlog
 );
 
@@ -39,6 +41,7 @@ blogsRouter.post(
     `/:id(${settings.ID_PATTERN_BY_DB_TYPE})/posts`,
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
+    setUserDataMiddleware,
     createPostInBlogInputValidations,
     inputValidationsMiddleware,
     blogControllers.createPostInBlog

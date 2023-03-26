@@ -27,6 +27,12 @@ export enum SortDirections {
     asc = 'asc'
 }
 
+export enum LikeStatus {
+    None = "None",
+    Like = "Like",
+    Dislike = "Dislike"
+}
+
 export const enum CommentManageStatuses {
     NOT_FOUND = 'NOT_FOUND',
     NOT_OWNER = 'NOT_OWNER',

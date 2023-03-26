@@ -1,5 +1,6 @@
 import {body} from "express-validator";
 import {blogsQueryRepository} from "../../repositories/Queries-repo/blogs-query-repository";
+import {getCorrectCommentLikeStatus} from "../../helpers";
 
 
 // validations for post body (post and put methods)
@@ -15,3 +16,7 @@ export const blogIdValidation = body('blogId')
         if (!foundBlog) throw new Error('Blog not found by passed blogId');
         return true;
     })
+
+// validation for comment/id/like-status body (put method)
+export const postLikeStatusValidation = body('likeStatus')
+    .custom((value) => getCorrectCommentLikeStatus(value)).withMessage('Invalid likeStatus')

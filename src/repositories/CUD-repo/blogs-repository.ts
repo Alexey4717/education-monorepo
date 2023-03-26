@@ -1,9 +1,10 @@
 import {ObjectId} from "mongodb";
 
-import {blogsCollection, postsCollection} from '../../store/db';
+import {blogsCollection} from '../../store/db';
 import {GetBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
 import {UpdateBlogInputModel} from "../../models/BlogModels/UpdateBlogInputModel";
-import {GetPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
+import {TPostDb} from "../../models/PostModels/GetPostOutputModel";
+import PostModel from "../../models/PostModels/Post-model";
 
 
 interface UpdateBlogArgs {
@@ -22,10 +23,10 @@ export const blogsRepository = {
         }
     },
 
-    async createPostInBlog(newPost: GetPostOutputModel): Promise<boolean> {
+    async createPostInBlog(newPost: TPostDb): Promise<boolean> {
         try {
-            const result = await postsCollection.insertOne(newPost);
-            return Boolean(result.insertedId);
+            await PostModel.create(newPost);
+            return true;
         } catch (error) {
             console.log(`blogsRepository.createPostInBlog error is occurred: ${error}`);
             return false;

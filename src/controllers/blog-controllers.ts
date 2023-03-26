@@ -20,6 +20,7 @@ import {CreateBlogInputModel} from "../models/BlogModels/CreateBlogInputModel";
 import {blogsService} from "../domain/blogs-service";
 import {CreatePostInBlogInputModel} from "../models/BlogModels/CreatePostInBlogInputModel";
 import {UpdateBlogInputModel} from "../models/BlogModels/UpdateBlogInputModel";
+import {ObjectId} from "mongodb";
 
 
 export const blogControllers = {
@@ -66,6 +67,10 @@ export const blogControllers = {
         req: RequestWithParamsAndQuery<{ id: string }, GetPostsInputModel>,
         res: Response<Paginator<GetMappedPostOutputModel[]>>
     ) {
+        const currentUserId = req?.context?.user?._id
+            ? new ObjectId(req.context.user?._id).toString()
+            : undefined;
+
         const resData = await blogsQueryRepository.getPostsInBlog({
             blogId: req.params.id,
             sortBy: (req.query.sortBy?.toString() || 'createdAt') as SortPostsBy, // by-default createdAt
@@ -86,12 +91,15 @@ export const blogControllers = {
             totalCount,
             items
         } = resData || {};
+
+        const itemsWithCurrentUserId = items.map(item => ({...item, currentUserId}));
+
         res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: items.map(getMappedPostViewModel)
+            items: itemsWithCurrentUserId.map(getMappedPostViewModel)
         });
     },
 
@@ -107,6 +115,10 @@ export const blogControllers = {
         req: RequestWithParamsAndBody<{ id: string }, CreatePostInBlogInputModel>,
         res: Response<GetMappedPostOutputModel>
     ) {
+        const currentUserId = req?.context?.user?._id
+            ? new ObjectId(req.context.user?._id).toString()
+            : undefined;
+
         const createdPostInBlog = await blogsService.createPostInBlog({
             blogId: req.params.id,
             input: req.body
@@ -117,7 +129,10 @@ export const blogControllers = {
             res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
-        res.status(constants.HTTP_STATUS_CREATED).json(getMappedPostViewModel(createdPostInBlog));
+        res.status(constants.HTTP_STATUS_CREATED).json(getMappedPostViewModel({
+            ...createdPostInBlog,
+            currentUserId
+        }));
     },
 
     async updateBlog(

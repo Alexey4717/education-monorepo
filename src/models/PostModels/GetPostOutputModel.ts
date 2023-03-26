@@ -1,5 +1,18 @@
 import {ObjectId} from 'mongodb';
+import {LikeStatus} from "../../types/common";
 
+
+export type NewestLikeType = {
+    addedAt: string,
+    userId: string
+    login: string
+}
+export type ExtendedLikesInfo = {
+    likesCount: number,
+    dislikesCount: number,
+    myStatus: LikeStatus,
+    newestLikes: NewestLikeType[]
+}
 
 export type GetPostOutputModel = {
     /**
@@ -31,6 +44,7 @@ export type GetPostOutputModel = {
      * Date of post creation in db.
      */
     createdAt: string
+    extendedLikesInfo: ExtendedLikesInfo
 }
 
 export type GetPostOutputModelFromMongoDB = GetPostOutputModel & {
@@ -45,4 +59,22 @@ export type GetMappedPostOutputModel = GetPostOutputModel & {
      * Id of post from db, required.
      */
     id: string
+}
+
+export type TReactions = {
+    userId: string
+    userLogin: string
+    likeStatus: LikeStatus
+    createdAt: string
+}
+
+export type TPostDb = {
+    _id: ObjectId
+    title:	string
+    shortDescription:	string
+    content:	string
+    blogId:	string
+    blogName:	string
+    createdAt: string
+    reactions: TReactions []
 }

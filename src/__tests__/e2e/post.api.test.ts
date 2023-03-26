@@ -12,7 +12,7 @@ import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputMod
 import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
 import {GetMappedUserOutputModel} from "../../models/UserModels/GetUserOutputModel";
 import {SigninInputModel} from "../../models/AuthModels/SigninInputModel";
-import {LikeStatus} from "../../models/CommentsModels/GetCommentOutputModel";
+import {LikeStatus} from "../../types/common";
 
 
 const mockedcreatedBlogId = new ObjectId().toString();
@@ -579,7 +579,13 @@ describe('/post', () => {
             content: createdPost.content,
             shortDescription: createdPost.shortDescription,
             blogName: createdPost.blogName,
-            createdAt: createdPost.createdAt
+            createdAt: createdPost.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.None,
+                newestLikes: [],
+            }
         };
 
         expect(createdPost).toEqual(expectedPost);

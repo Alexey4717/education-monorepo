@@ -1,13 +1,14 @@
+import {ObjectId} from 'mongodb';
+
 import {CreateBlogInputModel} from "../models/BlogModels/CreateBlogInputModel";
 import {GetBlogOutputModelFromMongoDB} from "../models/BlogModels/GetBlogOutputModel";
 import {UpdateBlogInputModel} from "../models/BlogModels/UpdateBlogInputModel";
 import {blogsRepository} from "../repositories/CUD-repo/blogs-repository";
 import {
-    CreatePostInBlogInputAndQueryModel,
-    CreatePostInBlogInputModel
+    CreatePostInBlogInputAndQueryModel
 } from "../models/BlogModels/CreatePostInBlogInputModel";
 import {blogsQueryRepository} from "../repositories/Queries-repo/blogs-query-repository";
-import {GetPostOutputModelFromMongoDB} from "../models/PostModels/GetPostOutputModel";
+import {GetPostOutputModelFromMongoDB, TPostDb} from "../models/PostModels/GetPostOutputModel";
 
 interface UpdateBlogArgs {
     id: string
@@ -37,7 +38,7 @@ export const blogsService = {
     async createPostInBlog({
                                blogId,
                                input
-                           }: CreatePostInBlogInputAndQueryModel): Promise<GetPostOutputModelFromMongoDB | null> {
+                           }: CreatePostInBlogInputAndQueryModel): Promise<TPostDb | null> {
         const {
             title,
             shortDescription,
@@ -48,17 +49,19 @@ export const blogsService = {
 
         if (!foundBlog) return null;
 
-        const newPost = {
+        const newPost: TPostDb = {
+            _id: new ObjectId(),
             title,
             shortDescription,
             blogId,
             blogName: foundBlog.name,
             content,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            reactions: [],
         };
 
         await blogsRepository.createPostInBlog(newPost);
-        return newPost as GetPostOutputModelFromMongoDB;
+        return newPost as TPostDb;
     },
 
     async updateBlog({id, input}: UpdateBlogArgs): Promise<boolean> {

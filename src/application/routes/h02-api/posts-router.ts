@@ -10,17 +10,20 @@ import {authMiddleware} from "../../../middlewares/auth-middleware";
 import {createCommentInputValidations} from "../../../validations/comment/createCommentInputValidations";
 import {postControllers} from "../../../controllers/post-controllers";
 import {setUserDataMiddleware} from "../../../middlewares/set-user-data-middleware";
+import {updatePostLikeStatusInputValidations} from "../../../validations/post/updatePostLikeStatusInputValidations";
 
 
 export const postsRouter = Router({});
 
 postsRouter.get(
     '/',
+    setUserDataMiddleware,
     postControllers.getPosts
 );
 postsRouter.get(
     `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
+    setUserDataMiddleware,
     inputValidationsMiddleware,
     postControllers.getPost
 );
@@ -33,6 +36,7 @@ postsRouter.get(
 postsRouter.post(
     '/',
     adminBasicAuthMiddleware,
+    setUserDataMiddleware,
     createPostInputValidations,
     inputValidationsMiddleware,
     postControllers.createPost
@@ -53,6 +57,15 @@ postsRouter.put(
     updatePostInputValidations,
     inputValidationsMiddleware,
     postControllers.updatePost
+);
+
+postsRouter.put(
+    `/:postId(${settings.ID_PATTERN_BY_DB_TYPE})/like-status`,
+    paramIdValidationMiddleware,
+    authMiddleware,
+    updatePostLikeStatusInputValidations,
+    inputValidationsMiddleware,
+    postControllers.updatePostLikeStatus
 );
 
 postsRouter.delete(

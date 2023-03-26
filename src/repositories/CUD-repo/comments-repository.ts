@@ -2,11 +2,10 @@ import {ObjectId} from "mongodb";
 
 import {commentsCollection} from "../../store/db";
 import {
-    LikeStatus,
     TCommentDb, TReactions
 } from "../../models/CommentsModels/GetCommentOutputModel";
+import {LikeStatus} from '../../types/common';
 import CommentModel from '../../models/CommentsModels/Comment-model';
-import CommentLikeStatusModel from "../../models/CommentLikeStatusModels/CommentLikeStatus-model";
 import {commentsQueryRepository} from "../Queries-repo/comments-query-repository";
 
 
@@ -80,7 +79,7 @@ export const commentsRepository = {
             // }
 
             const result = await CommentModel.updateOne(
-                { ...filter, 'reactions.userId': userId },
+                {...filter, 'reactions.userId': userId},
                 {
                     $set: {
                         'reactions.$.likeStatus': likeStatus,

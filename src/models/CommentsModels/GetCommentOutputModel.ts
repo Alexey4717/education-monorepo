@@ -1,11 +1,6 @@
 import {ObjectId, WithId} from 'mongodb';
+import {LikeStatus} from "../../types/common";
 
-
-export enum LikeStatus {
-    None = "None",
-    Like = "Like",
-    Dislike = "Dislike"
-}
 
 type CommentatorInfoType = {
     userId: string,
