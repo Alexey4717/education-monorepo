@@ -9,6 +9,7 @@ import {settings} from "../../../settings";
 import {authMiddleware} from "../../../middlewares/auth-middleware";
 import {createCommentInputValidations} from "../../../validations/comment/createCommentInputValidations";
 import {postControllers} from "../../../controllers/post-controllers";
+import {setUserDataMiddleware} from "../../../middlewares/set-user-data-middleware";
 
 
 export const postsRouter = Router({});
@@ -25,6 +26,7 @@ postsRouter.get(
 );
 postsRouter.get(
     `/:postId(${settings.ID_PATTERN_BY_DB_TYPE})/comments`,
+    setUserDataMiddleware,
     postControllers.getCommentsOfPost
 );
 

@@ -7,12 +7,12 @@ import {
     RequestWithParams,
     RequestWithParamsAndBody,
     RequestWithQuery,
-    SortDirections, TokenTypes
+    SortDirections,
 } from "../types/common";
 import {GetPostsInputModel, SortPostsBy} from "../models/PostModels/GetPostsInputModel";
 import {GetMappedPostOutputModel, GetPostOutputModel} from "../models/PostModels/GetPostOutputModel";
 import {postsQueryRepository} from "../repositories/Queries-repo/posts-query-repository";
-import {getMappedCommentViewModel, getMappedCommentViewModel2, getMappedPostViewModel} from "../helpers";
+import {getMappedCommentViewModel, getMappedPostViewModel} from "../helpers";
 import {GetPostInputModel} from "../models/PostModels/GetPostInputModel";
 import {commentsQueryRepository} from "../repositories/Queries-repo/comments-query-repository";
 import {SortPostCommentsBy} from "../models/CommentsModels/GetPostCommentsInputModel";
@@ -22,8 +22,6 @@ import {CreateCommentInputModel} from "../models/CommentsModels/CreateCommentInp
 import {commentsService} from "../domain/comments-service";
 import {UpdatePostInputModel} from "../models/PostModels/UpdatePostInputModel";
 import {ObjectId} from "mongodb";
-import {LikeStatus} from "../models/CommentsModels/GetCommentOutputModel";
-import {jwtService} from "../application/jwt-service";
 
 
 export const postControllers = {
@@ -92,34 +90,18 @@ export const postControllers = {
             items
         } = resData || {};
 
-        const authData = req?.headers?.authorization;
+        const currentUserId = req?.context?.user?._id
+            ? new ObjectId(req?.context?.user?._id)?.toString()
+            : undefined;
 
-        const splitAuthData = authData?.split(' ');
-        const token = splitAuthData ? splitAuthData[1] : undefined;
-
-        let userId;
-
-        if (token) {
-            userId = await jwtService.getUserIdByToken({token, type: TokenTypes.access});
-        }
-
-        const currentUserId = userId ? new ObjectId(userId as ObjectId).toString() : undefined;
-
-        // const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId: req?.context?.user?._id?.toString()}));
-        const itemsWithMyStatus = items.map((item) => {
-            const foundReactionByUserId = item.reactions.find((reaction) => reaction.userId === currentUserId);
-            const myStatus = foundReactionByUserId?.likeStatus ?? LikeStatus.None;
-            return {...item, myStatus};
-        });
-
-        // reaction.userId === currentUserId
+        const itemsWithCurrentUserID = items.map(item => ({...item,  currentUserId}));
 
         res.status(constants.HTTP_STATUS_OK).json({
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: itemsWithMyStatus.map(getMappedCommentViewModel)
+            items: itemsWithCurrentUserID.map(getMappedCommentViewModel)
         });
     },
 
@@ -163,10 +145,6 @@ export const postControllers = {
         }
 
         res.status(201).json(createdCommentInPost)
-        // res.status(constants.HTTP_STATUS_CREATED).json(getMappedCommentViewModel({
-        //     ...createdCommentInPost,
-        //     currentUserId
-        // }));
     },
 
     async updatePost(

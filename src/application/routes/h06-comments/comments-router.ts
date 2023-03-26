@@ -9,6 +9,7 @@ import {commentControllers} from "../../../controllers/comment-controllers";
 import {
     updateCommentLikeStatusInputValidations
 } from "../../../validations/comment/updateCommenLikeStatusInputValidations";
+import {setUserDataMiddleware} from "../../../middlewares/set-user-data-middleware";
 
 
 export const commentsRouter = Router({});
@@ -16,6 +17,7 @@ export const commentsRouter = Router({});
 commentsRouter.get(
     `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
     paramIdValidationMiddleware,
+    setUserDataMiddleware,
     commentControllers.getComment
 );
 

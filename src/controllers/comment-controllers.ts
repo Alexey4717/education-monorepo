@@ -10,7 +10,6 @@ import {GetCommentInputModel} from "../models/CommentsModels/GetCommentInputMode
 import {UpdateCommentInputModel} from "../models/CommentsModels/UpdateCommentInputModel";
 import {GetMappedUserOutputModel} from "../models/UserModels/GetUserOutputModel";
 import {commentsService} from "../domain/comments-service";
-import {jwtService} from "../application/jwt-service";
 
 
 export const commentControllers = {
@@ -23,24 +22,14 @@ export const commentControllers = {
             res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
             return;
         }
-        const authData = req?.headers?.authorization;
 
-        const splitAuthData = authData?.split(' ');
-        const token = splitAuthData ? splitAuthData[1] : undefined;
-
-        let userId;
-
-        if (token) {
-            userId = await jwtService.getUserIdByToken({token, type: TokenTypes.access});
-        }
-
-        const currentUserId = userId ? new ObjectId(userId as ObjectId).toString() : undefined;
-        const foundReactionByUserId = foundComment.reactions.find((reaction) => reaction.userId === currentUserId);
-        const myStatus = foundReactionByUserId?.likeStatus ?? LikeStatus.None;
+        const currentUserId = req?.context?.user?._id ? new ObjectId(req?.context?.user?._id).toString() : undefined;
+        // const foundReactionByUserId = foundComment.reactions.find((reaction) => reaction.userId === currentUserId);
+        // const myStatus = foundReactionByUserId?.likeStatus ?? LikeStatus.None;
 
         res.status(constants.HTTP_STATUS_OK).json(getMappedCommentViewModel({
             ...foundComment,
-            myStatus
+            currentUserId
         }));
     },
 
