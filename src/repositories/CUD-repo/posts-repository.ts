@@ -7,6 +7,7 @@ import PostModel from '../../models/PostModels/Post-model';
 import {LikeStatus} from "../../types/common";
 import {postsQueryRepository} from "../Queries-repo/posts-query-repository";
 import {TReactions} from "../../models/PostModels/GetPostOutputModel";
+import {Model} from "mongoose";
 
 
 interface UpdatePostArgs {
@@ -22,10 +23,10 @@ interface UpdateLikeStatusPostArgs {
 }
 
 export const postsRepository = {
-    async createPost(newPost: TPostDb): Promise<boolean> {
+    async createPost(newPost: any): Promise<any> {
         try {
-            await PostModel.create(newPost);
-            return true;
+            return await newPost.save();
+            // return true;
             // const result = await postsCollection.insertOne(newPost);
             // return Boolean(result.insertedId);
         } catch (error) {

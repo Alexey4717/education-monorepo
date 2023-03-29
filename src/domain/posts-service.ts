@@ -9,6 +9,7 @@ import {blogsQueryRepository} from "../repositories/Queries-repo/blogs-query-rep
 import {postsRepository} from "../repositories/CUD-repo/posts-repository";
 import {ObjectId} from "mongodb";
 import {LikeStatus} from "../types/common";
+import PostModel from "../models/PostModels/Post-model";
 
 
 interface UpdatePostArgs {
@@ -25,7 +26,6 @@ interface UpdateLikeStatusPostArgs {
 
 export const postsService = {
     _mapPostToViewType(post: TPostDb): GetMappedPostOutputModel {
-        const currentDateString = new Date().toISOString();
         return {
             id: post._id.toString(),
             title: post.title,
@@ -33,7 +33,7 @@ export const postsService = {
             content: post.content,
             blogId: post.blogId,
             blogName: post.blogName,
-            createdAt: currentDateString,
+            createdAt: post.createdAt,
             extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
@@ -55,7 +55,7 @@ export const postsService = {
 
         if (!foundBlog) return null;
 
-        const newPost: TPostDb = {
+        const newPost: TPostDb = await PostModel.create({
             _id: new ObjectId(),
             title,
             shortDescription,
@@ -64,10 +64,10 @@ export const postsService = {
             content,
             createdAt: new Date().toISOString(),
             reactions: [],
-        };
+        });
 
-        await postsRepository.createPost(newPost);
-        return this._mapPostToViewType(newPost);
+        const postFromDB = await postsRepository.createPost(newPost);
+        return this._mapPostToViewType(postFromDB);
     },
 
     async updatePost({id, input}: UpdatePostArgs): Promise<boolean> {

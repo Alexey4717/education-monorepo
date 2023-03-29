@@ -11,13 +11,13 @@ const ReactionsSchema = new Schema<TReactions>({
 }, {_id: false, id: false})
 
 const PostSchema = new Schema<TPostDb>({
-    title:	{type: String, required: true},
-    shortDescription:	{type: String, required: true},
-    content:	{type: String, required: true},
-    blogId:	{type: String, required: true},
-    blogName:	{type: String, required: true},
-    createdAt: {type: String, required: true},
-    reactions: {type: [ReactionsSchema], default: []   }
-});
+    title: {type: String, required: true},
+    shortDescription: {type: String, required: true},
+    content: {type: String, required: true},
+    blogId: {type: String, required: true},
+    blogName: {type: String, required: true},
+    createdAt: {type: String, default: new Date().toISOString()},
+    reactions: {type: [ReactionsSchema], default: []}
+}, {timestamps:true});
 
 export default model("Post", PostSchema);
