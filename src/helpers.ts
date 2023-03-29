@@ -4,7 +4,7 @@ import {
     GetMappedPostOutputModel,
     TPostDb,
     ExtendedLikesInfo,
-    TReactions as TReactionsPost
+    TReactions as TReactionsPost, NewestLikeType
 } from "./models/PostModels/GetPostOutputModel";
 import {AvailableResolutions} from './types/common';
 import {db} from "./store/mockedDB";
@@ -88,7 +88,8 @@ export const getMappedPostViewModel = (({
                     )) {
                         let oldestReaction = new Date().valueOf();
                         let oldestReactionIndex = 0;
-                        for (let i = 0; i <= result.newestLikes.length; i++) {
+                        for (let i = 0; i < result.newestLikes.length; i++) {
+                            // TODO сделать desc
                             const currentNewestLikeDate = new Date(result.newestLikes[i].addedAt).valueOf();
                             if (currentNewestLikeDate < oldestReaction) {
                                 oldestReaction = currentNewestLikeDate;
@@ -99,14 +100,18 @@ export const getMappedPostViewModel = (({
                     }
                 }
 
-
+                if (result.newestLikes.length) {
+                    result.newestLikes.sort((a: NewestLikeType, b: NewestLikeType) => {
+                        if (new Date(a.addedAt).valueOf() < new Date(b.addedAt).valueOf()) return 1;
+                        if (new Date(a.addedAt).valueOf() === new Date(b.addedAt).valueOf()) return 0;
+                        return -1;
+                    })
+                }
 
                 if (reaction.likeStatus === LikeStatus.Like) result.likesCount += 1;
                 if (reaction.likeStatus === LikeStatus.Dislike) result.dislikesCount += 1;
                 if (reaction.userId === currentUserId) {
                     result.myStatus = reaction.likeStatus;
-                } else {
-                    result.myStatus = LikeStatus.None;
                 }
                 return result;
             }, {
@@ -170,8 +175,6 @@ export const getMappedCommentViewModel = ({
                 if (reaction.likeStatus === LikeStatus.Dislike) result.dislikesCount += 1;
                 if (reaction.userId === currentUserId) {
                     result.myStatus = reaction.likeStatus;
-                } else {
-                    result.myStatus = LikeStatus.None;
                 }
                 return result;
             }, {

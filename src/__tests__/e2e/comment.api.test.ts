@@ -13,7 +13,8 @@ import {CreateBlogInputModel} from "../../models/BlogModels/CreateBlogInputModel
 import {GetMappedBlogOutputModel} from "../../models/BlogModels/GetBlogOutputModel";
 import {CreatePostInputModel} from "../../models/PostModels/CreatePostInputModel";
 import {GetMappedPostOutputModel} from "../../models/PostModels/GetPostOutputModel";
-import {GetMappedCommentOutputModel, LikeStatus} from "../../models/CommentsModels/GetCommentOutputModel";
+import {GetMappedCommentOutputModel} from "../../models/CommentsModels/GetCommentOutputModel";
+import {LikeStatus} from '../../types/common';
 
 
 describe('CRUD comments', () => {

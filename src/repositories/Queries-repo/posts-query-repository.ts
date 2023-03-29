@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
 
 import {GetPostOutputModelFromMongoDB, TPostDb} from "../../models/PostModels/GetPostOutputModel";
-import {postsCollection} from "../../store/db";
+// import {postsCollection} from "../../store/db";
 import {Paginator, GetPostsArgs, SortDirections} from "../../types/common";
 import {calculateAndGetSkipValue} from "../../helpers";
 import PostModel from "../../models/PostModels/Post-model";

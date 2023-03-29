@@ -56,7 +56,6 @@ export const postsRepository = {
 
             const foundPostLikeStatus = foundPost.reactions.find((likeStatus: TReactions) => likeStatus.userId === userId);
 
-            console.log(foundPostLikeStatus)
             if (!foundPostLikeStatus) {
                 const newPostLikeStatus: TReactions = {
                     userId,

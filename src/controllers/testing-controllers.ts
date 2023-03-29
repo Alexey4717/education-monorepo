@@ -5,13 +5,14 @@ import {db} from "../store/mockedDB";
 import {
     blogsCollection,
     // commentsCollection,
-    postsCollection,
+    // postsCollection,
     securityDevicesCollection,
     usersCollection,
     // videosCollection
 } from "../store/db";
 import VideoModel from "../models/VideoModels/Video-model";
 import CommentModel from "../models/CommentsModels/Comment-model";
+import PostModel from "../models/PostModels/Post-model";
 
 
 export const testingControllers = {
@@ -29,7 +30,7 @@ export const testingControllers = {
         // deleting from mongodb atlas
         await Promise.all([
             blogsCollection.deleteMany({}),
-            postsCollection.deleteMany({}),
+            PostModel.deleteMany({}),
             // videosCollection.deleteMany({}),
             VideoModel.deleteMany({}),
             usersCollection.deleteMany({}),

@@ -16,7 +16,7 @@ const PostSchema = new Schema<TPostDb>({
     content:	{type: String, required: true},
     blogId:	{type: String, required: true},
     blogName:	{type: String, required: true},
-    createdAt: {type: String, default: new Date().toISOString()},
+    createdAt: {type: String, required: true},
     reactions: {type: [ReactionsSchema], default: []   }
 });
 

@@ -54,7 +54,6 @@ export const commentsRepository = {
 
             const foundCommentLikeStatus = foundComment.reactions.find((likeStatus: TReactions) => likeStatus.userId === userId);
 
-            console.log(foundCommentLikeStatus)
             if (!foundCommentLikeStatus) {
                 const newCommentLikeStatus: TReactions = {
                     userId,
