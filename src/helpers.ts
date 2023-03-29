@@ -1,3 +1,5 @@
+import {ObjectId} from 'mongodb';
+
 import {GetMappedVideoOutputModel, GetVideoOutputModelFromMongoDB} from "./models/VideoModels/GetVideoOutputModel";
 import {GetBlogOutputModelFromMongoDB, GetMappedBlogOutputModel} from "./models/BlogModels/GetBlogOutputModel";
 import {
@@ -79,33 +81,19 @@ export const getMappedPostViewModel = (({
                         addedAt: reaction.createdAt
                     };
 
-                    if (result.newestLikes.length < 3) {
-                        result.newestLikes.push(currentReaction);
+                    result.newestLikes.push(currentReaction);
+
+                    if (result.newestLikes.length > 1) {
+                        result.newestLikes.sort((a: NewestLikeType, b: NewestLikeType) => {
+                            if (new Date(a.addedAt).valueOf() < new Date(b.addedAt).valueOf()) return 1;
+                            if (new Date(a.addedAt).valueOf() === new Date(b.addedAt).valueOf()) return 0;
+                            return -1;
+                        })
                     }
 
-                    if (result.newestLikes.length >= 3 && result.newestLikes.some(
-                        newestLike => new Date(newestLike.addedAt).valueOf() < new Date(reaction.createdAt).valueOf()
-                    )) {
-                        let oldestReaction = new Date().valueOf();
-                        let oldestReactionIndex = 0;
-                        for (let i = 0; i < result.newestLikes.length; i++) {
-                            // TODO сделать desc
-                            const currentNewestLikeDate = new Date(result.newestLikes[i].addedAt).valueOf();
-                            if (currentNewestLikeDate < oldestReaction) {
-                                oldestReaction = currentNewestLikeDate;
-                                oldestReactionIndex = i;
-                            }
-                        }
-                        result.newestLikes.splice(oldestReactionIndex, 1, currentReaction);
+                    if (result.newestLikes.length === 4) {
+                        result.newestLikes.splice(3, 1);
                     }
-                }
-
-                if (result.newestLikes.length) {
-                    result.newestLikes.sort((a: NewestLikeType, b: NewestLikeType) => {
-                        if (new Date(a.addedAt).valueOf() < new Date(b.addedAt).valueOf()) return 1;
-                        if (new Date(a.addedAt).valueOf() === new Date(b.addedAt).valueOf()) return 0;
-                        return -1;
-                    })
                 }
 
                 if (reaction.likeStatus === LikeStatus.Like) result.likesCount += 1;
@@ -130,10 +118,10 @@ export const getMappedPostViewModel = (({
     return {
         id: _id.toString(),
         title,
-        content,
         shortDescription,
-        blogName,
+        content,
         blogId,
+        blogName,
         createdAt,
         extendedLikesInfo
     }

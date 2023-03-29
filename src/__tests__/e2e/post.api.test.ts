@@ -624,6 +624,154 @@ describe('/post', () => {
             })
         )
     }, 30000)
+    it(`create post then: like the post by user 1, user 2, user 3, user 4. get the post after each like by user 1. NewestLikes should be sorted in descending`, async () => {
+        const createdUser1 = await createUser({
+            password: 'password1',
+            email: 'example1@mail.ru',
+            login: 'user1'
+        });
+        const createdUser2 = await createUser({
+            password: 'password1',
+            email: 'example2@mail.ru',
+            login: 'user2'
+        });
+        const createdUser3 = await createUser({
+            password: 'password1',
+            email: 'example3@mail.ru',
+            login: 'user3'
+        });
+        const createdUser4 = await createUser({
+            password: 'password1',
+            email: 'example4@mail.ru',
+            login: 'user4'
+        });
+
+        const accessTokenUser1 = await auth({
+            loginOrEmail: 'user1',
+            password: 'password1'
+        });
+        const accessTokenUser2 = await auth({
+            loginOrEmail: 'user2',
+            password: 'password1'
+        });
+        const accessTokenUser3 = await auth({
+            loginOrEmail: 'user3',
+            password: 'password1'
+        });
+        const accessTokenUser4 = await auth({
+            loginOrEmail: 'user4',
+            password: 'password1'
+        });
+
+        const blogId = await getCreatedBlogId();
+        const createdPost1 = await createPost(blogId);
+
+        // like post 1 by user 1, 2, 3, 4;
+        await request(app)
+            .put(`/posts/${createdPost1.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/posts/${createdPost1.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser2}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/posts/${createdPost1.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser3}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+        await request(app)
+            .put(`/posts/${createdPost1.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser4}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        // Get the posts by user 1 after all likes
+        await request(app)
+            .get(`/blogs/${blogId}/posts`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .expect(constants.HTTP_STATUS_OK)
+
+        const post1ForUser1Reactions1 = await request(app)
+            .get(`/posts/${createdPost1.id}/`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+
+        expect([
+            {
+                login: post1ForUser1Reactions1.body.extendedLikesInfo.newestLikes[0].login,
+                userId: post1ForUser1Reactions1.body.extendedLikesInfo.newestLikes[0].userId
+            },
+            {
+                login: post1ForUser1Reactions1.body.extendedLikesInfo.newestLikes[1].login,
+                userId: post1ForUser1Reactions1.body.extendedLikesInfo.newestLikes[1].userId
+            },
+            {
+                login: post1ForUser1Reactions1.body.extendedLikesInfo.newestLikes[2].login,
+                userId: post1ForUser1Reactions1.body.extendedLikesInfo.newestLikes[2].userId
+            },
+        ]).toEqual([
+            {
+                login: createdUser4.login,
+                userId: createdUser4.id,
+            },
+            {
+                login: createdUser3.login,
+                userId: createdUser3.id,
+            },
+            {
+                login: createdUser2.login,
+                userId: createdUser2.id,
+            },
+        ])
+
+        await request(app)
+            .put(`/posts/${createdPost1.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .send({likeStatus: LikeStatus.None})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        await request(app)
+            .put(`/posts/${createdPost1.id}/like-status`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+            .send({likeStatus: LikeStatus.Like})
+            .expect(constants.HTTP_STATUS_NO_CONTENT)
+
+        const post1ForUser1Reactions2 = await request(app)
+            .get(`/posts/${createdPost1.id}/`)
+            .set('Authorization', `Bearer ${accessTokenUser1}`)
+
+        expect([
+            {
+                login: post1ForUser1Reactions2.body.extendedLikesInfo.newestLikes[0].login,
+                userId: post1ForUser1Reactions2.body.extendedLikesInfo.newestLikes[0].userId
+            },
+            {
+                login: post1ForUser1Reactions2.body.extendedLikesInfo.newestLikes[1].login,
+                userId: post1ForUser1Reactions2.body.extendedLikesInfo.newestLikes[1].userId
+            },
+            {
+                login: post1ForUser1Reactions2.body.extendedLikesInfo.newestLikes[2].login,
+                userId: post1ForUser1Reactions2.body.extendedLikesInfo.newestLikes[2].userId
+            },
+        ]).toEqual([
+            {
+                login: createdUser1.login,
+                userId: createdUser1.id,
+            },
+            {
+                login: createdUser4.login,
+                userId: createdUser4.id,
+            },
+            {
+                login: createdUser3.login,
+                userId: createdUser3.id,
+            },
+        ]);
+
+
+    }, 40000)
 
     // testing get '/posts/:id' api
     it('should return 404 for not existing post', async () => {
