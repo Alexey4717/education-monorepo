@@ -1,7 +1,7 @@
 import {Schema, model} from "mongoose";
 
-import {LikeStatus} from "../CommentsModels/GetCommentOutputModel";
 import {GetCommentLikeStatusOutputModel} from "./GetCommentLikeStatusOutputModel";
+import {LikeStatus} from "../../types/common";
 
 
 export const CommentLikeStatusSchema = new Schema<GetCommentLikeStatusOutputModel>({

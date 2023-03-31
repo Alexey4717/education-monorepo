@@ -146,6 +146,24 @@ describe('/post', () => {
         return createdPost;
     }
 
+    const createPostInBlog = async (blogId: string, input?: Omit<CreatePostInputModel, 'blogId'>) => {
+        const defaultPayload = {
+            title: 'title',
+            content: 'content',
+            shortDescription: 'shortDescription',
+            ...input
+        }
+
+        const createResponse = await request(app)
+            .post(`/blogs/${blogId}/posts`)
+            .set('Authorization', `Basic ${encodedBase64Token}`)
+            .send({...defaultPayload})
+            .expect(constants.HTTP_STATUS_CREATED)
+
+        const createdPost: GetMappedPostOutputModel = createResponse?.body;
+        return createdPost;
+    }
+
     let mongoMemoryServer: MongoMemoryServer
 
     beforeAll(async () => {
@@ -393,6 +411,22 @@ describe('/post', () => {
 
         const blogId = await getCreatedBlogId();
 
+        // const [
+        //     createdPost1,
+        //     createdPost2,
+        //     createdPost3,
+        //     createdPost4,
+        //     createdPost5,
+        //     createdPost6
+        // ] = await Promise.all([
+        //     await createPost(blogId),
+        //     await createPost(blogId),
+        //     await createPost(blogId),
+        //     await createPost(blogId),
+        //     await createPost(blogId),
+        //     await createPost(blogId)
+        // ]);
+
         const [
             createdPost1,
             createdPost2,
@@ -401,12 +435,12 @@ describe('/post', () => {
             createdPost5,
             createdPost6
         ] = await Promise.all([
-            await createPost(blogId),
-            await createPost(blogId),
-            await createPost(blogId),
-            await createPost(blogId),
-            await createPost(blogId),
-            await createPost(blogId)
+            await createPostInBlog(blogId),
+            await createPostInBlog(blogId),
+            await createPostInBlog(blogId),
+            await createPostInBlog(blogId),
+            await createPostInBlog(blogId),
+            await createPostInBlog(blogId)
         ]);
 
         // like post 1 by user 1, user 2;

@@ -468,126 +468,126 @@ describe('/blog', () => {
                 items: [createdBlog]
             });
 
-        const { blogId: blogId1, ...invalidPostInputDataInvalidTitle1 } = invalidPostInputData.title1;
+        const {blogId: blogId1, ...invalidPostInputDataInvalidTitle1} = invalidPostInputData.title1;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidPostInputDataInvalidTitle1})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId2, ...invalidPostInputDataInvalidTitle2 } = invalidPostInputData.title2;
+        const {blogId: blogId2, ...invalidPostInputDataInvalidTitle2} = invalidPostInputData.title2;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidPostInputDataInvalidTitle2})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId3, ...invalidPostInputDataInvalidTitle3 } = invalidPostInputData.title3;
+        const {blogId: blogId3, ...invalidPostInputDataInvalidTitle3} = invalidPostInputData.title3;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidPostInputDataInvalidTitle3})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId4, ...invalidPostInputDataInvalidTitle4 } = invalidPostInputData.title4;
+        const {blogId: blogId4, ...invalidPostInputDataInvalidTitle4} = invalidPostInputData.title4;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidPostInputDataInvalidTitle4})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId5, ...invalidPostInputDataInvalidTitle5 } = invalidPostInputData.title5;
+        const {blogId: blogId5, ...invalidPostInputDataInvalidTitle5} = invalidPostInputData.title5;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidPostInputDataInvalidTitle5})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId6, ...invalidPostInputDataInvalidTitle6 } = invalidPostInputData.title6;
+        const {blogId: blogId6, ...invalidPostInputDataInvalidTitle6} = invalidPostInputData.title6;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidPostInputDataInvalidTitle6})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId7, ...invalidShortDescription1PostInputData } = invalidPostInputData.shortDescription1;
+        const {blogId: blogId7, ...invalidShortDescription1PostInputData} = invalidPostInputData.shortDescription1;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidShortDescription1PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId8, ...invalidShortDescription2PostInputData } = invalidPostInputData.shortDescription2;
+        const {blogId: blogId8, ...invalidShortDescription2PostInputData} = invalidPostInputData.shortDescription2;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidShortDescription2PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId9, ...invalidShortDescription3PostInputData } = invalidPostInputData.shortDescription3;
+        const {blogId: blogId9, ...invalidShortDescription3PostInputData} = invalidPostInputData.shortDescription3;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidShortDescription3PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId10, ...invalidShortDescription4PostInputData } = invalidPostInputData.shortDescription4;
+        const {blogId: blogId10, ...invalidShortDescription4PostInputData} = invalidPostInputData.shortDescription4;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidShortDescription4PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId11, ...invalidShortDescription5PostInputData } = invalidPostInputData.shortDescription5;
+        const {blogId: blogId11, ...invalidShortDescription5PostInputData} = invalidPostInputData.shortDescription5;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidShortDescription5PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId12, ...invalidShortDescription6PostInputData } = invalidPostInputData.shortDescription6;
+        const {blogId: blogId12, ...invalidShortDescription6PostInputData} = invalidPostInputData.shortDescription6;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidShortDescription6PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId13, ...invalidContent1PostInputData } = invalidPostInputData.content1;
+        const {blogId: blogId13, ...invalidContent1PostInputData} = invalidPostInputData.content1;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidContent1PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId14, ...invalidContent2PostInputData } = invalidPostInputData.content2;
+        const {blogId: blogId14, ...invalidContent2PostInputData} = invalidPostInputData.content2;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidContent2PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId15, ...invalidContent3PostInputData } = invalidPostInputData.content3;
+        const {blogId: blogId15, ...invalidContent3PostInputData} = invalidPostInputData.content3;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidContent3PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId16, ...invalidContent4PostInputData } = invalidPostInputData.content4;
+        const {blogId: blogId16, ...invalidContent4PostInputData} = invalidPostInputData.content4;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidContent4PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId17, ...invalidContent5PostInputData } = invalidPostInputData.content5;
+        const {blogId: blogId17, ...invalidContent5PostInputData} = invalidPostInputData.content5;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
             .send({...invalidContent5PostInputData})
             .expect(constants.HTTP_STATUS_BAD_REQUEST)
 
-        const { blogId: blogId18, ...invalidContent6PostInputData } = invalidPostInputData.content6;
+        const {blogId: blogId18, ...invalidContent6PostInputData} = invalidPostInputData.content6;
         await request(app)
             .post(`/blogs/${createdBlogId}/posts`)
             .set('Authorization', `Basic ${encodedBase64Token}`)
@@ -644,7 +644,8 @@ describe('/blog', () => {
             content: createdPost.content,
             shortDescription: createdPost.shortDescription,
             blogName: createdPost.blogName,
-            createdAt: createdPost.createdAt
+            createdAt: createdPost.createdAt,
+            extendedLikesInfo: createdPost.extendedLikesInfo
         };
 
         expect(createdPost).toEqual(expectedPost);
