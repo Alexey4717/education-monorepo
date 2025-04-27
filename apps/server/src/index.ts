@@ -1,8 +1,8 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import {runDB} from "./store/db";
 import express from "express";
+import {runDB} from "./store/db";
 import {configApp} from "./app";
 
 export const app = express();

@@ -1,0 +1,1 @@
+TODO поменять скрипт "dev": "nodemon src/index.js",

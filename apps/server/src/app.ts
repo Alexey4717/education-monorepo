@@ -3,6 +3,7 @@ dotenv.config();
 
 import express, {Request, Response, NextFunction, Express} from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import {authRouter} from "./application/routes/h05-api/auth-router";
 import {videosRouter} from "./application/routes/h01-videos/videos-router";
@@ -18,6 +19,7 @@ import {securityDevicesRouter} from "./application/routes/h09-security-devices/s
 export const configApp = (app: Express) => {
     app.set('trust proxy', true);
 
+    app.use(cors()); // Разрешает запросы с любых доменов
     app.use(cookieParser());
     app.use(express.json());
 
