@@ -12,7 +12,7 @@ configApp(app);
 const port = process.env.PORT || 3001;
 
 const startApp = async () => {
-    await runDB();
+    await runDB().catch(console.dir);
     app.listen(port, () => {
         console.log(`server running on ${port} port`);
     });

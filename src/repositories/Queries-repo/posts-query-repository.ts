@@ -23,7 +23,7 @@ export const postsQueryRepository = {
                 .skip(skipValue)
                 .limit(pageSize)
                 .lean();
-            const totalCount = await PostModel.count(filter);
+            const totalCount = await PostModel.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
             return {
                 page: pageNumber,
