@@ -6,20 +6,29 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:style": "stylelint \"**/*.{scss,ts,tsx}\"",
+    "lint:style:fix": "stylelint \"**/*.{scss,ts,tsx}\" --fix"
   },
   "dependencies": {
     "@shared/core": "file:../../packages/shared",
+    "next": "15.3.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.3.1"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint-config-next": "15.3.1",
-    "@eslint/eslintrc": "^3"
+    "eslint-plugin-tailwindcss": "^3.18.0",
+    "sass": "^1.87.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-config-standard": "^38.0.0",
+    "stylelint-config-tailwindcss": "^1.0.0",
+    "stylelint-order": "^7.0.0",
+    "tailwindcss": "^4"
   }
 }
