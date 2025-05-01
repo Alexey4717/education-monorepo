@@ -1,13 +1,11 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
-import type {SendEmailConfirmationMessageInputType} from "./types";
-import {emailService} from "../domain/email-service";
-import {GetUserOutputModelFromMongoDB} from "../models/UserModels/GetUserOutputModel";
-import {usersRepository} from "../repositories/CUD-repo/users-repository";
-import {add} from "date-fns";
-
+import type { SendEmailConfirmationMessageInputType } from './types';
+import { emailService } from '../domain/email-service';
+import { usersRepository } from '../repositories/CUD-repo/users-repository';
+import { add } from 'date-fns';
 
 export const emailManager = {
     async sendPasswordRecoveryMessage(email: string): Promise<boolean> {
@@ -17,10 +15,13 @@ export const emailManager = {
 
         const recoveryData = {
             recoveryCode: uuidv4(),
-            expirationDate: add(new Date(), {days: 1}),
+            expirationDate: add(new Date(), { days: 1 }),
         };
 
-        const result = await usersRepository.setUserRecoveryData({userId: foundUser._id, recoveryData});
+        const result = await usersRepository.setUserRecoveryData({
+            userId: foundUser._id,
+            recoveryData,
+        });
         // Even if current email is not registered (for prevent user's email detection)
         if (!result) return true;
 
@@ -38,11 +39,14 @@ export const emailManager = {
         });
     },
 
-    async sendEmailConfirmationMessage({user, confirmationCode}: SendEmailConfirmationMessageInputType): Promise<boolean> {
+    async sendEmailConfirmationMessage({
+        user,
+        confirmationCode,
+    }: SendEmailConfirmationMessageInputType): Promise<boolean> {
         if (confirmationCode) {
             const result = await usersRepository.updateUserConfirmationCode({
                 userId: user._id,
-                newCode: confirmationCode
+                newCode: confirmationCode,
             });
             if (!result) return false;
         }

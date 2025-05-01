@@ -1,4 +1,4 @@
-import {commonValidationForBodyStrings} from '../common';
+import { commonValidationForBodyStrings } from '../common';
 import {
     authorValidation,
     availableResolutionsValidation,
@@ -6,7 +6,7 @@ import {
     minAgeRestrictionValidation,
     publicationDateValidation,
     titleValidation,
-} from "./index";
+} from './index';
 
 export const updateVideoInputValidations = [
     commonValidationForBodyStrings('title'),
@@ -16,5 +16,5 @@ export const updateVideoInputValidations = [
     availableResolutionsValidation,
     canBeDownloadedValidation,
     minAgeRestrictionValidation,
-    publicationDateValidation
+    publicationDateValidation,
 ];

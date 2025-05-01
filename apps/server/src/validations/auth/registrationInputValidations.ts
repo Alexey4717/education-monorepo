@@ -1,6 +1,5 @@
-import {commonValidationForBodyStrings} from "../common";
-import {emailValidation, loginValidation, passwordValidation} from "./index";
-
+import { commonValidationForBodyStrings } from '../common';
+import { emailValidation, loginValidation, passwordValidation } from './index';
 
 export const registrationInputValidations = [
     commonValidationForBodyStrings('login'),
@@ -8,5 +7,5 @@ export const registrationInputValidations = [
     commonValidationForBodyStrings('password'),
     passwordValidation,
     commonValidationForBodyStrings('email'),
-    emailValidation
+    emailValidation,
 ];

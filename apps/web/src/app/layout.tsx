@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.scss';
 
-
 const geistRoboto = Roboto({
     variable: '--font-roboto-sans',
     subsets: ['latin'],
@@ -21,11 +20,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-        <body
-            className={`${geistRoboto.variable} antialiased`}
-        >
-        {children}
-        </body>
+            <body className={`${geistRoboto.variable} antialiased`}>
+                {children}
+            </body>
         </html>
     );
 }

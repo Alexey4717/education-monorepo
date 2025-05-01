@@ -2,15 +2,15 @@ export type SignupInputModel = {
     /**
      * Set login for registration user.
      */
-    login: string
+    login: string;
 
     /**
      * Set email for registration user.
      */
-    email: string
+    email: string;
 
     /**
      * Set password for registration user.
      */
-    password: string
+    password: string;
 };

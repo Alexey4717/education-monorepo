@@ -7,12 +7,15 @@ export default function Home() {
 
     useEffect(() => {
         console.log('ehere');
-        fetch('http://localhost:3001/videos').then((response) => {
-            return response.json();
-        }).then((res) => {
-            console.log(res); // Works!!!!
-            return res;
-        }).catch(console.error);
+        fetch('http://localhost:3001/videos')
+            .then((response) => {
+                return response.json();
+            })
+            .then((res) => {
+                console.log(res); // Works!!!!
+                return res;
+            })
+            .catch(console.error);
     }, []);
 
     return (

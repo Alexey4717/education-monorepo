@@ -1,27 +1,25 @@
 import {
     GetMappedPostOutputModel,
-    GetPostOutputModelFromMongoDB,
-    TPostDb
-} from "../models/PostModels/GetPostOutputModel";
-import {CreatePostInputModel} from "../models/PostModels/CreatePostInputModel";
-import {UpdatePostInputModel} from "../models/PostModels/UpdatePostInputModel";
-import {blogsQueryRepository} from "../repositories/Queries-repo/blogs-query-repository";
-import {postsRepository} from "../repositories/CUD-repo/posts-repository";
-import {ObjectId} from "mongodb";
-import {LikeStatus} from "../types/common";
-import PostModel from "../models/PostModels/Post-model";
-
+    TPostDb,
+} from '../models/PostModels/GetPostOutputModel';
+import { CreatePostInputModel } from '../models/PostModels/CreatePostInputModel';
+import { UpdatePostInputModel } from '../models/PostModels/UpdatePostInputModel';
+import { blogsQueryRepository } from '../repositories/Queries-repo/blogs-query-repository';
+import { postsRepository } from '../repositories/CUD-repo/posts-repository';
+import { ObjectId } from 'mongodb';
+import { LikeStatus } from '../types/common';
+import PostModel from '../models/PostModels/Post-model';
 
 interface UpdatePostArgs {
-    id: string
-    input: UpdatePostInputModel
+    id: string;
+    input: UpdatePostInputModel;
 }
 
 interface UpdateLikeStatusPostArgs {
-    postId: string
-    userId: string
-    userLogin: string
-    likeStatus: LikeStatus
+    postId: string;
+    userId: string;
+    userLogin: string;
+    likeStatus: LikeStatus;
 }
 
 export const postsService = {
@@ -38,18 +36,15 @@ export const postsService = {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: LikeStatus.None,
-                newestLikes: []
-            }
-        }
+                newestLikes: [],
+            },
+        };
     },
 
-    async createPost(input: CreatePostInputModel): Promise<GetMappedPostOutputModel | null> {
-        const {
-            title,
-            shortDescription,
-            blogId,
-            content
-        } = input || {};
+    async createPost(
+        input: CreatePostInputModel
+    ): Promise<GetMappedPostOutputModel | null> {
+        const { title, shortDescription, blogId, content } = input || {};
 
         const foundBlog = await blogsQueryRepository.findBlogById(blogId);
 
@@ -70,20 +65,25 @@ export const postsService = {
         return this._mapPostToViewType(postFromDB);
     },
 
-    async updatePost({id, input}: UpdatePostArgs): Promise<boolean> {
-        return await postsRepository.updatePost({id, input});
+    async updatePost({ id, input }: UpdatePostArgs): Promise<boolean> {
+        return await postsRepository.updatePost({ id, input });
     },
 
-    async updatePostLikeStatus({postId, userId, userLogin, likeStatus}: UpdateLikeStatusPostArgs): Promise<boolean> {
+    async updatePostLikeStatus({
+        postId,
+        userId,
+        userLogin,
+        likeStatus,
+    }: UpdateLikeStatusPostArgs): Promise<boolean> {
         return await postsRepository.updatePostLikeStatus({
             postId,
             userId,
             userLogin,
-            likeStatus
+            likeStatus,
         });
     },
 
     async deletePostById(id: string): Promise<boolean> {
         return await postsRepository.deletePostById(id);
-    }
+    },
 };

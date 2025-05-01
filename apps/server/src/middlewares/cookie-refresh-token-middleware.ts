@@ -1,12 +1,15 @@
-import {Request, Response, NextFunction} from "express";
-import {constants} from 'http2';
+import { Request, Response, NextFunction } from 'express';
+import { constants } from 'http2';
 
-import {jwtService} from "../application/jwt-service";
-import {usersQueryRepository} from "../repositories/Queries-repo/users-query-repository";
-import {securityDevicesQueryRepository} from "../repositories/Queries-repo/security-devices-query-repository";
+import { jwtService } from '../application/jwt-service';
+import { usersQueryRepository } from '../repositories/Queries-repo/users-query-repository';
+import { securityDevicesQueryRepository } from '../repositories/Queries-repo/security-devices-query-repository';
 
-
-export const cookieRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const cookieRefreshTokenMiddleware = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const refreshToken = req?.cookies?.refreshToken;
 
@@ -15,7 +18,10 @@ export const cookieRefreshTokenMiddleware = async (req: Request, res: Response, 
             return;
         }
 
-        const {deviceId, userId} = await jwtService.getDeviceAndUserIdsByRefreshToken(refreshToken) || {};
+        const { deviceId, userId } =
+            (await jwtService.getDeviceAndUserIdsByRefreshToken(
+                refreshToken
+            )) || {};
 
         // проверка что токен валиден и не протух
         if (!userId || !deviceId) {
@@ -28,7 +34,10 @@ export const cookieRefreshTokenMiddleware = async (req: Request, res: Response, 
             req.context.user = foundUser;
         }
 
-        const foundSecurityDevice = await securityDevicesQueryRepository.findSecurityDeviceById(deviceId);
+        const foundSecurityDevice =
+            await securityDevicesQueryRepository.findSecurityDeviceById(
+                deviceId
+            );
 
         if (!foundSecurityDevice) {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);

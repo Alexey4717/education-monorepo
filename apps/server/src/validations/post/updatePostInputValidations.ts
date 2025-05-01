@@ -1,11 +1,10 @@
-import {commonValidationForBodyStrings} from '../common';
+import { commonValidationForBodyStrings } from '../common';
 import {
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
-    blogIdValidation
-} from "./index";
-
+    blogIdValidation,
+} from './index';
 
 export const updatePostInputValidations = [
     commonValidationForBodyStrings('title'),
@@ -15,5 +14,5 @@ export const updatePostInputValidations = [
     commonValidationForBodyStrings('content'),
     contentValidation,
     commonValidationForBodyStrings('blogId'),
-    blogIdValidation
+    blogIdValidation,
 ];

@@ -1,20 +1,14 @@
-import {Router} from "express";
+import { Router } from 'express';
 
-import {adminBasicAuthMiddleware} from "../../../middlewares/admin-basicAuth-middleware";
-import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
-import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
-import {createUserInputValidations} from "../../../validations/user/createVideoInputValidations";
-import {userControllers} from "../../../controllers/user-controllers";
-import {settings} from "../../../settings";
-
+import { adminBasicAuthMiddleware } from '../../../middlewares/admin-basicAuth-middleware';
+import { paramIdValidationMiddleware } from '../../../middlewares/paramId-validation-middleware';
+import { inputValidationsMiddleware } from '../../../middlewares/input-validations-middleware';
+import { createUserInputValidations } from '../../../validations/user/createVideoInputValidations';
+import { userControllers } from '../../../controllers/user-controllers';
 
 export const usersRouter = Router({});
 
-usersRouter.get(
-    '/',
-    adminBasicAuthMiddleware,
-    userControllers.getUsers
-);
+usersRouter.get('/', adminBasicAuthMiddleware, userControllers.getUsers);
 
 usersRouter.post(
     '/',
@@ -25,7 +19,7 @@ usersRouter.post(
 );
 
 usersRouter.delete(
-    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
+    '/:id',
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     userControllers.deleteUser

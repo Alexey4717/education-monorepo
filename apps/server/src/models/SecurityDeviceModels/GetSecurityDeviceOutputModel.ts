@@ -1,38 +1,41 @@
-import {ObjectId, WithId} from 'mongodb';
-
+import { WithId } from 'mongodb';
 
 export type GetSecurityDeviceOutputModel = {
     /**
      * security device ip
      */
-    ip: string
+    ip: string;
 
     /**
      * security device title
      */
-    title: string
+    title: string;
 
     /**
      * last active date of security device
      */
-    lastActiveDate: string
+    lastActiveDate: string;
 
     /**
      * current user id of security device
      */
-    userId: string
+    userId: string;
 
     /**
      * expired Date refreshToken of security device
      */
-    expiredAt: string
-}
+    expiredAt: string;
+};
 
-export type GetSecurityDeviceOutputModelFromMongoDB = WithId<GetSecurityDeviceOutputModel>
+export type GetSecurityDeviceOutputModelFromMongoDB =
+    WithId<GetSecurityDeviceOutputModel>;
 
-export type GetMappedSecurityDeviceOutputModel = Omit<GetSecurityDeviceOutputModel, 'userId' | 'expiredAt'> & {
+export type GetMappedSecurityDeviceOutputModel = Omit<
+    GetSecurityDeviceOutputModel,
+    'userId' | 'expiredAt'
+> & {
     /**
      * id of security device
      */
-    deviceId: string
-}
+    deviceId: string;
+};

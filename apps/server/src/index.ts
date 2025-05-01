@@ -1,9 +1,9 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
 
-import express from "express";
-import {runDB} from "./store/db";
-import {configApp} from "./app";
+import express from 'express';
+import { runDB } from './store/db';
+import { configApp } from './app';
 
 export const app = express();
 
@@ -16,6 +16,6 @@ const startApp = async () => {
     app.listen(port, () => {
         console.log(`server running on ${port} port`);
     });
-}
+};
 
 startApp();

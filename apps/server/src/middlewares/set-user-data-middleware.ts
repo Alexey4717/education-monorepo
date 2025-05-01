@@ -1,12 +1,14 @@
-import {Request, Response, NextFunction} from "express";
-import {constants} from 'http2';
+import { Request, Response, NextFunction } from 'express';
 
-import {jwtService} from "../application/jwt-service";
-import {usersQueryRepository} from "../repositories/Queries-repo/users-query-repository";
-import {TokenTypes} from "../types/common";
+import { jwtService } from '../application/jwt-service';
+import { usersQueryRepository } from '../repositories/Queries-repo/users-query-repository';
+import { TokenTypes } from '../types/common';
 
-
-export const setUserDataMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const setUserDataMiddleware = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const authData = req?.headers?.authorization;
         const splitAuthData = authData?.split(' ');
@@ -14,7 +16,10 @@ export const setUserDataMiddleware = async (req: Request, res: Response, next: N
         let userId;
 
         if (token) {
-            userId = await jwtService.getUserIdByToken({token, type: TokenTypes.access});
+            userId = await jwtService.getUserIdByToken({
+                token,
+                type: TokenTypes.access,
+            });
         }
 
         if (userId) {

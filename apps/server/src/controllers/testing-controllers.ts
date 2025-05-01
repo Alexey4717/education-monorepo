@@ -1,7 +1,7 @@
-import {Request, Response} from "express";
-import {constants} from "http2";
+import { Request, Response } from 'express';
+import { constants } from 'http2';
 
-import {db} from "../store/mockedDB";
+import { db } from '../store/mockedDB';
 import {
     blogsCollection,
     // commentsCollection,
@@ -9,17 +9,13 @@ import {
     securityDevicesCollection,
     usersCollection,
     // videosCollection
-} from "../store/db";
-import VideoModel from "../models/VideoModels/Video-model";
-import CommentModel from "../models/CommentsModels/Comment-model";
-import PostModel from "../models/PostModels/Post-model";
-
+} from '../store/db';
+import VideoModel from '../models/VideoModels/Video-model';
+import CommentModel from '../models/CommentsModels/Comment-model';
+import PostModel from '../models/PostModels/Post-model';
 
 export const testingControllers = {
-    async deleteAllData(
-        req: Request,
-        res: Response<void>
-    ) {
+    async deleteAllData(req: Request, res: Response<void>) {
         // deleting from mocked DB
         for (let property in db) {
             if (property.toString() !== 'users') {
@@ -40,5 +36,5 @@ export const testingControllers = {
         ]);
 
         res.sendStatus(constants.HTTP_STATUS_NO_CONTENT);
-    }
+    },
 };

@@ -2,15 +2,15 @@ export type MeOutputModel = {
     /**
      * My id from users repository db.
      */
-    userId: string
+    userId: string;
 
     /**
      * My login from users repository db.
      */
-    login: string
+    login: string;
 
     /**
      * My email from users repository db.
      */
-    email: string
+    email: string;
 };

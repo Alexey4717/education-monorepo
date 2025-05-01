@@ -1,26 +1,22 @@
-import {dirname} from "path";
-import {fileURLToPath} from "url";
-import {FlatCompat} from "@eslint/eslintrc";
-import baseConfig from "../../eslint.config.js";
+import { FlatCompat } from '@eslint/eslintrc';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import baseConfig from '../../eslint.config.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 const compat = new FlatCompat({
     baseDirectory: __dirname,
+    resolvePluginsRelativeTo: __dirname,
 });
 
-const eslintConfig = [
+export default [
     ...baseConfig,
-    ...compat.extends("next/core-web-vitals", "next/typescript"),
+    ...compat.extends('next/core-web-vitals'),
     {
-        plugins: ["tailwindcss"], // Подключаем плагин tailwindcss
-        extends: ["plugin:tailwindcss/recommended"], // Используем рекомендованные правила
         rules: {
-            "tailwindcss/classnames-order": "warn", // Проверка порядка классов
-            "tailwindcss/no-custom-classname": "warn" // Предупреждения о кастомных классах
+            'react/jsx-max-props-per-line': ['error', { maximum: 4 }],
         },
     },
 ];
-
-export default eslintConfig;

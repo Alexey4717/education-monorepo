@@ -1,80 +1,79 @@
-import {ObjectId} from 'mongodb';
-import {LikeStatus} from "../../types/common";
-
+import { ObjectId } from 'mongodb';
+import { LikeStatus } from '../../types/common';
 
 export type NewestLikeType = {
-    addedAt: string,
-    userId: string
-    login: string
-}
+    addedAt: string;
+    userId: string;
+    login: string;
+};
 export type ExtendedLikesInfo = {
-    likesCount: number,
-    dislikesCount: number,
-    myStatus: LikeStatus,
-    newestLikes: NewestLikeType[]
-}
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: LikeStatus;
+    newestLikes: NewestLikeType[];
+};
 
 export type GetPostOutputModel = {
     /**
      * Title of post from db, required.
      */
-    title:	string
+    title: string;
 
     /**
      * Short description of post from db, required.
      */
-    shortDescription:	string
+    shortDescription: string;
 
     /**
      * Content of post from db, required.
      */
-    content:	string
+    content: string;
 
     /**
      * blogId of post from db, required.
      */
-    blogId:	string
+    blogId: string;
 
     /**
      * Blog name of post from db, required.
      */
-    blogName:	string
+    blogName: string;
 
     /**
      * Date of post creation in db.
      */
-    createdAt: string
-    extendedLikesInfo: ExtendedLikesInfo
-}
+    createdAt: string;
+    extendedLikesInfo: ExtendedLikesInfo;
+};
 
 export type GetPostOutputModelFromMongoDB = GetPostOutputModel & {
     /**
      * Id of post from mongoDB.
      */
-    _id: ObjectId
-}
+    _id: ObjectId;
+};
 
 export type GetMappedPostOutputModel = GetPostOutputModel & {
     /**
      * Id of post from db, required.
      */
-    id: string
-}
+    id: string;
+};
 
 export type TReactions = {
-    userId: string
-    userLogin: string
-    likeStatus: LikeStatus
-    createdAt: string
-}
+    userId: string;
+    userLogin: string;
+    likeStatus: LikeStatus;
+    createdAt: string;
+};
 
 export type TPostDb = {
-    _id: ObjectId
-    title:	string
-    shortDescription:	string
-    content:	string
-    blogId:	string
-    blogName:	string
-    createdAt: string
-    reactions: TReactions []
-}
+    _id: ObjectId;
+    title: string;
+    shortDescription: string;
+    content: string;
+    blogId: string;
+    blogName: string;
+    createdAt: string;
+    reactions: TReactions[];
+};

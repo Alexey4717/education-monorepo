@@ -1,21 +1,24 @@
-import {Request, Response, NextFunction} from 'express';
-import {constants} from "http2";
-
+import { Request, Response, NextFunction } from 'express';
+import { constants } from 'http2';
 
 type ConnectionType = {
-    ip: string
-    url: string
-    method: string
-    connectionDate: number
-}
+    ip: string;
+    url: string;
+    method: string;
+    connectionDate: number;
+};
 
 let connections: ConnectionType[] = [];
 
-export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const rateLimitMiddleware = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     const now = +new Date();
     const blockInterval = 10 * 1000;
 
-    const ip = req.ip;
+    const ip = req.ip || 'unknown'; // TODO проверить как работает если undefined
     const url = req.originalUrl;
     const method = req.method;
 
@@ -23,18 +26,18 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
         ip,
         url,
         method,
-        connectionDate: now
+        connectionDate: now,
     });
 
-    const connectionSessions = connections
-        .filter(c => (
+    const connectionSessions = connections.filter(
+        (c) =>
             c.ip === ip &&
             c.url === url &&
             c.method === method &&
-            ((now - c.connectionDate) <= blockInterval)
-        ));
+            now - c.connectionDate <= blockInterval
+    );
 
-    const connectionsCount = connectionSessions.length
+    const connectionsCount = connectionSessions.length;
 
     if (connectionsCount > 5) {
         res.sendStatus(constants.HTTP_STATUS_TOO_MANY_REQUESTS);
@@ -42,7 +45,7 @@ export const rateLimitMiddleware = (req: Request, res: Response, next: NextFunct
     }
 
     next();
-}
+};
 
 // Попробовать через cron запускать каждые 10 секунд метод по очистке
 // https://www.npmjs.com/package/node-cron

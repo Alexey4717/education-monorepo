@@ -1,28 +1,38 @@
-import {ObjectId} from "mongodb";
+import { ObjectId } from 'mongodb';
 
-import {blogsCollection} from '../../store/db';
-import {GetBlogOutputModelFromMongoDB} from "../../models/BlogModels/GetBlogOutputModel";
-import {SortDirections, GetBlogsArgs, GetPostsInBlogArgs, Paginator} from "../../types/common";
-import {calculateAndGetSkipValue} from "../../helpers";
-import {GetPostOutputModelFromMongoDB, TPostDb} from "../../models/PostModels/GetPostOutputModel";
-import PostModel from "../../models/PostModels/Post-model";
-
+import { blogsCollection } from '../../store/db';
+import { GetBlogOutputModelFromMongoDB } from '../../models/BlogModels/GetBlogOutputModel';
+import {
+    SortDirections,
+    GetBlogsArgs,
+    GetPostsInBlogArgs,
+    Paginator,
+} from '../../types/common';
+import { calculateAndGetSkipValue } from '../../helpers';
+import { TPostDb } from '../../models/PostModels/GetPostOutputModel';
+import PostModel from '../../models/PostModels/Post-model';
 
 export const blogsQueryRepository = {
     async getBlogs({
-                       searchNameTerm,
-                       sortBy,
-                       sortDirection,
-                       pageNumber,
-                       pageSize
-                   }
-                       : GetBlogsArgs): Promise<Paginator<GetBlogOutputModelFromMongoDB[]>> {
+        searchNameTerm,
+        sortBy,
+        sortDirection,
+        pageNumber,
+        pageSize,
+    }: GetBlogsArgs): Promise<Paginator<GetBlogOutputModelFromMongoDB[]>> {
         try {
-            const filter = searchNameTerm ? {name: {$regex: searchNameTerm, $options: 'i'}} : {};
-            const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
+            const filter = searchNameTerm
+                ? { name: { $regex: searchNameTerm, $options: 'i' } }
+                : {};
+            const skipValue = calculateAndGetSkipValue({
+                pageNumber,
+                pageSize,
+            });
             const items = await blogsCollection
                 .find(filter)
-                .sort({[sortBy]: sortDirection === SortDirections.desc ? -1 : 1})
+                .sort({
+                    [sortBy]: sortDirection === SortDirections.desc ? -1 : 1,
+                })
                 .skip(skipValue)
                 .limit(pageSize)
                 .toArray();
@@ -33,29 +43,37 @@ export const blogsQueryRepository = {
                 pageSize,
                 totalCount,
                 pagesCount,
-                items
-            }
+                items,
+            };
         } catch (error) {
-            console.log(`BlogsQueryRepository get blogs error is occurred: ${error}`);
+            console.log(
+                `BlogsQueryRepository get blogs error is occurred: ${error}`
+            );
             return {} as Paginator<GetBlogOutputModelFromMongoDB[]>;
         }
     },
 
     async getPostsInBlog({
-                             blogId,
-                             sortBy,
-                             sortDirection,
-                             pageNumber,
-                             pageSize
-                         }: GetPostsInBlogArgs): Promise<Paginator<TPostDb[]> | null> {
+        blogId,
+        sortBy,
+        sortDirection,
+        pageNumber,
+        pageSize,
+    }: GetPostsInBlogArgs): Promise<Paginator<TPostDb[]> | null> {
         try {
-            const foundBlog = await blogsCollection.findOne({"_id": new ObjectId(blogId)});
+            const foundBlog = await blogsCollection.findOne({
+                _id: new ObjectId(blogId),
+            });
             if (!foundBlog) return null;
-            const skipValue = calculateAndGetSkipValue({pageNumber, pageSize});
-            const filter = {blogId: {$regex: blogId}}
-            const items = await PostModel
-                .find(filter)
-                .sort({[sortBy]: sortDirection === SortDirections.desc ? -1 : 1})
+            const skipValue = calculateAndGetSkipValue({
+                pageNumber,
+                pageSize,
+            });
+            const filter = { blogId: { $regex: blogId } };
+            const items = await PostModel.find(filter)
+                .sort({
+                    [sortBy]: sortDirection === SortDirections.desc ? -1 : 1,
+                })
                 .skip(skipValue)
                 .limit(pageSize)
                 .lean();
@@ -66,20 +84,28 @@ export const blogsQueryRepository = {
                 pageSize,
                 totalCount,
                 pagesCount,
-                items
-            }
+                items,
+            };
         } catch (error) {
-            console.log(`BlogsQueryRepository.getPostsInBlog error is occurred: ${error}`);
+            console.log(
+                `BlogsQueryRepository.getPostsInBlog error is occurred: ${error}`
+            );
             return null;
         }
     },
 
-    async findBlogById(id: string): Promise<GetBlogOutputModelFromMongoDB | null> {
+    async findBlogById(
+        id: string
+    ): Promise<GetBlogOutputModelFromMongoDB | null> {
         try {
-            const foundBlog = await blogsCollection.findOne({"_id": new ObjectId(id)});
+            const foundBlog = await blogsCollection.findOne({
+                _id: new ObjectId(id),
+            });
             return foundBlog ?? null;
         } catch (error) {
-            console.log(`BlogsQueryRepository find blog by id error is occurred: ${error}`);
+            console.log(
+                `BlogsQueryRepository find blog by id error is occurred: ${error}`
+            );
             return null;
         }
     },

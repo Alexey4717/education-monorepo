@@ -1,21 +1,16 @@
-import {Router} from "express";
+import { Router } from 'express';
 
-import {createVideoInputValidations} from "../../../validations/video/createVideoInputValidations";
-import {updateVideoInputValidations} from "../../../validations/video/updateVideoInputValidations";
-import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
-import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
-import {settings} from "../../../settings";
-import {videoControllers} from "../../../composition-root";
-
+import { createVideoInputValidations } from '../../../validations/video/createVideoInputValidations';
+import { updateVideoInputValidations } from '../../../validations/video/updateVideoInputValidations';
+import { inputValidationsMiddleware } from '../../../middlewares/input-validations-middleware';
+import { paramIdValidationMiddleware } from '../../../middlewares/paramId-validation-middleware';
+import { videoControllers } from '../../../composition-root';
 
 export const videosRouter = Router({});
 
+videosRouter.get('/', videoControllers.getVideos.bind(videoControllers));
 videosRouter.get(
-    '/',
-    videoControllers.getVideos.bind(videoControllers)
-);
-videosRouter.get(
-    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
+    '/:id',
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     videoControllers.getVideo.bind(videoControllers)
@@ -29,7 +24,7 @@ videosRouter.post(
 );
 
 videosRouter.put(
-    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
+    '/:id',
     paramIdValidationMiddleware,
     updateVideoInputValidations,
     inputValidationsMiddleware,
@@ -37,7 +32,7 @@ videosRouter.put(
 );
 
 videosRouter.delete(
-    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
+    '/:id',
     paramIdValidationMiddleware,
     inputValidationsMiddleware,
     videoControllers.deleteVideo.bind(videoControllers)

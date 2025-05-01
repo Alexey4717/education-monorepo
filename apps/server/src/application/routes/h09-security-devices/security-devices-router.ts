@@ -1,10 +1,8 @@
-import {Router} from "express";
+import { Router } from 'express';
 
-import {securityDeviceControllers} from "../../../controllers/security-device-controllers";
-import {settings} from "../../../settings";
-import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
-import {cookieRefreshTokenMiddleware} from "../../../middlewares/cookie-refresh-token-middleware";
-
+import { securityDeviceControllers } from '../../../controllers/security-device-controllers';
+import { paramIdValidationMiddleware } from '../../../middlewares/paramId-validation-middleware';
+import { cookieRefreshTokenMiddleware } from '../../../middlewares/cookie-refresh-token-middleware';
 
 export const securityDevicesRouter = Router({});
 
@@ -21,7 +19,7 @@ securityDevicesRouter.delete(
 );
 
 securityDevicesRouter.delete(
-    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
+    '/:id',
     paramIdValidationMiddleware,
     // не вставляю мидлвэр, т.к. нужно отобразить 404 если не найден девайс
     // cookieRefreshTokenMiddleware,

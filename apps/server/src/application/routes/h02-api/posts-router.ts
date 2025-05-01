@@ -1,34 +1,28 @@
-import {Router} from "express";
+import { Router } from 'express';
 
-import {inputValidationsMiddleware} from "../../../middlewares/input-validations-middleware";
-import {adminBasicAuthMiddleware} from "../../../middlewares/admin-basicAuth-middleware";
-import {createPostInputValidations} from "../../../validations/post/createPostInputValidations";
-import {updatePostInputValidations} from "../../../validations/post/updatePostInputValidations";
-import {paramIdValidationMiddleware} from "../../../middlewares/paramId-validation-middleware";
-import {settings} from "../../../settings";
-import {authMiddleware} from "../../../middlewares/auth-middleware";
-import {createCommentInputValidations} from "../../../validations/comment/createCommentInputValidations";
-import {postControllers} from "../../../controllers/post-controllers";
-import {setUserDataMiddleware} from "../../../middlewares/set-user-data-middleware";
-import {updatePostLikeStatusInputValidations} from "../../../validations/post/updatePostLikeStatusInputValidations";
-
+import { inputValidationsMiddleware } from '../../../middlewares/input-validations-middleware';
+import { adminBasicAuthMiddleware } from '../../../middlewares/admin-basicAuth-middleware';
+import { createPostInputValidations } from '../../../validations/post/createPostInputValidations';
+import { updatePostInputValidations } from '../../../validations/post/updatePostInputValidations';
+import { paramIdValidationMiddleware } from '../../../middlewares/paramId-validation-middleware';
+import { authMiddleware } from '../../../middlewares/auth-middleware';
+import { createCommentInputValidations } from '../../../validations/comment/createCommentInputValidations';
+import { postControllers } from '../../../controllers/post-controllers';
+import { setUserDataMiddleware } from '../../../middlewares/set-user-data-middleware';
+import { updatePostLikeStatusInputValidations } from '../../../validations/post/updatePostLikeStatusInputValidations';
 
 export const postsRouter = Router({});
 
+postsRouter.get('/', setUserDataMiddleware, postControllers.getPosts);
 postsRouter.get(
-    '/',
-    setUserDataMiddleware,
-    postControllers.getPosts
-);
-postsRouter.get(
-    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
+    '/:id',
     paramIdValidationMiddleware,
     setUserDataMiddleware,
     inputValidationsMiddleware,
     postControllers.getPost
 );
 postsRouter.get(
-    `/:postId(${settings.ID_PATTERN_BY_DB_TYPE})/comments`,
+    '/:postId/comments',
     setUserDataMiddleware,
     postControllers.getCommentsOfPost
 );
@@ -42,7 +36,7 @@ postsRouter.post(
     postControllers.createPost
 );
 postsRouter.post(
-    `/:postId(${settings.ID_PATTERN_BY_DB_TYPE})/comments`,
+    '/:postId/comments',
     authMiddleware,
     paramIdValidationMiddleware,
     createCommentInputValidations,
@@ -51,7 +45,7 @@ postsRouter.post(
 );
 
 postsRouter.put(
-    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
+    '/:id',
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     updatePostInputValidations,
@@ -60,7 +54,7 @@ postsRouter.put(
 );
 
 postsRouter.put(
-    `/:postId(${settings.ID_PATTERN_BY_DB_TYPE})/like-status`,
+    '/:postId/like-status',
     paramIdValidationMiddleware,
     authMiddleware,
     updatePostLikeStatusInputValidations,
@@ -69,7 +63,7 @@ postsRouter.put(
 );
 
 postsRouter.delete(
-    `/:id(${settings.ID_PATTERN_BY_DB_TYPE})`,
+    '/:id',
     adminBasicAuthMiddleware,
     paramIdValidationMiddleware,
     postControllers.deletePost

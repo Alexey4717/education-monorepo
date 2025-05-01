@@ -1,6 +1,5 @@
-import {commonValidationForBodyStrings} from "../common";
-import {emailRecoveryPasswordValidation} from "./index";
-
+import { commonValidationForBodyStrings } from '../common';
+import { emailRecoveryPasswordValidation } from './index';
 
 export const passwordRecoveryInputValidations = [
     commonValidationForBodyStrings('email'),

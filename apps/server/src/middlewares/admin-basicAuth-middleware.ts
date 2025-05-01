@@ -1,14 +1,17 @@
-import {Request, Response, NextFunction} from "express";
-import {constants} from 'http2';
+import { Request, Response, NextFunction } from 'express';
+import { constants } from 'http2';
 
-import {db} from "../store/mockedDB";
+import { db } from '../store/mockedDB';
 
-
-export const adminBasicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const adminBasicAuthMiddleware = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const token = req?.headers?.authorization;
         if (!token) {
-            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
             return;
         }
 
@@ -22,7 +25,9 @@ export const adminBasicAuthMiddleware = (req: Request, res: Response, next: Next
 
         if (
             authType !== 'Basic' ||
-            !db.users.some(user => user.login === login && user.password === password)
+            !db.users.some(
+                (user) => user.login === login && user.password === password
+            )
         ) {
             res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
             return;

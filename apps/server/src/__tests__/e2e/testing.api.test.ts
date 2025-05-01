@@ -1,10 +1,9 @@
-import request from "supertest";
-import {constants} from 'http2';
+import request from 'supertest';
+import { constants } from 'http2';
 
-import {app} from "../../index";
-import {CreateUserInputModel} from "../../models/UserModels/CreateUserInputModel";
-import {getEncodedAuthToken} from "../../helpers";
-
+import { app } from '../../index';
+import { CreateUserInputModel } from '../../models/UserModels/CreateUserInputModel';
+import { getEncodedAuthToken } from '../../helpers';
 
 describe('/testing', () => {
     const adminBasicToken = getEncodedAuthToken();
@@ -12,8 +11,8 @@ describe('/testing', () => {
     beforeEach(async () => {
         await request(app)
             .delete('/testing/all-data')
-            .expect(constants.HTTP_STATUS_NO_CONTENT)
-    })
+            .expect(constants.HTTP_STATUS_NO_CONTENT);
+    });
 
     // testing clear all data api
     it('should remove all data', async () => {
@@ -27,7 +26,7 @@ describe('/testing', () => {
             .post('/users')
             .set('Authorization', `Basic ${adminBasicToken}`)
             .send(input)
-            .expect(constants.HTTP_STATUS_CREATED)
+            .expect(constants.HTTP_STATUS_CREATED);
 
         await request(app)
             .get('/users')
@@ -37,12 +36,12 @@ describe('/testing', () => {
                 page: 1,
                 pageSize: 10,
                 totalCount: 1,
-                items: [createdUser.body]
-            })
+                items: [createdUser.body],
+            });
 
         await request(app)
             .delete('/testing/all-data')
-            .expect(constants.HTTP_STATUS_NO_CONTENT)
+            .expect(constants.HTTP_STATUS_NO_CONTENT);
 
         await request(app)
             .get('/users')
@@ -52,10 +51,9 @@ describe('/testing', () => {
                 page: 1,
                 pageSize: 10,
                 totalCount: 0,
-                items: []
-            })
+                items: [],
+            });
 
         // add creating all entities types later
-    })
-
+    });
 });

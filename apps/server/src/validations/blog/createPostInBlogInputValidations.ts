@@ -1,10 +1,9 @@
-import {commonValidationForBodyStrings} from '../common';
+import { commonValidationForBodyStrings } from '../common';
 import {
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
-} from "../post";
-
+} from '../post';
 
 export const createPostInBlogInputValidations = [
     commonValidationForBodyStrings('title'),

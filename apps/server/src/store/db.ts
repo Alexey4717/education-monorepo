@@ -26,8 +26,10 @@ export const usersCollection = db01.collection<GetUserOutputModel>('users');
 export const blogsCollection = db01.collection<GetBlogOutputModel>('blogs');
 export const postsCollection = db01.collection<GetPostOutputModel>('posts');
 export const videosCollection = db01.collection<GetVideoOutputModel>('videos');
-export const commentsCollection = db01.collection<GetCommentOutputModel>('comments');
-export const securityDevicesCollection = db01.collection<GetSecurityDeviceOutputModel>('security-devices');
+export const commentsCollection =
+    db01.collection<GetCommentOutputModel>('comments');
+export const securityDevicesCollection =
+    db01.collection<GetSecurityDeviceOutputModel>('security-devices');
 
 export const runDB = async () => {
     try {
