@@ -14,5 +14,10 @@
             "@shared/*": ["packages/shared/src/*"]
         }
     },
+    "include": [
+        "apps/**/*",
+        "packages/**/*",
+        "apps/server/eslint.config.js",
+    ],
     "exclude": ["**/node_modules", "**/.next"]
 }

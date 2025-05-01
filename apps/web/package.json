@@ -6,11 +6,13 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint",
-        "lint:fix": "next lint --fix",
-        "lint:style": "stylelint \"**/*.{scss,ts,tsx}\"",
-        "lint:style:fix": "stylelint \"**/*.{scss,ts,tsx}\" --fix",
-        "prettier": "npx prettier --write **/*.{ts,tsx,json}"
+        "lint:ts": "next lint",
+        "lint:ts:fix": "next lint --fix",
+        "lint:style": "stylelint \"**/*.{css,scss}\" --config .stylelintrc.cjs",
+        "lint:style:fix": "stylelint \"**/*.{css,scss}\" --config .stylelintrc.cjs --fix",
+        "lint": "yarn lint:ts && yarn lint:style",
+        "lint:fix": "yarn lint:ts:fix && yarn lint:style:fix",
+        "prettier": "prettier --write \"**/*.{ts,tsx,json,css,scss}\""
     },
     "dependencies": {
         "@shared/core": "file:../../packages/shared",
@@ -20,16 +22,17 @@
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",
+        "@stylistic/stylelint-plugin": "^3.1.2",
         "@tailwindcss/postcss": "^4",
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "eslint-config-next": "15.3.1",
         "sass": "^1.87.0",
         "stylelint": "^16.19.1",
-        "stylelint-config-prettier": "^9.0.5",
-        "stylelint-config-standard": "^38.0.0",
+        "stylelint-config-standard-scss": "^14.0.0",
         "stylelint-config-tailwindcss": "^1.0.0",
-        "stylelint-order": "^7.0.0",
-        "tailwindcss": "^4"
+        "stylelint-prettier": "^5.0.3",
+        "stylelint-use-logical": "^2.1.2",
+        "tailwindcss": "^4.1.5"
     }
 }
