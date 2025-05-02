@@ -12,10 +12,11 @@ configApp(app);
 const port = process.env.PORT || 3001;
 
 const startApp = async () => {
-    await runDB().catch(console.dir);
-    app.listen(port, () => {
-        console.log(`server running on ${port} port`);
-    });
+	await runDB().catch(console.dir);
+	app.listen(port, () => {
+		console.log(`server running on ${port} port`);
+		console.log('Swagger docs available at http://localhost:3001/api-docs');
+	});
 };
 
 startApp();

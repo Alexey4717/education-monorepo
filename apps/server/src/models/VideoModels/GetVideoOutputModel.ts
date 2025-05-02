@@ -3,52 +3,61 @@ import { ObjectId } from 'mongodb';
 import { AvailableResolutions } from '../../types/common';
 
 export type GetVideoOutputModel = {
-    /**
-     * video title
-     */
-    title: string;
+	/**
+	 * @format video title
+	 * @example "Video title"
+	 */
+	title: string;
 
-    /**
-     * video author
-     */
-    author: string;
+	/**
+	 * @format video author
+	 * @example "Alex"
+	 */
+	author: string;
 
-    /**
-     * showing can video is downloaded. By default - false.
-     */
-    canBeDownloaded: boolean;
+	/**
+	 * @format showing can video is downloaded. By default - false.
+	 * @example false
+	 */
+	canBeDownloaded: boolean;
 
-    /**
-     * min age restriction for watching video. Min - 0, max - 18, null - no restriction. By default - null.
-     */
-    minAgeRestriction: number | null;
+	/**
+	 * @format min age restriction for watching video. Min - 0, max - 18, null - no restriction. By default - null.
+	 * @example 18
+	 */
+	minAgeRestriction: number | null;
 
-    /**
-     * Date of created video.
-     */
-    createdAt: string;
+	/**
+	 * @format Date of created video.
+	 * @example "2024-05-20T10:00:00Z"
+	 */
+	createdAt: string;
 
-    /**
-     * Date of publication video. By default - next day after date of created video.
-     */
-    publicationDate: string;
+	/**
+	 * @format Date of publication video. By default - next day after date of created video.
+	 * @example "2024-05-20T10:00:00Z"
+	 */
+	publicationDate: string;
 
-    /**
-     * Available resolutions of video (enum), can be nullable.
-     */
-    availableResolutions: AvailableResolutions[] | null;
+	/**
+	 * @format Available resolutions of video (enum), can be nullable.
+	 * @example ["P720", "P1080"]
+	 */
+	availableResolutions: AvailableResolutions[] | null;
 };
 
 export type GetVideoOutputModelFromMongoDB = GetVideoOutputModel & {
-    /**
-     * Inserted id video from mongodb
-     */
-    _id: ObjectId;
+	/**
+	 * @format Inserted id video from mongodb
+	 * @example "00000001-0000001-222222-022222"
+	 */
+	_id: ObjectId;
 };
 
 export type GetMappedVideoOutputModel = GetVideoOutputModel & {
-    /**
-     * Mapped id of video from db
-     */
-    id: string;
+	/**
+	 * @format Mapped id of video from db
+	 * @example "00000001-0000001-222222-022222"
+	 */
+	id: string;
 };
