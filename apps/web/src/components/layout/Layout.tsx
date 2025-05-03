@@ -7,21 +7,21 @@ import { Sidebar } from './sidebar/Sidebar';
 import styles from './Layout.module.scss';
 
 export function Layout({ children }: PropsWithChildren<unknown>) {
-    const [isShowedSidebar, setIsShowedSidebar] = useState(true);
+	const [isShowedSidebar, setIsShowedSidebar] = useState(true);
 
-    const toggleSidebar = () => {
-        setIsShowedSidebar(!isShowedSidebar);
-    };
+	const toggleSidebar = () => {
+		setIsShowedSidebar(!isShowedSidebar);
+	};
 
-    return (
-        <main
-            className={cn(
-                'flex min-h-screen',
-                isShowedSidebar ? styles.showedSidebar : styles.hidedSidebar,
-            )}
-        >
-            <Sidebar toggleSidebar={toggleSidebar} />
-            <Content>{children}</Content>
-        </main>
-    );
+	return (
+		<main
+			className={cn(
+				'flex min-h-screen',
+				isShowedSidebar ? styles.showedSidebar : styles.hidedSidebar
+			)}
+		>
+			<Sidebar toggleSidebar={toggleSidebar} />
+			<Content>{children}</Content>
+		</main>
+	);
 }
