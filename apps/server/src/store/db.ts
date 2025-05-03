@@ -33,7 +33,6 @@ export const securityDevicesCollection =
 
 export const runDB = async () => {
     try {
-        console.log('mongoUri: ', mongoUri);
         await client.connect();
         await mongoose.connect(mongoUri);
         await client.db('admin').command({ ping: 1 });
