@@ -1,48 +1,34 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "noEmit": true,
-    "module": "esnext",
-    "forceConsistentCasingInFileNames": true,
-    // для корректного нейминга импортов
-    "verbatimModuleSyntax": true,
-    // будет ругаться, если импортировать тип без type
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "baseUrl": "src",
-    "paths": {
-      "@/ui/*": [
-        // сокращаем импорт
-        "components/ui/*"
-      ],
-      "@/*": [
-        "./*"
-      ]
-    }
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    ".next"
-  ]
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"target": "ES2017",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"noEmit": true,
+		"module": "esnext",
+		"forceConsistentCasingInFileNames": true,
+		// для корректного нейминга импортов
+		"verbatimModuleSyntax": true,
+		// будет ругаться, если импортировать тип без type
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"incremental": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"baseUrl": "src",
+		"paths": {
+			"@/ui/*": [
+				// сокращаем импорт
+				"components/ui/*"
+			],
+			"@/*": ["./*"]
+		}
+	},
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+	"exclude": ["node_modules", ".next"]
 }
