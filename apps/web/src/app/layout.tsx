@@ -11,8 +11,11 @@ const geistRoboto = Roboto({
 });
 
 export const metadata: Metadata = {
-	title: 'MediaHub',
-	description: 'Imitation of blog-platform',
+	title: {
+		absolute: 'Mediahub', // статичное/неизменное название
+		template: `%s | Mediahub`, // %s - это переменная из шаблона
+	},
+	description: 'Hub for sharing video/blogs/posts',
 };
 
 export default function RootLayout({

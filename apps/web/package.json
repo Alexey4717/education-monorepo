@@ -24,7 +24,8 @@
 		"next": "15.3.1",
 		"path-to-regexp": "^8.2.0",
 		"react": "^19.0.0",
-		"react-dom": "^19.0.0"
+		"react-dom": "^19.0.0",
+		"tailwind-merge": "^3.2.0"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
