@@ -4,6 +4,7 @@ import { Header } from './header/Header';
 export function Content({ children }: PropsWithChildren<unknown>) {
 	return (
 		<div
+			className="relative"
 			style={{
 				flex: '1 1 0%',
 			}}

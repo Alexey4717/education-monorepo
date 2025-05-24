@@ -1,5 +1,5 @@
 export const COLORS = {
-	primary: '#EF4444',
+	primary: '#ef4444',
 	bg: '#191B28',
-	border: '#2A3439',
+	border: 'rgba(255, 255, 255, 0.07)',
 };

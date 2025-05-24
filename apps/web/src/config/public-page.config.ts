@@ -1,22 +1,32 @@
 class PublicPage {
-    HOME = '/';
-    TRENDING = '/trending';
-    VIDEO_GAMES = '/video-games';
+	AUTH = '/auth';
 
-    MY_CHANNEL = '/my-channel';
-    SUBSCRIPTIONS = '/subscriptions';
-    HISTORY = '/history';
-    LIKED_VIDEOS = '/liked-videos';
+	HOME = '/';
+	TRENDING = '/trending';
+	VIDEO_GAMES = '/video-games';
+	SUBSCRIPTIONS = '/my/subscriptions';
 
-    FEEDBACK = '/feedback';
+	MY_CHANNEL = '/my-channel';
+	HISTORY = '/my/history';
+	LIKED_VIDEOS = '/my/liked-videos';
 
-    VIDEO(path: string) {
-        return `/v/${path}`;
-    }
+	FEEDBACK = '/feedback';
 
-    SEARCH(searchTerm: string) {
-        return `/s?term=${searchTerm}`;
-    }
+	VIDEO(path: string) {
+		return `/v/${path}`;
+	}
+
+	CHANNEL(path: string) {
+		return `/c/${path}`;
+	}
+
+	PLAYLISTS(path?: string) {
+		return `/my/playlists${path ? `/${path}` : ''}`;
+	}
+
+	SEARCH(searchTerm: string) {
+		return `/s?term=${searchTerm}`;
+	}
 }
 
 export const PAGE = new PublicPage();

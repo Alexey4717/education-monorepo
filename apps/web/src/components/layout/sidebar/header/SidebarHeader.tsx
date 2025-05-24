@@ -1,7 +1,5 @@
-import { Menu, SquarePlay } from 'lucide-react';
-import Link from 'next/link';
-import { COLORS } from '@/constants/colors.constants';
-import { PAGE } from '@/config/public-page.config';
+import { Menu } from 'lucide-react';
+import { Logo } from './Logo';
 
 export function SidebarHeader({
 	toggleSidebar,
@@ -13,14 +11,12 @@ export function SidebarHeader({
 			<button
 				className="opacity-85 hover:opacity-100 transition-opacity"
 				onClick={toggleSidebar}
+				title="Toggle sidebar"
 			>
 				<Menu />
 			</button>
 
-			<Link href={PAGE.HOME} className="flex items-center gap-1.5">
-				<SquarePlay color={COLORS.primary} size={29} />
-				<span className="font-medium text-xl">MediaHub</span>
-			</Link>
+			<Logo />
 		</div>
 	);
 }

@@ -8,7 +8,7 @@ import { securityDevicesQueryRepository } from '../repositories/Queries-repo/sec
 export const cookieRefreshTokenMiddleware = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ) => {
     try {
         const refreshToken = req?.cookies?.refreshToken;
@@ -19,9 +19,9 @@ export const cookieRefreshTokenMiddleware = async (
         }
 
         const { deviceId, userId } =
-            (await jwtService.getDeviceAndUserIdsByRefreshToken(
-                refreshToken
-            )) || {};
+        (await jwtService.getDeviceAndUserIdsByRefreshToken(
+            refreshToken,
+        )) || {};
 
         // проверка что токен валиден и не протух
         if (!userId || !deviceId) {
@@ -36,7 +36,7 @@ export const cookieRefreshTokenMiddleware = async (
 
         const foundSecurityDevice =
             await securityDevicesQueryRepository.findSecurityDeviceById(
-                deviceId
+                deviceId,
             );
 
         if (!foundSecurityDevice) {
@@ -49,5 +49,6 @@ export const cookieRefreshTokenMiddleware = async (
         next();
     } catch (error) {
         console.log(`Auth middleware error is occurred: ${error}`);
+        res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
     }
 };

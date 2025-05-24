@@ -18,29 +18,42 @@ import { commentsRouter } from './application/routes/h06-comments/comments-route
 import { securityDevicesRouter } from './application/routes/h09-security-devices/security-devices-router';
 import { specs } from './swagger';
 
+const corsOptions = {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        const allowedOrigins = [process.env.CLIENT_URL];
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200,
+};
+
 export const configApp = (app: Express) => {
-	app.set('trust proxy', true);
+    app.set('trust proxy', true);
 
-	app.use(cors()); // Разрешает запросы с любых доменов
-	app.use(cookieParser());
-	app.use(express.json());
+    app.use(cors(corsOptions));
+    app.use(cookieParser());
+    app.use(express.json());
 
-	app.use((req: Request, res: Response, next: NextFunction) => {
-		req.context = {} as RequestContextType;
-		next();
-	});
-	app.use('/auth', authRouter);
-	app.use('/users', usersRouter);
-	app.use('/videos', videosRouter);
-	app.use('/blogs', blogsRouter);
-	app.use('/posts', postsRouter);
-	app.use('/comments', commentsRouter);
-	app.use('/security/devices', securityDevicesRouter);
-	app.use('/testing', testingDeletionRouter);
+    app.use((req: Request, res: Response, next: NextFunction) => {
+        req.context = {} as RequestContextType;
+        next();
+    });
+    app.use('/auth', authRouter);
+    app.use('/users', usersRouter);
+    app.use('/videos', videosRouter);
+    app.use('/blogs', blogsRouter);
+    app.use('/posts', postsRouter);
+    app.use('/comments', commentsRouter);
+    app.use('/security/devices', securityDevicesRouter);
+    app.use('/testing', testingDeletionRouter);
 
-	app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-	app.get('/', (req: Request, res: Response) => {
-		res.send('main page');
-	});
+    app.get('/', (req: Request, res: Response) => {
+        res.send('main page');
+    });
 };

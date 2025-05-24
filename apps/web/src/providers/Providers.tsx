@@ -1,20 +1,43 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { LazyMotion, domAnimation } from 'framer-motion';
 import { type ReactNode, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
+import { Provider } from 'react-redux';
+import { store } from '@/store';
 
-/**
- * Компонент со всеми провайдерами
- * @param children
- * @constructor
- */
 export function Providers({ children }: { children: ReactNode }) {
-	// Чтобы точно инициализировать на клиенте, т.к. useState работает только там
-	const [queryClient] = useState(() => new QueryClient());
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						retry: 1,
+						refetchOnWindowFocus: false,
+					},
+					mutations: {
+						retry: 1,
+					},
+				},
+			})
+	);
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			{children}
+			<Provider store={store}>
+				<LazyMotion features={domAnimation}>
+					{children}
+					<Toaster
+						toastOptions={{
+							style: {
+								backgroundColor: '#202937',
+								color: 'white',
+							},
+						}}
+					/>
+				</LazyMotion>
+			</Provider>
 		</QueryClientProvider>
 	);
 }

@@ -1,21 +1,39 @@
-export enum AvailableResolutions {
-	P144 = 'P144',
-	P240 = 'P240',
-	P360 = 'P360',
-	P480 = 'P480',
-	P720 = 'P720',
-	P1080 = 'P1080',
-	P1440 = 'P1440',
-	P2160 = 'P2160',
-}
+import type { EnumVideoPlayerQuality } from '@/ui/video-player/video-player.types';
+import type { IChannel } from './channel.types';
+import type { IComment } from './comment.types';
+import type { IPagination } from './pagination.types';
 
 export interface IVideo {
 	id: string;
+	publicId: string;
 	title: string;
-	author: string;
-	canBeDownloaded: boolean;
-	minAgeRestriction: number | null;
+	description: string;
+	thumbnailUrl: string;
+	videoFileName: string;
+	maxResolution: EnumVideoPlayerQuality;
+	viewsCount: number;
+	isPublic: boolean;
+	channel: IChannel;
 	createdAt: string;
-	publicationDate: string;
-	availableResolutions: AvailableResolutions[] | null;
+	updatedAt: string;
+}
+
+export interface IFullVideo extends IVideo {
+	likes: [];
+	comments: IComment[];
+}
+
+export interface ISingleVideoResponse extends IFullVideo {
+	similarVideos: IVideo[];
+}
+
+export interface IStudioVideoResponse extends IFullVideo {
+	tags: {
+		id: string;
+		name: string;
+	}[];
+}
+
+export interface IVideosPagination extends IPagination {
+	videos: IFullVideo[];
 }

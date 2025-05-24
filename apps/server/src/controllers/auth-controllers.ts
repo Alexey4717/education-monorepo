@@ -74,6 +74,23 @@ export const authControllers = {
             .json({ accessToken: newAccessToken });
     },
 
+    async getAccessToken(req: Request, res: Response) {
+        const user = req.context?.user;
+
+        if (!user) {
+            res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED);
+            return;
+        }
+
+        try {
+            const newAccessToken = await jwtService.createAccessJWT(user);
+            res.status(constants.HTTP_STATUS_OK).json({ accessToken: newAccessToken });
+        } catch (error) {
+            console.error(`Access token generation error: ${error}`);
+            res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        }
+    },
+
     async registration(req: RequestWithBody<SignupInputModel>, res: Response) {
         const { login, password, email } = req.body || {};
 
@@ -93,7 +110,7 @@ export const authControllers = {
 
     async registrationConfirmation(
         req: RequestWithBody<RegistrationConfirmInputModel>,
-        res: Response
+        res: Response,
     ) {
         const { code } = req.body || {};
         const result = await authService.confirmEmail(code);
@@ -107,7 +124,7 @@ export const authControllers = {
 
     async newPassword(
         req: RequestWithBody<NewPasswordInputModel>,
-        res: Response
+        res: Response,
     ) {
         const { newPassword, recoveryCode } = req.body || {};
         const result = await authService.changeUserPassword({
@@ -124,7 +141,7 @@ export const authControllers = {
 
     async recoveryPassword(
         req: RequestWithBody<RecoveryPasswordInputModel>,
-        res: Response
+        res: Response,
     ) {
         const { email } = req.body || {};
         const result = await authService.recoveryPassword(email);
@@ -139,7 +156,7 @@ export const authControllers = {
 
     async registrationEmailResending(
         req: RequestWithBody<ResendRegistrationInputModel>,
-        res: Response
+        res: Response,
     ) {
         const { email } = req.body || {};
         const result = await authService.resendConfirmationMessage(email);
@@ -163,7 +180,7 @@ export const authControllers = {
         }
         // TODO проверить, убрал return res
         res.clearCookie('refreshToken').sendStatus(
-            constants.HTTP_STATUS_NO_CONTENT
+            constants.HTTP_STATUS_NO_CONTENT,
         );
     },
 
@@ -173,7 +190,7 @@ export const authControllers = {
             return;
         }
         res.status(constants.HTTP_STATUS_OK).json(
-            getMappedMeViewModel(req.context.user)
+            getMappedMeViewModel(req.context.user),
         );
     },
 };

@@ -8,6 +8,7 @@ import { registrationConfirmationInputValidations } from '../../../validations/a
 import { registrationEmailResendingInputValidations } from '../../../validations/auth/registrationEmailResendingInputValidations';
 import { authControllers } from '../../../controllers/auth-controllers';
 import { cookieRefreshTokenMiddleware } from '../../../middlewares/cookie-refresh-token-middleware';
+import { cookieAccessTokenMiddleware } from '../../../middlewares/cookie-access-token-middleware';
 import { rateLimitMiddleware } from '../../../middlewares/rate-limit-middleware';
 import { newPasswordInputValidations } from '../../../validations/auth/newPasswordInputValidations';
 import { passwordRecoveryInputValidations } from '../../../validations/auth/passwordRecoveryInputValidations';
@@ -176,11 +177,11 @@ export const authRouter = Router({});
  *         description: Слишком много запросов
  */
 authRouter.post(
-	'/login',
-	rateLimitMiddleware,
-	loginInputValidations,
-	inputValidationsMiddleware,
-	authControllers.login
+    '/login',
+    rateLimitMiddleware,
+    loginInputValidations,
+    inputValidationsMiddleware,
+    authControllers.login,
 );
 
 /**
@@ -207,9 +208,33 @@ authRouter.post(
  *         description: Невалидный refresh token
  */
 authRouter.post(
-	'/refresh-token',
-	cookieRefreshTokenMiddleware,
-	authControllers.refreshToken
+    '/refresh-token',
+    cookieRefreshTokenMiddleware,
+    authControllers.refreshToken,
+);
+
+/**
+ * @swagger
+ * /auth/access-token:
+ *   post:
+ *     summary: Получение нового access токена
+ *     tags: [Auth]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Access токен успешно обновлен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Tokens"
+ *       401:
+ *         description: Невалидный refresh token
+ */
+authRouter.get(
+    '/access-token',
+    cookieAccessTokenMiddleware,
+    authControllers.getAccessToken,
 );
 
 /**
@@ -233,11 +258,11 @@ authRouter.post(
  *         description: Слишком много запросов
  */
 authRouter.post(
-	'/registration',
-	rateLimitMiddleware,
-	registrationInputValidations,
-	inputValidationsMiddleware,
-	authControllers.registration
+    '/registration',
+    rateLimitMiddleware,
+    registrationInputValidations,
+    inputValidationsMiddleware,
+    authControllers.registration,
 );
 
 /**
@@ -261,11 +286,11 @@ authRouter.post(
  *         description: Слишком много запросов
  */
 authRouter.post(
-	'/registration-confirmation',
-	rateLimitMiddleware,
-	registrationConfirmationInputValidations,
-	inputValidationsMiddleware,
-	authControllers.registrationConfirmation
+    '/registration-confirmation',
+    rateLimitMiddleware,
+    registrationConfirmationInputValidations,
+    inputValidationsMiddleware,
+    authControllers.registrationConfirmation,
 );
 
 /**
@@ -289,11 +314,11 @@ authRouter.post(
  *         description: Слишком много запросов
  */
 authRouter.post(
-	'/password-recovery',
-	rateLimitMiddleware,
-	passwordRecoveryInputValidations,
-	inputValidationsMiddleware,
-	authControllers.recoveryPassword
+    '/password-recovery',
+    rateLimitMiddleware,
+    passwordRecoveryInputValidations,
+    inputValidationsMiddleware,
+    authControllers.recoveryPassword,
 );
 
 /**
@@ -317,11 +342,11 @@ authRouter.post(
  *         description: Слишком много запросов
  */
 authRouter.post(
-	'/new-password',
-	rateLimitMiddleware,
-	newPasswordInputValidations,
-	inputValidationsMiddleware,
-	authControllers.newPassword
+    '/new-password',
+    rateLimitMiddleware,
+    newPasswordInputValidations,
+    inputValidationsMiddleware,
+    authControllers.newPassword,
 );
 
 /**
@@ -345,11 +370,11 @@ authRouter.post(
  *         description: Слишком много запросов
  */
 authRouter.post(
-	'/registration-email-resending',
-	rateLimitMiddleware,
-	registrationEmailResendingInputValidations,
-	inputValidationsMiddleware,
-	authControllers.registrationEmailResending
+    '/registration-email-resending',
+    rateLimitMiddleware,
+    registrationEmailResendingInputValidations,
+    inputValidationsMiddleware,
+    authControllers.registrationEmailResending,
 );
 
 /**
@@ -372,9 +397,9 @@ authRouter.post(
  *         description: Невалидный refresh token
  */
 authRouter.post(
-	'/logout',
-	cookieRefreshTokenMiddleware,
-	authControllers.logout
+    '/logout',
+    cookieRefreshTokenMiddleware,
+    authControllers.logout,
 );
 
 /**
